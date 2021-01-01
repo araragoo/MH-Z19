@@ -5,7 +5,8 @@ namespace CO2 {
 
     let CO2data = 400
 
-    //% blockId=measure CO2 block="CO2[ppm]"
+    //% blockId=measureCO2
+    //% block="CO2[ppm]"
     export function measuredValue () {
         serial.writeString("" + ([255, 1, 134, 0, 0, 0, 0, 0, 121]))
         basic.pause(100)
@@ -22,7 +23,8 @@ namespace CO2 {
         return value
     }
 
-    //% blockId=setOffset block="Set CO2 value as 400ppm"
+    //% blockId=setOffset
+    //% block="Set CO2 value as 400ppm"
     export function setOffset () {
         serial.writeString("" + ([255, 1, 135, 0, 0, 0, 0, 0, 120]))
     }
