@@ -5,6 +5,7 @@ namespace CO2 {
 
     let CO2data = 400
 
+    //  subcategory="CO2"
     //% blockId=measureCO2
     //% block="CO2[ppm]"
     export function measuredValue () {
@@ -23,6 +24,7 @@ namespace CO2 {
         return value
     }
 
+    //  subcategory="CO2"
     //% blockId=setOffset
     //% block="Set CO2 value as 400ppm"
     export function setOffset () {
