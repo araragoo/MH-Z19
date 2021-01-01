@@ -12,5 +12,5 @@ Extension for Servo Motor control ,Use with Micro:bit
 (The metadata above is needed for package search.)
 
 ```package
-Insect=github.com/araragoo/QTechCarPad
+Insect=github.com/araragoo/QTechCO2
 ```
