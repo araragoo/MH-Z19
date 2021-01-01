@@ -3,11 +3,10 @@
 //% weight=5 color=#0fbc11 icon="\uf112" block="CO2"
 namespace CO2 {
 
-    let CO2data
+    let CO2data = 400
 
-    //% subcategory="CO2"
-    //% blockId=measCO2 block="CO2[ppm]"
-    export function measureCO2 () {
+    //% blockId=measure CO2 block="CO2[ppm]"
+    export function measuredValue () {
         serial.writeString("" + ([255, 1, 134, 0, 0, 0, 0, 0, 121]))
         basic.pause(100)
         data = serial.readBuffer(9)
@@ -17,15 +16,14 @@ namespace CO2 {
                 sum = sum + data[index]
             }
             if (data[8] == sum % 255) {
-                CO2data = data[2] * 255 + data[3]
+                value = data[2] * 255 + data[3]
             }
         }
-        return CO2data
+        return value
     }
 
-    //% subcategory="CO2"
-    //% blockId=initCO2 block="CO2 Zero = 400ppm"
-    export function initZeroCO2 () {
+    //% blockId=setOffset block="Set CO2 value as 400ppm"
+    export function setOffset () {
         serial.writeString("" + ([255, 1, 135, 0, 0, 0, 0, 0, 120]))
     }
 }
