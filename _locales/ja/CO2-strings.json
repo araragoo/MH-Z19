@@ -1,5 +1,5 @@
 {
 	"CO2|block": "二酸化炭素測定",
-	"CO2.measuredValue": "CO2測定値[ppm]",
-	"CO2.setOffset": "オフセット設定400ppm"
+	"CO2.measuredValue|block": "CO2測定値[ppm]",
+	"CO2.setOffset|block": "オフセット設定400ppm"
 }
