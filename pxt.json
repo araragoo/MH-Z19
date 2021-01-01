@@ -1,15 +1,15 @@
 {
-    "name": "Car",
+    "name": "CO2",
     "version": "0.0.0",
-    "description": "Extension for Servo Motor Control",
+    "description": "Extension for CO2 Measurement",
     "license": "Ara",
     "dependencies": {
         "core": "*"
     },
     "files": [
         "README.md",
-        "Car.ts",
-        "_locales/ja/Car-strings.json"
+        "CO2.ts",
+        "_locales/ja/CO2-strings.json"
     ],
     "testFiles": [
         "test.ts"
