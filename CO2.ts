@@ -11,6 +11,11 @@ namespace CO2 {
     //% blockId=initalCO2
     //% block="Init CO2"
     export function initCO2 () {
+        serial.redirect(
+            SerialPin.P13,
+            SerialPin.P14,
+            BaudRate.BaudRate9600
+        )
     }
 
     //  subcategory="CO2"
