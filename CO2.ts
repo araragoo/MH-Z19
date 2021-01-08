@@ -48,10 +48,10 @@ namespace CO2 {
 
         buffer = serial.readBuffer(9)
         if (buffer.getNumber(NumberFormat.UInt8LE, 0) == 255 && buffer.getNumber(NumberFormat.UInt8LE, 1) == 134) {
-//            let sum = 0
-//            for (let index = 0; index <= 7; index++) {
-//                sum = sum + buffer.getNumber(NumberFormat.UInt8LE, index)
-//            }
+            let sum = 0
+            for (let index = 0; index <= 7; index++) {
+                sum = sum + buffer.getNumber(NumberFormat.UInt8LE, index)
+            }
 //            sum = sum % 256
 //            sum = 255 - sum
 //            if (sum == buffer.getNumber(NumberFormat.UInt8LE, 8)) {
