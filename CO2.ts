@@ -44,7 +44,7 @@ namespace CO2 {
     export function measuredValue(): number {
 
 //        serial.writeBuffer(buf)
-//        basic.pause(100)
+        basic.pause(100)
 
 //        buffer = serial.readBuffer(9)
 //        if (buffer.getNumber(NumberFormat.UInt8LE, 0) == 255 && buffer.getNumber(NumberFormat.UInt8LE, 1) == 134) {
@@ -58,7 +58,7 @@ namespace CO2 {
 //                CO2data = buffer.getNumber(NumberFormat.UInt8LE, 2) * 256 + buffer.getNumber(NumberFormat.UInt8LE, 3)
 //            }
 //        }
-        return 13
+        return CO2data
     }
 
     //  subcategory="CO2"
