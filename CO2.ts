@@ -16,6 +16,25 @@ namespace CO2 {
             SerialPin.P14,
             BaudRate.BaudRate9600
         )
+        buf.setNumber(NumberFormat.UInt8LE, 0, 255)
+        buf.setNumber(NumberFormat.UInt8LE, 1, 1)
+        buf.setNumber(NumberFormat.UInt8LE, 2, 134)
+        buf.setNumber(NumberFormat.UInt8LE, 3, 0)
+        buf.setNumber(NumberFormat.UInt8LE, 4, 0)
+        buf.setNumber(NumberFormat.UInt8LE, 5, 0)
+        buf.setNumber(NumberFormat.UInt8LE, 6, 0)
+        buf.setNumber(NumberFormat.UInt8LE, 7, 0)
+        buf.setNumber(NumberFormat.UInt8LE, 8, 121)
+
+        buf0.setNumber(NumberFormat.UInt8LE, 0, 255)
+        buf0.setNumber(NumberFormat.UInt8LE, 1, 1)
+        buf0.setNumber(NumberFormat.UInt8LE, 2, 135)
+        buf0.setNumber(NumberFormat.UInt8LE, 3, 0)
+        buf0.setNumber(NumberFormat.UInt8LE, 4, 0)
+        buf0.setNumber(NumberFormat.UInt8LE, 5, 0)
+        buf0.setNumber(NumberFormat.UInt8LE, 6, 0)
+        buf0.setNumber(NumberFormat.UInt8LE, 7, 0)
+        buf0.setNumber(NumberFormat.UInt8LE, 8, 120)
     }
 
     //  subcategory="CO2"
