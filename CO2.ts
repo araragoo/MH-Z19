@@ -4,8 +4,6 @@
 namespace CO2 {
 
     let CO2data = 400
-    let buf = pins.createBuffer(9);
-
     let buf  = control.createBuffer(9)
     let buf0 = control.createBuffer(9)
 
