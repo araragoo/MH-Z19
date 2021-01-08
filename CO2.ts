@@ -43,7 +43,7 @@ namespace CO2 {
     //% block="CO2[ppm]"
     export function measuredValue(): number {
 
-        serial.writeBuffer(buf)
+//        serial.writeBuffer(buf)
         basic.pause(100)
 
 //        buffer = serial.readBuffer(9)
