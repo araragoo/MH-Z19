@@ -44,7 +44,7 @@ namespace CO2 {
     //% blockId=measureCO2
     //% block="CO2[ppm]"
     export function measuredValue () {
-<<<<<<< HEAD
+
         serial.writeBuffer(buf)
         basic.pause(100)
 
