@@ -68,10 +68,9 @@ namespace CO2 {
 
         basic.showString("Wait 20min for setting 400ppm! ")
         for (let m = 0; m < 20; m++) {
-            basic.showString("" + convertToText(21 - m) + "min")
             for (let index = 0; index < 12; index++) {
-                basic.pause(4000)
                 basic.showString("" + convertToText(21 - m) + "min")
+                basic.pause(4000)
             }
         }
         for (let s = 0; s < 60; s++) {
