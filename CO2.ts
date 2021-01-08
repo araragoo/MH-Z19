@@ -11,6 +11,7 @@ namespace CO2 {
     //% blockId=initalCO2
     //% block="Init CO2"
     export function initCO2 () {
+/*
         serial.redirect(
             SerialPin.P13,
             SerialPin.P14,
@@ -36,13 +37,14 @@ namespace CO2 {
         buf0.setNumber(NumberFormat.UInt8LE, 6, 0)
         buf0.setNumber(NumberFormat.UInt8LE, 7, 0)
         buf0.setNumber(NumberFormat.UInt8LE, 8, 120)
+*/
     }
 
     //  subcategory="CO2"
     //% blockId=measureCO2
     //% block="CO2[ppm]"
     export function measuredValue () {
-
+/*
         serial.writeBuffer(buf)
         basic.pause(100)
 
@@ -59,7 +61,7 @@ namespace CO2 {
                 // basic.showNumber(value)
                 // lcd.showLine2(convertToText(value))
             }
-        }
+        }*/
         return CO2data
     }
 
@@ -67,10 +69,10 @@ namespace CO2 {
     //% blockId=setOffset
     //% block="Set CO2 value as 400ppm"
     export function setOffset () {
-
+/*
         serial.writeBuffer(buf0)
         basic.pause(100)
-
+*/
     }
 }
 
