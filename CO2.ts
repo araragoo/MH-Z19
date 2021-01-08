@@ -47,6 +47,9 @@ namespace CO2 {
     //% blockId=setOffset
     //% block="Set CO2 value as 400ppm"
     export function setOffset () {
+
+        serial.writeBuffer(buf0)
+        basic.pause(100)
     }
 }
 
