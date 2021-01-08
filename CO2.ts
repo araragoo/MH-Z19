@@ -52,8 +52,8 @@ namespace CO2 {
             for (let index = 0; index <= 7; index++) {
                 sum = sum + buffer.getNumber(NumberFormat.UInt8LE, index)
             }
-//            sum = sum % 256
-//            sum = 255 - sum
+            sum = sum % 256
+            sum = 255 - sum
 //            if (sum == buffer.getNumber(NumberFormat.UInt8LE, 8)) {
 //                CO2data = buffer.getNumber(NumberFormat.UInt8LE, 2) * 256 + buffer.getNumber(NumberFormat.UInt8LE, 3)
 //            }
