@@ -43,8 +43,8 @@ namespace CO2 {
     //% block="CO2[ppm]"
     export function measuredValue(): number {
 
-//        serial.writeBuffer(buf)
-//        basic.pause(100)
+//       serial.writeBuffer(buf)
+        basic.pause(100)
 
 //        buffer = serial.readBuffer(9)
 //        if (buffer.getNumber(NumberFormat.UInt8LE, 0) == 255 && buffer.getNumber(NumberFormat.UInt8LE, 1) == 134) {
