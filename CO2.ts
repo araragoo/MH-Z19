@@ -65,6 +65,8 @@ namespace CO2 {
     //% blockId=setOffset
     //% block="Set CO2 value as 400ppm"
     export function setOffset () {
+
+        basic.showString("Wait 20min for setting 400ppm! ")
         for (let m = 0; m < 20; m++) {
             basic.showString("" + convertToText(21 - m) + "min")
             for (let index = 0; index < 12; index++) {
