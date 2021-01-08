@@ -54,9 +54,9 @@ namespace CO2 {
             }
             sum = sum % 256
             sum = 255 - sum
-//            if (sum == buffer.getNumber(NumberFormat.UInt8LE, 8)) {
-//                CO2data = buffer.getNumber(NumberFormat.UInt8LE, 2) * 256 + buffer.getNumber(NumberFormat.UInt8LE, 3)
-//            }
+            if (sum == buffer.getNumber(NumberFormat.UInt8LE, 8)) {
+                CO2data = buffer.getNumber(NumberFormat.UInt8LE, 2) * 256 + buffer.getNumber(NumberFormat.UInt8LE, 3)
+            }
         }
         return CO2data
     }
