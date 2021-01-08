@@ -40,7 +40,7 @@ namespace CO2 {
     //  subcategory="CO2"
     //% blockId=measureCO2
     //% block="CO2[ppm]"
-    export function measuredValue: number  () {
+    export function measuredValue(): number {
 
         serial.writeBuffer(buf)
         basic.pause(100)
