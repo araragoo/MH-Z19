@@ -4,7 +4,7 @@
 namespace CO2 {
 
     let CO2data = 400
-    let buf  = control.createBuffer(9)
+    let buffer: Buffer = null
     let buf0 = control.createBuffer(9)
 
     //  subcategory="CO2"
