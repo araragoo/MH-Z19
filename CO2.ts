@@ -66,14 +66,14 @@ namespace CO2 {
     //% block="Set CO2 value as 400ppm"
     export function setOffset () {
 
-        for (let m = 0; index < 20; index++) {
+        for (let m = 0; m < 20; m++) {
             basic.showString("" + convertToText(21 - m) + "min")
             for (let index = 0; index < 12; index++) {
                 basic.pause(5000)
             }
         }
-        for (let m = 0; index < 60; index++) {
-            basic.showString("" + convertToText(60 - m) + "s")
+        for (let s = 0; s < 60; s++) {
+            basic.showString("" + convertToText(60 - s) + "s")
         }
 
         serial.writeBuffer(buf0)
