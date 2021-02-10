@@ -80,5 +80,62 @@ namespace CO2 {
         basic.pause(100)
         basic.showString("Done!")
     }
+
+
+
+	/**
+	* Initializes the gator:particle sensor, must be called on power up
+	*/	
+	//% weight=30 
+	//% blockId="gatorParticle_begin" 
+	//% block="initialize gator:Particle sensor"
+	export function begin(){
+		return
+	}
+		
+	/**
+	* Reads either the Red or Infrared detection channels
+	*/
+	//% weight=29 
+	//% blockId="gatorParticle_color" 
+	//% block="get %LEDToRead value"
+	export function color(type: LEDToRead): number{
+		return 0
+	}
+	
+	/**
+	* Set which LED's we want the sensor to update and read.
+	*/	
+	//% weight=28
+	//% blockId="gatorParticle_setReadMode"
+	//% block="set LED mode to read %LEDMode"
+	//% shim=gatorParticle::setReadMode
+	export function setReadMode(mode: LEDMode)
+	{
+		return
+	}
+
+	/**
+	* Set the amplitude of either Red or Infrared LED
+	*/	
+	//% weight=27
+	//% blockId="gatorParticle_setAmplitude"
+	//% block="change strength of %LEDToRead | to %myBrightness"
+	//% advanced=true
+	export function setAmplitude(led: LEDToRead, myBrightness: number)
+	{
+		return
+	}
+	
+	/**
+	* Grab the heartbeat from the sensor in either beats per minute, or an average of the last 4 BPM readings.
+	*/
+	//% weight=26
+	//% blockId="gatorParticle_heartbeat"
+	//% block="detect heartbeat in %HeartbeatType"
+	export function heartbeat(type: HeartbeatType): number
+	{
+		return 0
+	}
 }
 
