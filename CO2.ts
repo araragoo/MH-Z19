@@ -39,27 +39,27 @@ const MAX30105_PARTID = 			0xFF;    // Should always be 0x15. Identical to MAX30
 
 // MAX30105 Commands
 // Interrupt configuration (pg 13, 14)
-const MAX30105_INT_A_FULL_MASK =		(char)~0b10000000;
+const MAX30105_INT_A_FULL_MASK =~0x80;
 const MAX30105_INT_A_FULL_ENABLE = 	0x80;
 const MAX30105_INT_A_FULL_DISABLE = 	0x00;
 
-const char MAX30105_INT_DATA_RDY_MASK = (char)~0b01000000;
-const char MAX30105_INT_DATA_RDY_ENABLE =	0x40;
-const char MAX30105_INT_DATA_RDY_DISABLE = 0x00;
+const MAX30105_INT_DATA_RDY_MASK =      ~0x40;
+const MAX30105_INT_DATA_RDY_ENABLE =	0x40;
+const MAX30105_INT_DATA_RDY_DISABLE = 0x00;
 
-const MAX30105_INT_ALC_OVF_MASK = (char)~0b00100000;
+const MAX30105_INT_ALC_OVF_MASK =      ~0x20;
 const MAX30105_INT_ALC_OVF_ENABLE = 	0x20;
 const MAX30105_INT_ALC_OVF_DISABLE = 0x00;
 
-const MAX30105_INT_PROX_INT_MASK = (char)~0b00010000;
+const MAX30105_INT_PROX_INT_MASK = ~0x10;
 const MAX30105_INT_PROX_INT_ENABLE = 0x10;
 const MAX30105_INT_PROX_INT_DISABLE = 0x00;
 
-const MAX30105_INT_DIE_TEMP_RDY_MASK = (char)~0b00000010;
+const MAX30105_INT_DIE_TEMP_RDY_MASK = ~0x02;
 const MAX30105_INT_DIE_TEMP_RDY_ENABLE = 0x02;
 const MAX30105_INT_DIE_TEMP_RDY_DISABLE = 0x00;
 
-const MAX30105_SAMPLEAVG_MASK =	(char)~0b11100000;
+const MAX30105_SAMPLEAVG_MASK =	~0xE0;
 const MAX30105_SAMPLEAVG_1 = 	0x00;
 const MAX30105_SAMPLEAVG_2 = 	0x20;
 const MAX30105_SAMPLEAVG_4 = 	0x40;
@@ -143,10 +143,10 @@ let positiveEdge = 0;
 let negativeEdge = 0;
 let ir_avg_reg = 0;
 
-let cbuf[32];
+let cbuf;
 let offset = 0;
 
-const FIRCoeffs[12] = {172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012, 4096};
+const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012, 4096];
 
 
 
@@ -247,7 +247,7 @@ const FIRCoeffs[12] = {172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4
         return val;
     }
 
-    function bitMask(reg: number, mas: numberk, thing: number){
+    function bitMask(reg: number, mask: number, thing: number){
         let originalContents = i2cread(MAX30105_ADDRESS, reg);
         originalContents = originalContents & mask;
       i2cwrite(MAX30105_ADDRESS, reg, originalContents | thing);
@@ -258,7 +258,6 @@ const FIRCoeffs[12] = {172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4
 
     function softReset() {
         bitMask(MAX30105_MODECONFIG, MAX30105_RESET_MASK, MAX30105_RESET);
-        let startTime = input.running_time_micros();
         basic.pause(100);
     }
 
@@ -266,7 +265,7 @@ const FIRCoeffs[12] = {172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4
         bitMask(MAX30105_FIFOCONFIG, MAX30105_SAMPLEAVG_MASK, numberOfSamples);
     }
 
-    function MAX30105::setFIFOAlmostFull(numberOfSamples: number) {
+    function setFIFOAlmostFull(numberOfSamples: number) {
         bitMask(MAX30105_FIFOCONFIG, MAX30105_A_FULL_MASK, numberOfSamples);
     }
 
@@ -320,9 +319,9 @@ const FIRCoeffs[12] = {172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4
     }
 
     function clearFIFO() {
-      writeRegister8(MAX30105_ADDRESS, MAX30105_FIFOWRITEPTR, 0);
-      writeRegister8(MAX30105_ADDRESS, MAX30105_FIFOOVERFLOW, 0);
-      writeRegister8(MAX30105_ADDRESS, MAX30105_FIFOREADPTR, 0);
+      i2cwrite(MAX30105_ADDRESS, MAX30105_FIFOWRITEPTR, 0);
+      i2cwrite(MAX30105_ADDRESS, MAX30105_FIFOOVERFLOW, 0);
+      i2cwrite(MAX30105_ADDRESS, MAX30105_FIFOREADPTR, 0);
     }
 
     function particle_setup(powerLevel: number, sampleAverage: number, ledMode: number, sampleRate: number, pulseWidth: number, adcRange: number) {
