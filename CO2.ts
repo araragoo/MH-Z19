@@ -419,8 +419,8 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
 	//% blockId="gatorParticle_color" 
 	//% block="get Red:1 Infrared:2 %LEDToRead value"
 	export function color(LEDToRead: number): number{
-        let colorValue;
-		switch(LEDToRead)
+        let colorValue = 0;
+	/*	switch(LEDToRead)
 		{
 			case 1:
 				colorValue = getRed();
@@ -429,7 +429,8 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
 				colorValue = getIR();
 				break;
 		}
-		return colorValue;
+	*/
+    	return colorValue;
 	}
 	
 	/**
