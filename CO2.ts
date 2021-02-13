@@ -382,7 +382,7 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
 
         clearFIFO(); //Reset the FIFO before we begin checking the sensor
     }
-
+/*
     class sense {
         let red;
         let IR;
@@ -400,7 +400,7 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
         basic.pause(250);
         return sense.IR[sense.head];
     }
-
+*/
 	/**
 	* Initializes the gator:particle sensor, must be called on power up
 	*/	
