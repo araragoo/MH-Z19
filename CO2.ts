@@ -380,9 +380,9 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
 
         clearFIFO(); //Reset the FIFO before we begin checking the sensor
     }
-
-    let senseRed;
-    let senseIR;
+    
+    let senseRed=0;
+    let senseIR=0;
     let senseGreen;
     let senseHeat;
     let senseTail;
@@ -415,7 +415,7 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
                 return(false);
             }
             if(check() == true){ //We found new data!
-                break;
+                return(true);
             }
             basic.pause(1);
         }
