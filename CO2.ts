@@ -430,7 +430,6 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
 				break;
 		}
 		return colorValue;
-        return 0
 	}
 	
 	/**
