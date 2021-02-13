@@ -383,6 +383,24 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
         clearFIFO(); //Reset the FIFO before we begin checking the sensor
     }
 
+    class sense {
+        let red;
+        let IR;
+        let Green;
+        let heat;
+        let tail;
+    }
+    
+    function getRed() {
+        basic.pause(250);
+        return sense.red[sense.head];
+    }
+
+    function getIR() {
+        basic.pause(250);
+        return sense.IR[sense.head];
+    }
+
 	/**
 	* Initializes the gator:particle sensor, must be called on power up
 	*/	
@@ -401,7 +419,18 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
 	//% blockId="gatorParticle_color" 
 	//% block="get Red:1 Infrared:2 %LEDToRead value"
 	export function color(LEDToRead: number): number{
-		return 0
+        let colorValue;
+		switch(LEDToRead)
+		{
+			case 1:
+				colorValue = getRed();
+				break;
+			case 2:
+				colorValue = getIR();
+				break;
+		}
+		return colorValue;
+        return 0
 	}
 	
 	/**
