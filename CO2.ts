@@ -395,13 +395,19 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
     }
         
     function getRed() {
-        basic.pause(250);
-        return senseRed;//[senseHead];
+        if(safeCheck(250)){
+            return senseRed;//[sense.head];
+        } else {
+            return 0;
+        }
     }
 
     function getIR() {
-        basic.pause(250);
-        return senseIR;//[sense.head];
+        if(safeCheck(250)){
+            return senseIR;//[sense.head];
+        } else {
+            return 0;
+        }
     }
 
     function safeCheck(maxTimeToCheck: number){
