@@ -397,17 +397,15 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
     function getRed() {
         if(safeCheck(250)){
             return senseRed;//[sense.head];
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     function getIR() {
         if(safeCheck(250)){
             return senseIR;//[sense.head];
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     function safeCheck(maxTimeToCheck: number){
@@ -417,10 +415,11 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
                 return(false);
             }
             if(check() == true){ //We found new data!
-                return(true);
+                break;
             }
             basic.pause(1);
         }
+        return(false);        
     }
 
 	/**
