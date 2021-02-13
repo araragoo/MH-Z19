@@ -148,8 +148,6 @@ let offset = 0;
 
 const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012, 4096];
 
-
-
     let CO2data = 400
     let buffer: Buffer = null
     let buf  = control.createBuffer(9)
@@ -383,43 +381,41 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
         clearFIFO(); //Reset the FIFO before we begin checking the sensor
     }
 
-    class sense {
-        sense (){
-            let red;
-            let IR;
-            let Green;
-            let heat;
-            let tail;
-        }
-    }
+    let senseRed;
+    let senseIR;
+    let senseGreen;
+    let senseHeat;
+    let senseTail;
     
-    /*    
+ 
+    function check(){
+        senseRed = 0;
+        senseIR = 0;      
+        return(true);
+    }
+        
     function getRed() {
         basic.pause(250);
-        return sense.red[sense.head];
+        return senseRed;//[senseHead];
     }
 
     function getIR() {
         basic.pause(250);
-        return sense.IR[sense.head];
+        return senseIR;//[sense.head];
     }
-*/
-let safeCheck(maxTimeToCheck: number){
-  let markTime = input.runningTime();
-  
-  while(1)
-  {
-	if(input.runningTime() - markTime > maxTimeToCheck){
-		return(false);
-	}
 
-	if(check() == true)
-	{ //We found new data!
-	  return(true);
-	}
-    basic.pause(100);
-  }
-}
+    function safeCheck(maxTimeToCheck: number){
+        let markTime = input.runningTime();
+        while(1){
+            if(input.runningTime() - markTime > maxTimeToCheck){
+                return(false);
+            }
+            if(check() == true){ //We found new data!
+                return(true);
+            }
+            basic.pause(1);
+        }
+    }
 
 	/**
 	* Initializes the gator:particle sensor, must be called on power up
