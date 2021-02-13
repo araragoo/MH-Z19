@@ -382,15 +382,18 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
 
         clearFIFO(); //Reset the FIFO before we begin checking the sensor
     }
-/*
+
     class sense {
-        let red;
-        let IR;
-        let Green;
-        let heat;
-        let tail;
+        sense (){
+            let red;
+            let IR;
+            let Green;
+            let heat;
+            let tail;
+        }
     }
     
+    /*    
     function getRed() {
         basic.pause(250);
         return sense.red[sense.head];
@@ -401,6 +404,23 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
         return sense.IR[sense.head];
     }
 */
+let safeCheck(maxTimeToCheck: number){
+  let markTime = input.runningTime();
+  
+  while(1)
+  {
+	if(input.runningTime() - markTime > maxTimeToCheck){
+		return(false);
+	}
+
+	if(check() == true)
+	{ //We found new data!
+	  return(true);
+	}
+    basic.pause(100);
+  }
+}
+
 	/**
 	* Initializes the gator:particle sensor, must be called on power up
 	*/	
