@@ -8,7 +8,7 @@ namespace CO2 {
     let buf  = control.createBuffer(9)
     let buf0 = control.createBuffer(9)
 
-    //  subcategory="CO2"
+    //% subcategory="CO2"
     //% blockId=initalCO2
     //% block="Init CO2"
     export function CO2Init () {
@@ -38,7 +38,7 @@ namespace CO2 {
         buf0.setNumber(NumberFormat.UInt8LE, 8, 120)
     }
 
-    //  subcategory="CO2"
+    //% subcategory="CO2"
     //% blockId=measureCO2
     //% block="CO2[ppm]"
     export function CO2Value(): number {
@@ -61,7 +61,7 @@ namespace CO2 {
         return CO2data
     }
 
-    //  subcategory="CO2"
+    //% subcategory="CO2"
     //% blockId=setOffset
     //% block="Set CO2 value as 400ppm"
     export function CO2SetOffset () {
@@ -337,7 +337,7 @@ namespace CO2 {
 
 
 
-    //  subcategory="SpO2"
+    //% subcategory="SpO2"
 	//% blockId="gatorParticle_begin" 
 	//% block="initialize gator:Particle sensor"
 	export function SpO2Init(){
@@ -345,7 +345,7 @@ namespace CO2 {
 		return
 	}
 		
-    //  subcategory="SpO2"
+    //% subcategory="SpO2"
 	//% blockId="gatorParticle_color" 
 	//% block="get Red:1 Infrared:2 %LEDToRead value"
 	export function SpO2Value(LEDToRead: number): number{
@@ -362,7 +362,7 @@ namespace CO2 {
 	   	return colorValue;
 	}
 	
-    //  subcategory="SpO2"
+    //% subcategory="SpO2"
 	//% blockId="gatorParticle_setMode"
 	//% block="set LED mode to read Red:2 Red&Infrared:3 %LEDMode"
 	//% shim=gatorParticle::setReadMode
@@ -371,7 +371,7 @@ namespace CO2 {
 		return
 	}
 
-    //  subcategory="SpO2"
+    //% subcategory="SpO2"
 	//% blockId="gatorParticle_setAmplitude"
 	//% block="change strength of Red:1 Infrared:2 %LEDToRead | to %myBrightness"
 	//% advanced=true
@@ -380,7 +380,7 @@ namespace CO2 {
 		return
 	}
 	
-    //  subcategory="SpO2"
+    //% subcategory="SpO2"
 	//% blockId="gatorParticle_heartbeat"
 	//% block="detect heartbeat in BPM:0 AVG:1 %HeartbeatType"
 	export function SpO2Heartbeat(HeartbeatType: number): number
