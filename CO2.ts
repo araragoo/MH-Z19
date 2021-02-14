@@ -1,6 +1,6 @@
 // https://github.com/araragoo/CO2
 
-//% weight=5 color=#0fbc11 icon="\uf112" block="CO2"
+//% weight=5 color=#0fbc11 icon="\uf112" block="Measurement"
 namespace CO2 {
 
     let CO2data = 400
@@ -11,7 +11,7 @@ namespace CO2 {
     //  subcategory="CO2"
     //% blockId=initalCO2
     //% block="Init CO2"
-    export function initCO2 () {
+    export function CO2Init () {
         serial.redirect(
             SerialPin.P13,
             SerialPin.P14,
@@ -41,7 +41,7 @@ namespace CO2 {
     //  subcategory="CO2"
     //% blockId=measureCO2
     //% block="CO2[ppm]"
-    export function measuredValue(): number {
+    export function CO2Value(): number {
 
         serial.writeBuffer(buf)
         basic.pause(100)
@@ -64,7 +64,7 @@ namespace CO2 {
     //  subcategory="CO2"
     //% blockId=setOffset
     //% block="Set CO2 value as 400ppm"
-    export function setOffset () {
+    export function CO2SetOffset () {
 
         basic.showString("Wait 20min for setting 400ppm! ")
         for (let m = 0; m < 20; m++) {
@@ -337,24 +337,18 @@ namespace CO2 {
 
 
 
-	/**
-	* Initializes the gator:particle sensor, must be called on power up
-	*/	
-	//% weight=30 
+    //  subcategory="SpO2"
 	//% blockId="gatorParticle_begin" 
 	//% block="initialize gator:Particle sensor"
-	export function begin(){
+	export function SpO2Init(){
 		MAX30100_init();
 		return
 	}
 		
-	/**
-	* Reads either the Red or Infrared detection channels
-	*/
-	//% weight=29 
+    //  subcategory="SpO2"
 	//% blockId="gatorParticle_color" 
 	//% block="get Red:1 Infrared:2 %LEDToRead value"
-	export function color(LEDToRead: number): number{
+	export function SpO2Value(LEDToRead: number): number{
         let colorValue = 0;
 		switch(LEDToRead)
 		{
@@ -368,37 +362,28 @@ namespace CO2 {
 	   	return colorValue;
 	}
 	
-	/**
-	* Set which LED's we want the sensor to update and read.
-	*/	
-	//% weight=28
-	//% blockId="gatorParticle_setReadMode"
+    //  subcategory="SpO2"
+	//% blockId="gatorParticle_setMode"
 	//% block="set LED mode to read Red:2 Red&Infrared:3 %LEDMode"
 	//% shim=gatorParticle::setReadMode
-	export function setReadMode(LEDMode: number)
+	export function SpO2SetMode(LEDMode: number)
 	{
 		return
 	}
 
-	/**
-	* Set the amplitude of either Red or Infrared LED
-	*/	
-	//% weight=27
+    //  subcategory="SpO2"
 	//% blockId="gatorParticle_setAmplitude"
 	//% block="change strength of Red:1 Infrared:2 %LEDToRead | to %myBrightness"
 	//% advanced=true
-	export function setAmplitude(LEDToRead: number, myBrightness: number)
+	export function SpO2SetAmp(LEDToRead: number, myBrightness: number)
 	{
 		return
 	}
 	
-	/**
-	* Grab the heartbeat from the sensor in either beats per minute, or an average of the last 4 BPM readings.
-	*/
-	//% weight=26
+    //  subcategory="SpO2"
 	//% blockId="gatorParticle_heartbeat"
 	//% block="detect heartbeat in BPM:0 AVG:1 %HeartbeatType"
-	export function heartbeat(HeartbeatType: number): number
+	export function SpO2Heartbeat(HeartbeatType: number): number
 	{
 		return 0
 	}
