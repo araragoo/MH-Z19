@@ -177,7 +177,42 @@ namespace CO2 {
         let led_current_ir = 11.0;
         let pulse_width = 1600;
         let max_buffer_len = 10000;
+
+        self.i2c = i2c if i2c else smbus.SMBus(1)
+
+        self.set_mode(MODE_HR)  # Trigger an initial temperature read.
+        self.set_led_current(led_current_red, led_current_ir)
+        self.set_spo_config(sample_rate, pulse_width)
+
+        # Reflectance data (latest update)
+        self.led_current_ir = led_current_ir
+        self.led_current_red = led_current_red
+        self.i2cValue = i2c
+        self.sample_rate = sample_rate
+        self.pulse_width = pulse_width
+        self.max_buffer_len = max_buffer_len
+                
+        self.buffer_red = []
+        self.buffer_ir = []
+
+        self.max_buffer_len = max_buffer_len
+        self._interrupt = None
     }
+
+    def reinit(self):
+    self.i2c = self.i2cValue if self.i2cValue else smbus.SMBus(1)
+
+    self.set_mode(MODE_HR)  # Trigger an initial temperature read.
+    self.set_led_current(self.led_current_red, self.led_current_ir)
+    self.set_spo_config(self.sample_rate, self.pulse_width)
+
+    # Reflectance data (latest update)
+    self.buffer_red = []
+    self.buffer_ir = []
+
+    self.max_buffer_len = 10000
+    self._interrupt = None
+
 
     function red()  {
         return buffer_red[0];
