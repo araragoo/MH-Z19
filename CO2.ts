@@ -3,151 +3,6 @@
 //% weight=5 color=#0fbc11 icon="\uf112" block="CO2"
 namespace CO2 {
 
-const MAX30105_ADDRESS = 0xAE;
-// Status Registers
-const MAX30105_INTSTAT1 =		0x00;
-const MAX30105_INTSTAT2 =		0x01;
-const MAX30105_INTENABLE1 =		0x02;
-const MAX30105_INTENABLE2 =		0x03;
-
-// FIFO Registers
-const MAX30105_FIFOWRITEPTR = 	0x04;
-const MAX30105_FIFOOVERFLOW = 	0x05;
-const MAX30105_FIFOREADPTR = 	0x06;
-const MAX30105_FIFODATA =		0x07;
-
-// Configuration Registers
-const MAX30105_FIFOCONFIG = 		0x08;
-const MAX30105_MODECONFIG = 		0x09;
-const MAX30105_PARTICLECONFIG = 	0x0A;    // Note, sometimes listed as "SPO2" config in datasheet (pg. 11)
-const MAX30105_LED1_PULSEAMP = 	0x0C;
-const MAX30105_LED2_PULSEAMP = 	0x0D;
-const MAX30105_MULTILEDCONFIG1 = 0x11;
-const MAX30105_MULTILEDCONFIG2 = 0x12;
-
-// Die Temperature Registers
-const MAX30105_DIETEMPINT = 		0x1F;
-const MAX30105_DIETEMPFRAC = 	0x20;
-const MAX30105_DIETEMPCONFIG = 	0x21;
-
-// Proximity Function Registers
-const MAX30105_PROXINTTHRESH = 	0x30;
-
-// Part ID Registers
-const MAX30105_REVISIONID = 		0xFE;
-const MAX30105_PARTID = 			0xFF;    // Should always be 0x15. Identical to MAX30102.
-
-// MAX30105 Commands
-// Interrupt configuration (pg 13, 14)
-const MAX30105_INT_A_FULL_MASK =~0x80;
-const MAX30105_INT_A_FULL_ENABLE = 	0x80;
-const MAX30105_INT_A_FULL_DISABLE = 	0x00;
-
-const MAX30105_INT_DATA_RDY_MASK =      ~0x40;
-const MAX30105_INT_DATA_RDY_ENABLE =	0x40;
-const MAX30105_INT_DATA_RDY_DISABLE = 0x00;
-
-const MAX30105_INT_ALC_OVF_MASK =      ~0x20;
-const MAX30105_INT_ALC_OVF_ENABLE = 	0x20;
-const MAX30105_INT_ALC_OVF_DISABLE = 0x00;
-
-const MAX30105_INT_PROX_INT_MASK = ~0x10;
-const MAX30105_INT_PROX_INT_ENABLE = 0x10;
-const MAX30105_INT_PROX_INT_DISABLE = 0x00;
-
-const MAX30105_INT_DIE_TEMP_RDY_MASK = ~0x02;
-const MAX30105_INT_DIE_TEMP_RDY_ENABLE = 0x02;
-const MAX30105_INT_DIE_TEMP_RDY_DISABLE = 0x00;
-
-const MAX30105_SAMPLEAVG_MASK =	~0xE0;
-const MAX30105_SAMPLEAVG_1 = 	0x00;
-const MAX30105_SAMPLEAVG_2 = 	0x20;
-const MAX30105_SAMPLEAVG_4 = 	0x40;
-const MAX30105_SAMPLEAVG_8 = 	0x60;
-const MAX30105_SAMPLEAVG_16 = 	0x80;
-const MAX30105_SAMPLEAVG_32 = 	0xA0;
-
-const MAX30105_ROLLOVER_MASK = 	0xEF;
-const MAX30105_ROLLOVER_ENABLE = 0x10;
-const MAX30105_ROLLOVER_DISABLE = 0x00;
-
-const MAX30105_A_FULL_MASK = 	0xF0;
-
-// Mode configuration commands (page 19)
-const MAX30105_SHUTDOWN_MASK = 	0x7F;
-const MAX30105_SHUTDOWN = 		0x80;
-const MAX30105_WAKEUP = 			0x00;
-
-const MAX30105_RESET_MASK = 		0xBF;
-const MAX30105_RESET = 			0x40;
-
-const MAX30105_MODE_MASK = 		0xF8;
-const MAX30105_MODE_REDONLY = 	0x02;
-const MAX30105_MODE_REDIRONLY = 	0x03;
-
-// Particle sensing configuration commands (pgs 19-20)
-const MAX30105_ADCRANGE_MASK = 	0x9F;
-const MAX30105_ADCRANGE_2048 = 	0x00;
-const MAX30105_ADCRANGE_4096 = 	0x20;
-const MAX30105_ADCRANGE_8192 = 	0x40;
-const MAX30105_ADCRANGE_16384 = 	0x60;
-
-const MAX30105_SAMPLERATE_MASK = 0xE3;
-const MAX30105_SAMPLERATE_50 = 	0x00;
-const MAX30105_SAMPLERATE_100 = 	0x04;
-const MAX30105_SAMPLERATE_200 = 	0x08;
-const MAX30105_SAMPLERATE_400 = 	0x0C;
-const MAX30105_SAMPLERATE_800 = 	0x10;
-const MAX30105_SAMPLERATE_1000 = 0x14;
-const MAX30105_SAMPLERATE_1600 = 0x18;
-const MAX30105_SAMPLERATE_3200 = 0x1C;
-
-const MAX30105_PULSEWIDTH_MASK = 0xFC;
-const MAX30105_PULSEWIDTH_69 = 	0x00;
-const MAX30105_PULSEWIDTH_118 = 	0x01;
-const MAX30105_PULSEWIDTH_215 = 	0x02;
-const MAX30105_PULSEWIDTH_411 = 	0x03;
-
-//Multi-LED Mode configuration (pg 22)
-const MAX30105_SLOT1_MASK = 		0xF8;
-const MAX30105_SLOT2_MASK = 		0x8F;
-const MAX30105_SLOT3_MASK = 		0xF8;
-const MAX30105_SLOT4_MASK = 		0x8F;
-
-const SLOT_NONE = 				0x00;
-const SLOT_RED_LED = 			0x01;
-const SLOT_IR_LED = 				0x02;
-const SLOT_GREEN_LED = 			0x03;
-const SLOT_NONE_PILOT = 			0x04;
-const SLOT_RED_PILOT =			0x05;
-const SLOT_IR_PILOT = 			0x06;
-const SLOT_GREEN_PILOT = 		0x07;
-
-const MAX_30105_EXPECTEDPARTID = 0x15;
-
-let activeDiodes = 3; //Gets set during setup. Allows check() to calculate how many bytes to read from FIFO
-
-//#define STORAGE_SIZE 25 //Each long is 4 bytes so limit this to fit on your micro
-const STORAGE_SIZE = 25 //Each long is 4 bytes so limit this to fit on your micro
-
-let IR_AC_Max = 20;
-let IR_AC_Min = -20;
-
-let IR_AC_Signal_Current = 0;
-let IR_AC_Signal_Previous;
-let IR_AC_Signal_min = 0;
-let IR_AC_Signal_max = 0;
-let IR_Average_Estimated;
-
-let positiveEdge = 0;
-let negativeEdge = 0;
-let ir_avg_reg = 0;
-
-let cbuf;
-let offset = 0;
-
-const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012, 4096];
-
     let CO2data = 400
     let buffer: Buffer = null
     let buf  = control.createBuffer(9)
@@ -232,6 +87,68 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
 
 
 
+    const MAX30100_INT_STATUS   = 0x00  // Which interrupts are tripped
+    const MAX30100_INT_ENABLE   = 0x01  // Which interrupts are active
+    const MAX30100_FIFO_WR_PTR  = 0x02  // Where data is being written
+    const MAX30100_OVRFLOW_CTR  = 0x03  // Number of lost samples
+    const MAX30100_FIFO_RD_PTR  = 0x04  // Where to read from
+    const MAX30100_FIFO_DATA    = 0x05  // Ouput data buffer
+    const MAX30100_MODE_CONFIG  = 0x06  // Control register
+    const MAX30100_SPO2_CONFIG  = 0x07  // Oximetry settings
+    const MAX30100_LED_CONFIG   = 0x09  // Pulse width and power of LEDs
+    const MAX30100_TEMP_INTG    = 0x16  // Temperature value, whole number
+    const MAX30100_TEMP_FRAC    = 0x17  // Temperature value, fraction
+    const MAX30100_REV_ID       = 0xFE  // Part revision
+    const MAX30100_PART_ID      = 0xFF  // Part ID, normally 0x11
+
+    const MAX30100_I2C_ADDRESS  = 0xAE; //0x57 I2C address of the MAX30100 device
+
+    const PULSE_WIDTH = {
+        200: 0,
+        400: 1,
+        800: 2,
+       1600: 3,
+    }
+    
+    const SAMPLE_RATE = {
+        50: 0,
+       100: 1,
+       167: 2,
+       200: 3,
+       400: 4,
+       600: 5,
+       800: 6,
+      1000: 7,
+    }
+    
+    let LED_CURRENT = [
+        0,
+      4.4,
+      7.6,
+     11.0,
+     14.2,
+     17.4,
+     20.8,
+     24.0,
+     27.1,
+     30.6,
+     33.8,
+     37.0,
+     40.2,
+     43.6,
+     46.8,
+     50.0
+    ]
+    const LED_CURRENT_NUM = 16;
+
+    let INTERRUPT_SPO2 = 0;
+    let INTERRUPT_HR = 1;
+    let INTERRUPT_TEMP = 2;
+    let INTERRUPT_FIFO = 3;
+    
+    let MODE_HR = 0x02;
+    let MODE_SPO2 = 0x03;
+  
     function i2cwrite(addr: number, reg: number, value: number) {
         let buf = pins.createBuffer(2);
         buf[0] = reg;
@@ -244,6 +161,182 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
         let val = pins.i2cReadNumber(addr, NumberFormat.UInt8BE);
         return val;
     }
+
+    function twos_complement(val: number, bits: number) {
+        if ((val & (1 << (bits - 1))) != 0) {
+            val = val - (1 << bits)
+        }
+        return val
+    }
+
+    function MAX30100_init() {
+    
+        let mode = MODE_HR;
+        let sample_rate = 100;
+        let led_current_red = 11.0;
+        let led_current_ir = 11.0;
+        let pulse_width = 1600;
+        let max_buffer_len = 10000;
+    }
+
+    function red()  {
+        return buffer_red[0];
+    }
+
+    function ir()  {
+        return buffer_ir[0];
+    }
+
+    function get_valid(current: number) {
+        for (let index = 0; index < LED_CURRENT_NUM; index++) {
+            if(current <= LED_CURRENT[index]) {
+                return index;
+            }
+        }
+        return LED_CURRENT_NUM - 1;
+    }       
+
+    function set_led_current() {
+        let led_current_red = 11.0;
+        let led_current_ir = 11.0;
+        led_current_red = get_valid(led_current_red)
+        led_current_ir = get_valid(led_current_ir)
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_LED_CONFIG, (led_current_red << 4) | led_current_ir);
+    }
+    
+    function set_mode(mode: number) {
+        let reg = i2cread(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG)
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG, reg & 0x74) // mask the SHDN bit
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG, reg | mode);
+    }
+
+    function enable_spo2() {
+        set_mode(MODE_SPO2)
+    }
+
+    function  disable_spo2() {
+        set_mode(MODE_HR)
+    }
+    
+    function set_spo_config() {
+        let sample_rate = 100;
+        let pulse_width = 1600;
+        let reg = i2cread(MAX30100_I2C_ADDRESS, MAX30100_SPO2_CONFIG)
+        reg = reg & 0xFC  // Set LED pulsewidth to 00
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_SPO2_CONFIG, reg | pulse_width);
+    }
+
+    function enable_interrupt(interrupt_type: number) {
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_INT_ENABLE, (interrupt_type + 1)<<4);
+        i2cread(MAX30100_I2C_ADDRESS, MAX30100_INT_STATUS);
+    }
+
+    function get_number_of_samples() {
+        let write_ptr = i2cread(MAX30100_I2C_ADDRESS, MAX30100_FIFO_WR_PTR);
+        let read_ptr = i2cread(MAX30100_I2C_ADDRESS, MAX30100_FIFO_RD_PTR);
+        return Math.abs(16+write_ptr - read_ptr) % 16;
+    }
+
+    let buffer_red: number[] = [];
+    let buffer_ir: number[] = [];
+    const MAX30100_MAX_BUFFER_LEN = 10000;
+
+    function read_sensor() {
+        pins.i2cWriteNumber(MAX30100_I2C_ADDRESS, MAX30100_FIFO_DATA, NumberFormat.UInt8BE);
+        let nums: number[] = []
+        nums[0] = pins.i2cReadNumber(MAX30100_I2C_ADDRESS, NumberFormat.UInt8BE, true);
+        nums[1] = pins.i2cReadNumber(MAX30100_I2C_ADDRESS, NumberFormat.UInt8BE, true);
+        nums[2] = pins.i2cReadNumber(MAX30100_I2C_ADDRESS, NumberFormat.UInt8BE, true);
+        nums[3] = pins.i2cReadNumber(MAX30100_I2C_ADDRESS, NumberFormat.UInt8BE, false);
+        for (let index = 0; index <= MAX30100_MAX_BUFFER_LEN-2; index++) {
+            buffer_ir[index+1] = buffer_ir[index];
+            buffer_red[index+1] = buffer_red[index];
+        }
+        buffer_ir[0] = nums[0]<<8 | nums[1];
+        buffer_red[0] = nums[2]<<8 | nums[3];
+    }
+
+    function shutdown() {
+        let reg = i2cread(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG);
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG, reg | 0x80);
+    }
+
+    function reset() {
+        let reg = i2cread(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG);
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG, reg | 0x40);
+    }
+        
+    function refresh_temperature() {
+        let reg = i2cread(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG);
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG, reg | (1 << 3));
+    }
+
+    function get_temperature() {
+        let intg = twos_complement(i2cread(MAX30100_I2C_ADDRESS, MAX30100_TEMP_INTG), 8);
+        let frac = i2cread(MAX30100_I2C_ADDRESS, MAX30100_TEMP_FRAC);
+        return intg + (frac * 0.0625);
+    }
+
+    function get_rev_id() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_REV_ID);
+    }
+
+    function get_part_id() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_PART_ID);
+    }
+
+    //get_registers
+    function getINT_STATUS() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_INT_STATUS));
+    }
+    function getINT_ENABLE() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_INT_ENABLE));
+    }
+    function getFIFO_WR_PTR() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_FIFO_WR_PTR));
+    }
+    function getOVRFLOW_CTR() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_OVRFLOW_CTR));
+    }
+    function getFIFO_RD_PTR() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_FIFO_RD_PTR));
+    }
+    function getFIFO_DATA() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_FIFO_DATA));
+    }
+    function getMODE_CONFIG() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG));
+    }
+    function getSPO2_CONFIG() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_SPO2_CONFIG));
+    }
+    function getLED_CONFIG() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_LED_CONFIG));
+    }
+    function getTEMP_INTG() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_TEMP_INTG));
+    }
+    function getTEMP_FRAC() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_TEMP_FRAC));
+    }
+    function getREV_ID() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_REV_ID));
+    }
+    function getPART_ID() {
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_PART_ID));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     function bitMask(reg: number, mask: number, thing: number){
         let originalContents = i2cread(MAX30105_ADDRESS, reg);
@@ -384,14 +477,68 @@ const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012,
     let senseRed=0;
     let senseIR=0;
     let senseGreen;
-    let senseHeat;
+    let senseHead=0;
     let senseTail;
+
+    function getWritePointer() {
+        return (i2cread(MAX30105_ADDRESS, MAX30105_FIFOWRITEPTR));
+    }
     
- 
-    function check(){
-        senseRed = 0;
-        senseIR = 0;      
-        return(true);
+    function getReadPointer() {
+        return (i2cread(MAX30105_ADDRESS, MAX30105_FIFOREADPTR));
+    }
+
+    function check() {
+      //Until FIFO_RD_PTR = FIFO_WR_PTR
+  
+      let readPointer = getReadPointer();
+      let writePointer = getWritePointer();
+      let numberOfSamples = 0;
+    
+      if (readPointer != writePointer) {
+        numberOfSamples = writePointer - readPointer;
+        if (numberOfSamples < 0) numberOfSamples += I2C_BUFFER_LENGTH; //Wrap condition
+        let bytesLeftToRead = numberOfSamples * activeDiodes * 3;
+        while (bytesLeftToRead > 0) {            
+          let toGet = activeDiodes * 3;   
+          //i2c.requestFrom(MAX30105_ADDRESS, toGet);
+          while(toGet > 0) {
+            let temp[9]; //Array of 9 uint8_ts that we will convert into longs
+            let temp2[4];
+            let tempLong;
+            i2c.readRegister(MAX30105_ADDRESS, MAX30105_FIFODATA, temp, toGet);
+            senseHead++; //Advance the head of the storage struct
+            senseHead %= STORAGE_SIZE; //Wrap condition
+            for (let led = 0; led < activeDiodes; led++)
+            {
+                uint8_t checkOffset = led * 3;
+                temp2[3] = 0;
+                temp2[0] = temp[2 + checkOffset];
+                temp2[1] = temp[1 + checkOffset];
+                temp2[2] = temp[checkOffset];
+                memcpy(&tempLong, temp2, sizeof(tempLong)); //tempLong is 4 bytes, we only need 3
+                tempLong &= 0x3FFFF;
+                switch (led)
+                {
+                    case 0:
+                        sense.red[sense.head] = tempLong;//Long;//Store this reading into the sense array
+                        break;
+                    case 1:
+                        sense.IR[sense.head] = tempLong;
+                        break;
+                    case 2:
+                        sense.green[sense.head] = tempLong;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            bytesLeftToRead -= toGet;
+            toGet -= activeDiodes * 3;
+          }
+        } //End while (bytesLeftToRead > 0)
+      } //End readPtr != writePtr
+      return (numberOfSamples); //Let the world know how much new data we found
     }
         
     function getRed() {
