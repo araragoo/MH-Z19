@@ -344,7 +344,7 @@ namespace CO2 {
 	//% blockId="gatorParticle_begin" 
 	//% block="initialize gator:Particle sensor"
 	export function begin(){
-		particle_setup(0x1F, 4, 2, 400, 411, 4096);
+		MAX30100_init();
 		return
 	}
 		
@@ -359,10 +359,10 @@ namespace CO2 {
 		switch(LEDToRead)
 		{
 			case 1:
-				colorValue = getRed();
+				colorValue = red();
 				break;
 			case 2:
-				colorValue = getIR();
+				colorValue = ir();
 				break;
 		}
 	   	return colorValue;
