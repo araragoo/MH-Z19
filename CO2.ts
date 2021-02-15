@@ -140,7 +140,9 @@ namespace CO2 {
      43.6,
      46.8,
      50.0
-    ]
+    ];
+
+
     const LED_CURRENT_NUM = 16;
 
     const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012, 4096];
@@ -182,13 +184,10 @@ namespace CO2 {
     let lastBeat = 0;
     let numberOfSamples = 0;
 
-    function MAX30100_init() {
-        set_mode(mode)  // Trigger an initial temperature read.
-        set_led_current(led_current_red, led_current_ir);
-        set_spo_config(sample_rate, pulse_width);
-        basic.pause(100);
-        lastBeat = input.runningTime();
-    }
+    let buffer_red: number[] = [];
+    let buffer_ir: number[] = [];
+    let buffer_t: number[] = [];
+    const MAX30100_MAX_BUFFER_LEN = 1000;
 
     function red()  {
         return buffer_red[0];
@@ -229,6 +228,15 @@ namespace CO2 {
         i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG, reg | mode);
     }
 
+    function MAX30100_init() {
+        set_mode(mode)  // Trigger an initial temperature read.
+        set_led_red(led_current_red);
+        set_led_ir(led_current_ir);
+        set_spo_config(sample_rate, pulse_width);
+        basic.pause(100);
+        lastBeat = input.runningTime();
+    }
+
     function enable_spo2() {
         set_mode(MODE_SPO2)
     }
@@ -261,11 +269,6 @@ namespace CO2 {
         let read_ptr = i2cread(MAX30100_I2C_ADDRESS, MAX30100_FIFO_RD_PTR);
         return Math.abs(16 + write_ptr - read_ptr) % 16;
     }
-
-    let buffer_red: number[] = [];
-    let buffer_ir: number[] = [];
-    let buffer_t: number[] = [];
-    const MAX30100_MAX_BUFFER_LEN = 1000;
 
     function read_sensor() {
         pins.i2cWriteNumber(MAX30100_I2C_ADDRESS, MAX30100_FIFO_DATA, NumberFormat.UInt8BE);
