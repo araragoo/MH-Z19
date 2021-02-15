@@ -228,6 +228,21 @@ namespace CO2 {
         i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG, reg | mode);
     }
 
+    function get_valid_width(width: number) {
+        for (let index = 0; index < PULSE_WIDTH_NUM; index++) {
+            if(width <= PULSE_WIDTH[index]) {
+                return index;
+            }
+        }
+        return PULSE_WIDTH_NUM - 1;
+    }
+
+    function set_spo_config(rate: number, width: number) {
+        let reg = i2cread(MAX30100_I2C_ADDRESS, MAX30100_SPO2_CONFIG)
+        reg = reg & 0xFC  // Set LED pulsewidth to 00
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_SPO2_CONFIG, reg | get_valid_width(width));
+    }
+
     function MAX30100_init() {
         set_mode(mode)  // Trigger an initial temperature read.
         set_led_red(led_current_red);
@@ -243,21 +258,7 @@ namespace CO2 {
 
     function  disable_spo2() {
         set_mode(MODE_HR)
-    }
-    
-    function get_valid_width(width: number) {
-        for (let index = 0; index < PULSE_WIDTH_NUM; index++) {
-            if(width <= PULSE_WIDTH[index]) {
-                return index;
-            }
-        }PULSE_WIDTH_NUM - 1;
-    }
-
-    function set_spo_config(rate: number, width: number) {
-        let reg = i2cread(MAX30100_I2C_ADDRESS, MAX30100_SPO2_CONFIG)
-        reg = reg & 0xFC  // Set LED pulsewidth to 00
-        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_SPO2_CONFIG, reg | get_valid_width(width));
-    }
+    }   
 
     function enable_interrupt(interrupt_type: number) {
         i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_INT_ENABLE, (interrupt_type + 1)<<4);
