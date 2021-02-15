@@ -103,24 +103,26 @@ namespace CO2 {
 
     const MAX30100_I2C_ADDRESS  = 0xAE; //0x57 I2C address of the MAX30100 device
 
-    const PULSE_WIDTH = {
-        200: 0,
-        400: 1,
-        800: 2,
-       1600: 3,
-    }
+    const PULSE_WIDTH = [
+        200,
+        400,
+        800,
+       1600
+    ]
+    const PULSE_WIDTH_NUM = 4;
     
-    const SAMPLE_RATE = {
-        50: 0,
-       100: 1,
-       167: 2,
-       200: 3,
-       400: 4,
-       600: 5,
-       800: 6,
-      1000: 7,
-    }
-    
+    const SAMPLE_RATE = [
+        50,
+       100,
+       167,
+       200,
+       400,
+       600,
+       800,
+      1000
+    ]
+    const SAMPLE_RATE_NUM = 8;
+
     let LED_CURRENT = [
         0,
       4.4,
@@ -140,6 +142,9 @@ namespace CO2 {
      50.0
     ]
     const LED_CURRENT_NUM = 16;
+
+    const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012, 4096];
+    const FIR_COEFFS_NUM = 12;
 
     let INTERRUPT_SPO2 = 0;
     let INTERRUPT_HR = 1;
@@ -169,50 +174,18 @@ namespace CO2 {
         return val
     }
 
+    let mode = MODE_HR;
+    let sample_rate = 100;
+    let led_current_red = 11.0;
+    let led_current_ir = 11.0;
+    let pulse_width = 1600;
+
     function MAX30100_init() {
-    
-        let mode = MODE_HR;
-        let sample_rate = 100;
-        let led_current_red = 11.0;
-        let led_current_ir = 11.0;
-        let pulse_width = 1600;
-        let max_buffer_len = 10000;
-
-        self.i2c = i2c if i2c else smbus.SMBus(1)
-
-        self.set_mode(MODE_HR)  # Trigger an initial temperature read.
-        self.set_led_current(led_current_red, led_current_ir)
-        self.set_spo_config(sample_rate, pulse_width)
-
-        # Reflectance data (latest update)
-        self.led_current_ir = led_current_ir
-        self.led_current_red = led_current_red
-        self.i2cValue = i2c
-        self.sample_rate = sample_rate
-        self.pulse_width = pulse_width
-        self.max_buffer_len = max_buffer_len
-                
-        self.buffer_red = []
-        self.buffer_ir = []
-
-        self.max_buffer_len = max_buffer_len
-        self._interrupt = None
+        set_mode(mode)  // Trigger an initial temperature read.
+        set_led_current(led_current_red, led_current_ir);
+        set_spo_config(sample_rate, pulse_width);
+        basic.pause(100);
     }
-
-    def reinit(self):
-    self.i2c = self.i2cValue if self.i2cValue else smbus.SMBus(1)
-
-    self.set_mode(MODE_HR)  # Trigger an initial temperature read.
-    self.set_led_current(self.led_current_red, self.led_current_ir)
-    self.set_spo_config(self.sample_rate, self.pulse_width)
-
-    # Reflectance data (latest update)
-    self.buffer_red = []
-    self.buffer_ir = []
-
-    self.max_buffer_len = 10000
-    self._interrupt = None
-
 
     function red()  {
         return buffer_red[0];
@@ -231,12 +204,20 @@ namespace CO2 {
         return LED_CURRENT_NUM - 1;
     }       
 
-    function set_led_current() {
-        let led_current_red = 11.0;
-        let led_current_ir = 11.0;
-        led_current_red = get_valid(led_current_red)
-        led_current_ir = get_valid(led_current_ir)
-        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_LED_CONFIG, (led_current_red << 4) | led_current_ir);
+    function set_led_red(red: number) {
+        led_current_red = red;
+        let id_red = get_valid(led_current_red);
+        let id_ir = get_valid(led_current_ir);
+
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_LED_CONFIG, (id_red << 4) | id_ir);
+    }
+
+    function set_led_ir(ir: number) {
+        led_current_ir = ir;
+        let id_red = get_valid(led_current_red);
+        let id_ir = get_valid(led_current_ir);
+
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_LED_CONFIG, (id_red << 4) | id_ir);
     }
     
     function set_mode(mode: number) {
@@ -253,12 +234,18 @@ namespace CO2 {
         set_mode(MODE_HR)
     }
     
-    function set_spo_config() {
-        let sample_rate = 100;
-        let pulse_width = 1600;
+    function get_valid_width(width: number) {
+        for (let index = 0; index < PULSE_WIDTH_NUM; index++) {
+            if(width <= PULSE_WIDTH[index]) {
+                return index;
+            }
+        }PULSE_WIDTH_NUM - 1;
+    }
+
+    function set_spo_config(rate: number, width: number) {
         let reg = i2cread(MAX30100_I2C_ADDRESS, MAX30100_SPO2_CONFIG)
         reg = reg & 0xFC  // Set LED pulsewidth to 00
-        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_SPO2_CONFIG, reg | pulse_width);
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_SPO2_CONFIG, reg | get_valid_width(width));
     }
 
     function enable_interrupt(interrupt_type: number) {
@@ -269,7 +256,7 @@ namespace CO2 {
     function get_number_of_samples() {
         let write_ptr = i2cread(MAX30100_I2C_ADDRESS, MAX30100_FIFO_WR_PTR);
         let read_ptr = i2cread(MAX30100_I2C_ADDRESS, MAX30100_FIFO_RD_PTR);
-        return Math.abs(16+write_ptr - read_ptr) % 16;
+        return Math.abs(16 + write_ptr - read_ptr) % 16;
     }
 
     let buffer_red: number[] = [];
@@ -361,6 +348,78 @@ namespace CO2 {
         return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_PART_ID));
     }
 
+    let IR_AC_Max = 20;
+    let IR_AC_Min = -20;
+    
+    let IR_AC_Signal_Current = 0;
+    let IR_AC_Signal_Previous;
+    let IR_AC_Signal_min = 0;
+    let IR_AC_Signal_max = 0;
+    let IR_Average_Estimated;
+    
+    let positiveEdge = 0;
+    let negativeEdge = 0;
+    let ir_avg_reg = 0;
+
+    let cbuf: number[] = [];
+    let offset = 0;
+    let placeholder = 0;
+
+    let ave = 0;
+    function averageDCEstimator(x: number) {
+      ave += (((x << 15) - ave) >> 4);
+       return (ave >> 15);
+    }
+
+    function lowPassFIRFilter(x: number) {
+        cbuf[offset] = x;
+        let z = (FIRCoeffs[11], cbuf[(offset - 11) & 0x1F]);
+        for (let i = 0 ; i < 11 ; i++) {
+            z += FIRCoeffs[i] * (cbuf[(offset - i) & 0x1F] + cbuf[(offset - 22 + i) & 0x1F]);
+        }
+        offset++;
+        offset %= 32; //Wrap condition
+        return(z >> 15);
+    }
+
+    function checkForBeat(sample: number) {        
+        let beatDetected = false;
+        IR_AC_Signal_Previous = IR_AC_Signal_Current;
+        IR_Average_Estimated = averageDCEstimator(sample);
+        IR_AC_Signal_Current = lowPassFIRFilter(sample - IR_Average_Estimated);
+      
+        if ((IR_AC_Signal_Previous < 0) && (IR_AC_Signal_Current >= 0)) {
+            IR_AC_Max = IR_AC_Signal_max; //Adjust our AC max and min
+            IR_AC_Min = IR_AC_Signal_min;
+      
+            positiveEdge = 1;
+            negativeEdge = 0;
+            IR_AC_Signal_max = 0;
+      
+            //if ((IR_AC_Max - IR_AC_Min) > 100 & (IR_AC_Max - IR_AC_Min) < 1000)
+            if (((IR_AC_Max - IR_AC_Min) > 20) && ((IR_AC_Max - IR_AC_Min) < 1000)) {
+                placeholder++;
+                beatDetected = true;
+            }
+        }
+      
+        if ((IR_AC_Signal_Previous > 0) && (IR_AC_Signal_Current <= 0)) {
+            positiveEdge = 0;
+            negativeEdge = 1;
+            IR_AC_Signal_min = 0;
+        }
+
+        if (positiveEdge && (IR_AC_Signal_Current > IR_AC_Signal_Previous)) {
+            IR_AC_Signal_max = IR_AC_Signal_Current;
+        }
+      
+        if (negativeEdge && (IR_AC_Signal_Current < IR_AC_Signal_Previous)) {
+            IR_AC_Signal_min = IR_AC_Signal_Current;
+        }
+        
+        return(beatDetected);
+    }
+
 
 
 
@@ -398,23 +457,47 @@ namespace CO2 {
 	}
 	
     //% subcategory="SpO2"
+	//% blockId="gatorParticle_Red" 
+	//% block="get Red value"
+	export function SpO2ValueRed(): number{
+	   	return red();
+	}
+	
+    //% subcategory="SpO2"
+	//% blockId="gatorParticle_IR" 
+	//% block="get IR value"
+	export function SpO2ValueIR(): number{
+        return ir();
+    }
+ 
+
+    //% subcategory="SpO2"
 	//% blockId="gatorParticle_setMode"
-	//% block="set LED mode to read Red:2 Red&Infrared:3 %LEDMode"
-	//% shim=gatorParticle::setReadMode
+	//% block="set mode to read Red:2 Red&Infrared:3 %LEDMode"
+    //% nLEDMode.min=2 LEDMode.max=3
 	export function SpO2SetMode(LEDMode: number)
 	{
-		return
+		set_mode(LEDMode)
 	}
 
     //% subcategory="SpO2"
-	//% blockId="gatorParticle_setAmplitude"
-	//% block="change strength of Red:1 Infrared:2 %LEDToRead | to %myBrightness"
-	//% advanced=true
-	export function SpO2SetAmp(LEDToRead: number, myBrightness: number)
+	//% blockId="gatorParticle_setAmplitudeRed"
+	//% block="set Amplitude of LED Red %Brightness"
+    //% Brightness.min=0 Brightness.max=50
+	export function SpO2SetLedRed(Brightness: number)
 	{
-		return
+		set_led_red(Brightness);
 	}
-	
+
+    //% subcategory="SpO2"
+	//% blockId="gatorParticle_setAmplitudeIR"
+	//% block="set Amplitude of LED IR %Brightness"
+    //% Brightness.min=0 Brightness.max=50
+	export function SpO2SetLedIR(Brightness: number)
+	{
+		set_led_ir(Brightness);
+	}
+
     //% subcategory="SpO2"
 	//% blockId="gatorParticle_heartbeat"
 	//% block="detect heartbeat in BPM:0 AVG:1 %HeartbeatType"
