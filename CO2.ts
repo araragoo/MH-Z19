@@ -179,12 +179,15 @@ namespace CO2 {
     let led_current_red = 11.0;
     let led_current_ir = 11.0;
     let pulse_width = 1600;
+    let lastBeat = 0;
+    let numberOfSamples = 0;
 
     function MAX30100_init() {
         set_mode(mode)  // Trigger an initial temperature read.
         set_led_current(led_current_red, led_current_ir);
         set_spo_config(sample_rate, pulse_width);
         basic.pause(100);
+        lastBeat = input.runningTime();
     }
 
     function red()  {
@@ -261,7 +264,8 @@ namespace CO2 {
 
     let buffer_red: number[] = [];
     let buffer_ir: number[] = [];
-    const MAX30100_MAX_BUFFER_LEN = 10000;
+    let buffer_t: number[] = [];
+    const MAX30100_MAX_BUFFER_LEN = 1000;
 
     function read_sensor() {
         pins.i2cWriteNumber(MAX30100_I2C_ADDRESS, MAX30100_FIFO_DATA, NumberFormat.UInt8BE);
@@ -273,9 +277,12 @@ namespace CO2 {
         for (let index = 0; index <= MAX30100_MAX_BUFFER_LEN-2; index++) {
             buffer_ir[index+1] = buffer_ir[index];
             buffer_red[index+1] = buffer_red[index];
+            buffer_t[index+1] = buffer_t[index];
         }
         buffer_ir[0] = nums[0]<<8 | nums[1];
         buffer_red[0] = nums[2]<<8 | nums[3];
+        buffer_t[0] = input.runningTime();
+        numberOfSamples++;
     }
 
     function shutdown() {
@@ -438,24 +445,7 @@ namespace CO2 {
 		MAX30100_init();
 		return
 	}
-		
-    //% subcategory="SpO2"
-	//% blockId="gatorParticle_color" 
-	//% block="get Red:1 Infrared:2 %LEDToRead value"
-	export function SpO2Value(LEDToRead: number): number{
-        let colorValue = 0;
-		switch(LEDToRead)
-		{
-			case 1:
-				colorValue = red();
-				break;
-			case 2:
-				colorValue = ir();
-				break;
-		}
-	   	return colorValue;
-	}
-	
+
     //% subcategory="SpO2"
 	//% blockId="gatorParticle_Red" 
 	//% block="get Red value"
@@ -497,13 +487,52 @@ namespace CO2 {
 	{
 		set_led_ir(Brightness);
 	}
-
+   
     //% subcategory="SpO2"
 	//% blockId="gatorParticle_heartbeat"
 	//% block="detect heartbeat in BPM:0 AVG:1 %HeartbeatType"
 	export function SpO2Heartbeat(HeartbeatType: number): number
 	{
-		return 0
+        let myBeat;
+        let rates: number[] = [];
+        const RATES_NUM = 4;
+        let rateSpot = 0;
+
+        let beatsPerMinute;
+        let beatAvg;
+
+        numberOfSamples = 0;
+		do {
+			let irValue = ir();
+			if (checkForBeat(irValue) == true) {
+				let delta = input.runningTime() - lastBeat;
+				lastBeat = input.runningTime();
+
+				let beatsPerMinute = 60 / (delta / 1000.0);
+
+				if (beatsPerMinute < 255 && beatsPerMinute > 20)
+				{
+					rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
+					rateSpot %= RATES_NUM; 
+					beatAvg = 0;
+                    for (let x = 0 ; x < RATES_NUM; x++){
+						beatAvg += rates[x];
+					}
+					beatAvg /= RATES_NUM;
+				}
+			}
+        } while(numberOfSamples < MAX30100_MAX_BUFFER_LEN);
+		switch(HeartbeatType)
+		{
+			case 0:
+				myBeat = beatsPerMinute;
+				break;
+				
+			case 1:
+				myBeat = beatAvg;
+				break;				
+		}
+		return myBeat;
 	}
 }
 
