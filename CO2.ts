@@ -311,11 +311,11 @@ namespace CO2 {
     }
 
     function get_rev_id() {
-        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_REV_ID);
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_REV_ID));
     }
 
     function get_part_id() {
-        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_PART_ID);
+        return (i2cread(MAX30100_I2C_ADDRESS, MAX30100_PART_ID));
     }
 
     //get_registers
