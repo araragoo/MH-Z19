@@ -163,7 +163,7 @@ namespace CO2 {
         pins.i2cWriteBuffer(addr, buf);
     }
 
-    function i2cread(addr: number, reg: number) {
+    function i2cread(addr: number, reg: number): number{
         pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
         let val = pins.i2cReadNumber(addr, NumberFormat.UInt8BE);
         return val;
