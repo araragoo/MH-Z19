@@ -103,7 +103,7 @@ namespace CO2 {
 
     const MAX30100_I2C_ADDRESS  = 0xAE; //0x57 I2C address of the MAX30100 device
 
-    const PULSE_WIDTH = [
+    const PULSE_WIDTH_m = [
         200,
         400,
         800,
@@ -111,7 +111,7 @@ namespace CO2 {
     ]
     const PULSE_WIDTH_NUM = 4;
     
-    const SAMPLE_RATE = [
+    const SAMPLE_RATE_m = [
         50,
        100,
        167,
@@ -123,7 +123,7 @@ namespace CO2 {
     ]
     const SAMPLE_RATE_NUM = 8;
 
-    let LED_CURRENT = [
+    let LED_CURRENT_m = [
         0,
       4.4,
       7.6,
@@ -199,7 +199,7 @@ namespace CO2 {
 
     function get_valid(current: number) {
         for (let index = 0; index < LED_CURRENT_NUM; index++) {
-            if(current <= LED_CURRENT[index]) {
+            if(current <= LED_CURRENT_m[index]) {
                 return index;
             }
         }
@@ -230,7 +230,7 @@ namespace CO2 {
 
     function get_valid_width(width: number) {
         for (let index = 0; index < PULSE_WIDTH_NUM; index++) {
-            if(width <= PULSE_WIDTH[index]) {
+            if(width <= PULSE_WIDTH_m[index]) {
                 return index;
             }
         }
@@ -244,7 +244,7 @@ namespace CO2 {
     }
 
     function MAX30100_init() {
-        set_mode(mode)  // Trigger an initial temperature read.
+        set_mode(mode);  // Trigger an initial temperature read.
         set_led_red(led_current_red);
         set_led_ir(led_current_ir);
         set_spo_config(sample_rate, pulse_width);
