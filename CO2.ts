@@ -224,7 +224,7 @@ namespace CO2 {
     
     function set_mode(mode: number) {
         let reg = i2cread(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG)
-        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG, reg & 0x74) // mask the SHDN bit
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG, reg & 0x74);
         i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG, reg | mode);
     }
 
@@ -244,7 +244,7 @@ namespace CO2 {
     }
 
     function MAX30100_init() {
-        set_mode(mode);  // Trigger an initial temperature read.
+        set_mode(mode);
         set_led_red(led_current_red);
         set_led_ir(led_current_ir);
         set_spo_config(sample_rate, pulse_width);
@@ -389,7 +389,7 @@ namespace CO2 {
             z += FIRCoeffs[i] * (cbuf[(offset - i) & 0x1F] + cbuf[(offset - 22 + i) & 0x1F]);
         }
         offset++;
-        offset %= 32; //Wrap condition
+        offset %= 32;
         return(z >> 15);
     }
 
@@ -400,7 +400,7 @@ namespace CO2 {
         IR_AC_Signal_Current = lowPassFIRFilter(sample - IR_Average_Estimated);
       
         if ((IR_AC_Signal_Previous < 0) && (IR_AC_Signal_Current >= 0)) {
-            IR_AC_Max = IR_AC_Signal_max; //Adjust our AC max and min
+            IR_AC_Max = IR_AC_Signal_max;
             IR_AC_Min = IR_AC_Signal_min;
       
             positiveEdge = 1;
@@ -516,7 +516,7 @@ namespace CO2 {
 
 				if (beatsPerMinute < 255 && beatsPerMinute > 20)
 				{
-					rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
+					rates[rateSpot++] = beatsPerMinute;
 					rateSpot %= RATES_NUM; 
 					beatAvg = 0;
                     for (let x = 0 ; x < RATES_NUM; x++){
