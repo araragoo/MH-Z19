@@ -160,11 +160,11 @@ namespace CO2 {
         let buf = pins.createBuffer(2);
         buf[0] = reg;
         buf[1] = value;
-        pins.i2cWriteBuffer(addr, buf);
+        pins.i2cWriteBuffer(addr, buf, false);
     }
 
     function i2cread(addr: number, reg: number): number{
-        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
+        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE, false);
         let val = pins.i2cReadNumber(addr, NumberFormat.UInt8BE);
         return val;
     }
@@ -272,7 +272,7 @@ namespace CO2 {
     }
 
     function read_sensor() {
-        pins.i2cWriteNumber(MAX30100_I2C_ADDRESS, MAX30100_FIFO_DATA, NumberFormat.UInt8BE);
+        pins.i2cWriteNumber(MAX30100_I2C_ADDRESS, MAX30100_FIFO_DATA, NumberFormat.UInt8BE, false);
         let nums: number[] = []
         nums[0] = pins.i2cReadNumber(MAX30100_I2C_ADDRESS, NumberFormat.UInt8BE, true);
         nums[1] = pins.i2cReadNumber(MAX30100_I2C_ADDRESS, NumberFormat.UInt8BE, true);
