@@ -166,14 +166,13 @@ namespace CO2 {
     }
 
     function i2cread(addr: number, reg: number): number{
-        //pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE, false);
-        //let val = pins.i2cReadNumber(addr, NumberFormat.UInt8BE);
-        //return val;
-        let X
-        let buf = pins.createBufferFromArray([X]) // ex. [X, Y, Z]
-        buf = pins.i2cReadBuffer(addr, 1)
-        basic.pause(100)
-        return buf[0]
+        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE, false);
+        let val = pins.i2cReadNumber(addr, NumberFormat.UInt8BE);
+        return val;
+        //let X
+        //let buf = pins.createBufferFromArray([X]) // ex. [X, Y, Z]
+        //buf = pins.i2cReadBuffer(addr, 1)
+        //return buf[0]
     }
 
     function twos_complement(val: number, bits: number) {
