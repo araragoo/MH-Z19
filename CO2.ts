@@ -171,7 +171,7 @@ namespace CO2 {
         //return val;
         let X
         let buf = pins.createBufferFromArray([X]) // ex. [X, Y, Z]
-        buf =pins.i2cReadBuffer(addr, 1)
+        buf = pins.i2cReadBuffer(addr, 1)
         basic.pause(100)
         return buf[0]
     }
