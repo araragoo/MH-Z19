@@ -101,7 +101,9 @@ namespace CO2 {
     const MAX30100_REV_ID       = 0xFE  // Part revision
     const MAX30100_PART_ID      = 0xFF  // Part ID, normally 0x11
 
-    const MAX30100_I2C_ADDRESS  = 0xAE; //0x57 I2C address of the MAX30100 device
+    const MAX30100_I2C_ADDRESS  = 0x57; // 0x57 =  87 I2C address of the MAX30100 device
+                                        // 0xAE = 174 I2C address of the MAX30105 device
+
 
     const PULSE_WIDTH_m = [
         200,
