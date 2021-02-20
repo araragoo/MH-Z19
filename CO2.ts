@@ -143,8 +143,6 @@ namespace CO2 {
      46.8,
      50.0
     ];
-
-
     const LED_CURRENT_NUM = 16;
 
     const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012, 4096];
@@ -159,22 +157,32 @@ namespace CO2 {
     let MODE_SPO2 = 0x03;
   
     function i2cwrite(addr: number, reg: number, value: number) {
-        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE, true);
-        pins.i2cWriteNumber(addr, value, NumberFormat.UInt8BE, false);
-        //let buf = pins.createBuffer(2);
-        //buf[0] = reg;
-        //buf[1] = value;
-        //pins.i2cWriteBuffer(addr, buf, false);   
+        //pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE, true);
+        //pins.i2cWriteNumber(addr, value, NumberFormat.UInt8BE, false);
+        let buf = pins.createBuffer(2);
+        buf[0] = reg;
+        buf[1] = value;
+        pins.i2cWriteBuffer(addr, buf, false);
     }
 
     function i2cread(addr: number, reg: number): number{
-        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE, false);
-        let val = pins.i2cReadNumber(addr, NumberFormat.UInt8BE);
-        return val;
+        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
+        return pins.i2cReadNumber(addr, NumberFormat.UInt8BE);
         //let X
         //let buf = pins.createBufferFromArray([X]) // ex. [X, Y, Z]
         //buf = pins.i2cReadBuffer(addr, 1)
         //return buf[0]
+    }
+
+    function readRegisterUInt16(addr: number, reg: number): number {
+        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
+        return pins.i2cReadNumber(addr, NumberFormat.UInt16LE);
+    }
+
+    function readRegisterInt16(addr: number, reg: number): number {
+        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
+        return pins.i2cReadNumber(addr, NumberFormat.Int16LE);
+
     }
 
     function twos_complement(val: number, bits: number) {
