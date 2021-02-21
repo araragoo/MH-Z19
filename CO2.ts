@@ -157,12 +157,13 @@ namespace CO2 {
     let MODE_SPO2 = 0x03;
   
     function i2cwrite(addr: number, reg: number, value: number) {
-        //pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE, true);
-        //pins.i2cWriteNumber(addr, value, NumberFormat.UInt8BE, false);
-        let buf = pins.createBuffer(2);
-        buf[0] = reg;
-        buf[1] = value;
-        pins.i2cWriteBuffer(addr, buf, false);
+        pins.i2cWriteNumber(addr, reg * 256 + value, NumberFormat.UInt16BE)
+        //NG:pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE, true);
+        //NG:pins.i2cWriteNumber(addr, value, NumberFormat.UInt8BE, false);
+        //let buf = pins.createBuffer(2);
+        //buf[0] = reg;
+        //buf[1] = value;
+        //pins.i2cWriteBuffer(addr, buf, false);
     }
 
     function i2cread(addr: number, reg: number): number{
