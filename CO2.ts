@@ -87,6 +87,17 @@ namespace CO2 {
 
 
 
+
+
+
+
+
+
+    
+
+
+
+
     const MAX30100_INT_STATUS   = 0x00  // Which interrupts are tripped
     const MAX30100_INT_ENABLE   = 0x01  // Which interrupts are active
     const MAX30100_FIFO_WR_PTR  = 0x02  // Where data is being written
