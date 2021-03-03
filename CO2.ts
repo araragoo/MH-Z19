@@ -98,23 +98,37 @@ namespace CO2 {
 
 
 
+// Status Registers
     const MAX30100_INT_STATUS   = 0x00  // Which interrupts are tripped
     const MAX30100_INT_ENABLE   = 0x01  // Which interrupts are active
     const MAX30100_FIFO_WR_PTR  = 0x02  // Where data is being written
     const MAX30100_OVRFLOW_CTR  = 0x03  // Number of lost samples
+// FIFO Registers
     const MAX30100_FIFO_RD_PTR  = 0x04  // Where to read from
     const MAX30100_FIFO_DATA    = 0x05  // Ouput data buffer
     const MAX30100_MODE_CONFIG  = 0x06  // Control register
     const MAX30100_SPO2_CONFIG  = 0x07  // Oximetry settings
+// Configuration Registers
+    const MAX30100_FIFO_CONFIG  = 0x08
     const MAX30100_LED_CONFIG   = 0x09  // Pulse width and power of LEDs
+          
     const MAX30100_TEMP_INTG    = 0x16  // Temperature value, whole number
     const MAX30100_TEMP_FRAC    = 0x17  // Temperature value, fraction
     const MAX30100_REV_ID       = 0xFE  // Part revision
     const MAX30100_PART_ID      = 0xFF  // Part ID, normally 0x11
 
+    const MAX30100_RESET_MASK   = 0xBF;
+    const MAX30100_RESET        = 0x40;
+    const MAX30100_SAMPLEAVG_MASK =	  0x1F; // (char)~0b11100000;
+    const MAX30100_SAMPLEAVG_1 = 	0x00;
+    const MAX30100_SAMPLEAVG_2 = 	0x20;
+    const MAX30100_SAMPLEAVG_4 = 	0x40; // default
+    const MAX30100_SAMPLEAVG_8 = 	0x60;
+    const MAX30100_SAMPLEAVG_16 = 	0x80;
+    const MAX30100_SAMPLEAVG_32 = 	0xA0;
+
     const MAX30100_I2C_ADDRESS  = 0x57; // 0x57 =  87 I2C address of the MAX30100 device
                                         // 0xAE = 174 I2C address of the MAX30105 device
-
 
     const PULSE_WIDTH_m = [
         200,
@@ -167,14 +181,20 @@ namespace CO2 {
     let MODE_HR = 0x02;
     let MODE_SPO2 = 0x03;
   
+    function bitMask(addr: number, reg: number, mask: number, thing: number) {
+        let originalContents = i2cread(MAX30100_I2C_ADDRESS, reg);
+        originalContents = originalContents & mask;
+        i2cwrite(MAX30100_I2C_ADDRESS, reg, originalContents | thing);
+    }
+
     function i2cwrite(addr: number, reg: number, value: number) {
-        pins.i2cWriteNumber(addr, reg * 256 + value, NumberFormat.UInt16BE)
+        //pins.i2cWriteNumber(addr, reg * 256 + value, NumberFormat.UInt16BE)
         //NG:pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE, true);
         //NG:pins.i2cWriteNumber(addr, value, NumberFormat.UInt8BE, false);
-        //let buf = pins.createBuffer(2);
-        //buf[0] = reg;
-        //buf[1] = value;
-        //pins.i2cWriteBuffer(addr, buf, false);
+        let buf = pins.createBuffer(2);
+        buf[0] = reg;
+        buf[1] = value;
+        pins.i2cWriteBuffer(addr, buf, false);
     }
 
     function i2cread(addr: number, reg: number): number{
@@ -250,6 +270,10 @@ namespace CO2 {
         i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_LED_CONFIG, (id_red << 4) | id_ir);
     }
     
+    function setFIFOAverage(numberOfSamples: number) {
+        bitMask(MAX30100_I2C_ADDRESS, MAX30100_FIFO_CONFIG, MAX30100_SAMPLEAVG_MASK, numberOfSamples);
+    }
+
     function set_mode(mode: number) {
         let reg = i2cread(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG)
         i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG, reg & 0x74);
@@ -269,6 +293,11 @@ namespace CO2 {
         let reg = i2cread(MAX30100_I2C_ADDRESS, MAX30100_SPO2_CONFIG)
         reg = reg & 0xFC  // Set LED pulsewidth to 00
         i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_SPO2_CONFIG, reg | get_valid_width(width));
+    }
+
+    function softReset() {
+        bitMask(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG, MAX30100_RESET_MASK, MAX30100_RESET);
+        basic.pause(1000);
     }
 
     function MAX30100_init() {
