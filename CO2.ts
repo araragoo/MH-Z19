@@ -127,6 +127,10 @@ namespace CO2 {
     const MAX30100_SAMPLEAVG_16 = 	0x80;
     const MAX30100_SAMPLEAVG_32 = 	0xA0;
 
+    const MAX30100_ROLLOVER_MASK = 	0xEF;
+    const MAX30100_ROLLOVER_ENABLE = 0x10;
+    const MAX30100_ROLLOVER_DISABLE = 0x00;
+
     const MAX30100_I2C_ADDRESS  = 0x57; // 0x57 =  87 I2C address of the MAX30100 device
                                         // 0xAE = 174 I2C address of the MAX30105 device
 
@@ -274,6 +278,10 @@ namespace CO2 {
         bitMask(MAX30100_I2C_ADDRESS, MAX30100_FIFO_CONFIG, MAX30100_SAMPLEAVG_MASK, numberOfSamples);
     }
 
+    function enableFIFORollover() {
+        bitMask(MAX30100_I2C_ADDRESS, MAX30100_FIFO_CONFIG, MAX30100_ROLLOVER_MASK, MAX30100_ROLLOVER_ENABLE);
+    }
+      
     function set_mode(mode: number) {
         let reg = i2cread(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG)
         i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_MODE_CONFIG, reg & 0x74);
