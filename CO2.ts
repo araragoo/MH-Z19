@@ -131,8 +131,9 @@ namespace CO2 {
     const MAX30100_ROLLOVER_ENABLE = 0x10;
     const MAX30100_ROLLOVER_DISABLE = 0x00;
 
-    const MAX30100_I2C_ADDRESS  = 0x57; // 0x57 =  87 I2C address of the MAX30100 device
-                                        // 0xAE = 174 I2C address of the MAX30105 device
+    const MAX30100_I2C_ADDRESS  = 0x57; // 0x57 =  87 = 0101 0111 I2C address of the MAX30100 device
+                                        // 0xAE = 174 = 1010 1110 I2C address of WRITE
+                                        // 0xAF = 175 = 1010 1111 I2C address of READ
 
     const PULSE_WIDTH_m = [
         200,
