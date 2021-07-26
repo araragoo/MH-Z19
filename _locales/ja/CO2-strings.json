@@ -6,10 +6,10 @@
 	"CO2.CO2Value|block": "CO2値[ppm]",
 	"CO2.CO2SetOffset|block": "CO2 オフセット",
 	"CO2.SpO2Init|block": "SpO2 初期化",
+	"CO2.SpO2Heartbeat|block": "SpO2 心拍数 BPM:0 AVG:1 %HeartbeatType",
 	"CO2.SpO2ValueRed|block": "SpO2-Red値",
 	"CO2.SpO2ValueIR|block": "SpO2-IR値",
 	"CO2.SpO2SetMode|block": "SpO2 測定方式 Red:2 Red&Infrared:3 %LEDMode",
-	"CO2.SpO2SetLedRed|block": "SpO2 Red強度",
-	"CO2.SpO2SetLedIR|block": "SpO2 Ir強度",
-	"CO2.SpO2Heartbeat|block": "SpO2 心拍数 BPM:0 AVG:1 %HeartbeatType"
+	"CO2.SpO2SetLedRed|block": "SpO2 Red強度:0-50mA",
+	"CO2.SpO2SetLedIR|block": "SpO2 Ir強度:0-50mA"
 }
