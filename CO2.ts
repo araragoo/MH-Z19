@@ -82,6 +82,7 @@ namespace CO2 {
     }
 
     const MAX30105_ADDRESS = 0x57; //7-bit I2C Address
+    const I2C_BUFFER_LENGTH = 32;
 
     const MAX30105_MODECONFIG = 	0x09;
     const MAX30105_MODE_MASK = 	    0xF8;
@@ -517,7 +518,7 @@ namespace CO2 {
     
       IR_AC_Signal_Previous = IR_AC_Signal_Current;
     
-      IR_Average_Estimated = averageDCEstimator(&ir_avg_reg, sample);
+      IR_Average_Estimated = averageDCEstimator(sample);
       IR_AC_Signal_Current = lowPassFIRFilter(sample - IR_Average_Estimated);
     
       if ((IR_AC_Signal_Previous < 0) && (IR_AC_Signal_Current >= 0)) {
