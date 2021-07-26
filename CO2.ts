@@ -157,7 +157,7 @@ namespace CO2 {
         pins.i2cWriteBuffer(addr, buf, false);
     }
 
-    function i2cread(addr: number, reg: number): number{
+    function i2cread(addr: number, reg: number): number {
         pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
         return pins.i2cReadNumber(addr, NumberFormat.UInt8BE);
         //let X
@@ -166,7 +166,7 @@ namespace CO2 {
         //return buf[0]
     }
 
-    function i2creads(addr: number, reg: number, size: number) {
+    function i2creads(addr: number, reg: number, size: number): number {
         pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
         let buf = pins.i2cReadBuffer(addr, size)
         return buf;
@@ -243,16 +243,16 @@ namespace CO2 {
         }
     }
 
-    function getWritePointer() {
+    function getWritePointer(): number {
         return (i2cread(MAX30105_ADDRESS, MAX30105_FIFOWRITEPTR));
     }
     
     //Read the FIFO Read Pointer
-    function getReadPointer() {
+    function getReadPointer(): number {
         return (i2cread(MAX30105_ADDRESS, MAX30105_FIFOREADPTR));
     }
     
-    function readTemperature() {
+    function readTemperature(): number {
         i2cwrite(MAX30105_ADDRESS, MAX30105_DIETEMPCONFIG, 0x01);
     
         /*
@@ -347,14 +347,14 @@ namespace CO2 {
         clearFIFO(); //Reset the FIFO before we begin checking the sensor
     }
     
-    function available() {
+    function available() : number{
       let numberOfSamples = sense_head - sense_tail;
       if (numberOfSamples < 0) numberOfSamples += STORAGE_SIZE;
     
       return (numberOfSamples);
     }
 
-    function getRed() {
+    function getRed() : number{
         //if(safeCheck(250)){
             return sense_red[sense_head];
         //}
@@ -362,14 +362,14 @@ namespace CO2 {
         //    return(0); //Sensor failed to find new data
     }
     
-    function getIR() {
+    function getIR(): number {
         //if(safeCheck(250))
             return (sense_IR[sense_head]);
         //else
         //    return(0); //Sensor failed to find new dat
     }
 
-    function getGreen() {
+    function getGreen(): number {
         //if(safeCheck(250))
             return (sense_green[sense_head]);
         //else
@@ -386,7 +386,7 @@ namespace CO2 {
         }
     }
 
-    function check() {
+    function check(): number {
         //Read register FIDO_DATA in (3-uint8_t * number of active LED) chunks
         //Until FIFO_RD_PTR = FIFO_WR_PTR
 
@@ -467,8 +467,8 @@ namespace CO2 {
 
         let ledBrightness = 60; //Options: 0=Off to 255=50mA
         let sampleAverage = 4; //Options: 1, 2, 4, 8, 16, 32
-        let ledMode = 2; //Options: 1 = Red only, 2 = Red + IR, 3 = Red + IR + Green
-    
+        let ledMode = 2;    //Options(MAX30102): 1 = Red only, 2 = Red + IR
+                            //Options(MAX30105): 1 = Red only, 2 = Red + IR, 3 = Red + IR + Green
         let sampleRate = 100; //Options: 50, 100, 200, 400, 800, 1000, 1600, 3200
         let pulseWidth = 411; //Options: 69, 118, 215, 411
         let adcRange = 4096; //Options: 2048, 4096, 8192, 16384
@@ -495,7 +495,7 @@ namespace CO2 {
     const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012, 4096];
 
 
-    function averageDCEstimator(x: number)  {
+    function averageDCEstimator(x: number) : number {
         ir_avg_reg += (((x << 15) - ir_avg_reg) >> 4);
         return (ir_avg_reg >> 15);
     }
@@ -513,8 +513,7 @@ namespace CO2 {
         return(z >> 15);
     }
 
-    function checkForBeat(sample: number)
-    {
+    function checkForBeat(sample: number) {
       let beatDetected = false;
     
       IR_AC_Signal_Previous = IR_AC_Signal_Current;
@@ -561,29 +560,85 @@ namespace CO2 {
         MAX30105_init();
     }
 
-    //% subcategory="CO2"
-    //% blockId=SpO2ValueRed
-    //% block="CO2[ppm]"
-    export function SpO2ValueRed(): number {
-
-        serial.writeBuffer(buf)
-        basic.pause(100)
-
-        buffer = serial.readBuffer(9)
-        if (buffer.getNumber(NumberFormat.UInt8LE, 0) == 255 && buffer.getNumber(NumberFormat.UInt8LE, 1) == 134) {
-//            let sum = 0
-//            for (let index = 0; index <= 7; index++) {
-//                sum = sum + buffer.getNumber(NumberFormat.UInt8LE, index)
-//            }
-//            sum = sum % 256
-//            sum = 255 - sum
-//            if (sum == buffer.getNumber(NumberFormat.UInt8LE, 8)) {
-                CO2data = buffer.getNumber(NumberFormat.UInt8LE, 2) * 256 + buffer.getNumber(NumberFormat.UInt8LE, 3)
-//            }
-        }
-        return CO2data
+    //% subcategory="SpO2"
+    //% blockId=SpO2Red
+    //% block="Value:Red"
+    export function SpO2getRed(): number {
+        return getRed();
     }
     
+    //% subcategory="SpO2"
+    //% blockId=SpO2IR
+    //% block="Value:IR"
+    export function SpO2getIR(): number {
+        return getIR();
+    }
+    
+    //% subcategory="SpO2"
+    //% blockId=SpO2BPM
+    //% block="Value BPM"
+    export function SpO2getBPM(): number {
+        return getIR();
+    }
 
+    //% subcategory="SpO2"
+    //% blockId=SpO2AveBPM
+    //% block="Value:Ave BPM"
+    export function SpO2getAveBPM(): number {
+        return getIR();
+    }
 
+    //% subcategory="SpO2"
+    //% blockId=SpO2HR
+    //% block="Value:HR"
+    export function SpO2getHR(): number {
+        return getIR();
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2ValidHR
+    //% block="Value:Valid HR"
+    export function SpO2getValidHR(): number {
+        return getIR();
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2SpO2
+    //% block="Value:SpO2"
+    export function SpO2getSpO2(): number {
+        return getIR();
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2ValidSpO2
+    //% block="Value:Valid SpO2"
+    export function SpO2getValidSpO2(): number {
+        return getIR();
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2Mode
+    //% block="SpO2 Mode Red:1 Red&Infrared:2 %LEDMode"
+    //% LEDMode.min=1 LEDMode.max=3
+    export function SpO2SetMode(LEDMode: number) {
+        if (LEDMode == 2) setLEDMode(MAX30105_MODE_REDIRONLY); //Red and IR
+        else setLEDMode(MAX30105_MODE_REDONLY); //Red only
+        activeDiodes = LEDMode; //Used to control how many uint8_ts to read from FIFO buffer
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2SetRed
+    //% block="SpO2 Set Red Amp:0-50mA %RedAmp"
+    //% RedAmp.min=1 RedAmp.max=0xFF
+    export function SpO2SetRedAmp(RedAmp: number) {
+        setPulseAmplitudeRed(RedAmp);
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2SetIR
+    //% block="SpO2 Set IR Amp:0-50mA %IRAmp"
+    //% IRAmp.min=1 IRAmp.max=0xFF
+    export function SpO2SetIRAmp(RedAmp: number) {
+        setPulseAmplitudeIR(RedAmp);
+    }
 }
