@@ -561,4 +561,29 @@ namespace CO2 {
         MAX30105_init();
     }
 
+    //% subcategory="CO2"
+    //% blockId=SpO2ValueRed
+    //% block="CO2[ppm]"
+    export function SpO2ValueRed(): number {
+
+        serial.writeBuffer(buf)
+        basic.pause(100)
+
+        buffer = serial.readBuffer(9)
+        if (buffer.getNumber(NumberFormat.UInt8LE, 0) == 255 && buffer.getNumber(NumberFormat.UInt8LE, 1) == 134) {
+//            let sum = 0
+//            for (let index = 0; index <= 7; index++) {
+//                sum = sum + buffer.getNumber(NumberFormat.UInt8LE, index)
+//            }
+//            sum = sum % 256
+//            sum = 255 - sum
+//            if (sum == buffer.getNumber(NumberFormat.UInt8LE, 8)) {
+                CO2data = buffer.getNumber(NumberFormat.UInt8LE, 2) * 256 + buffer.getNumber(NumberFormat.UInt8LE, 3)
+//            }
+        }
+        return CO2data
+    }
+    
+
+
 }
