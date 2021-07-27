@@ -561,34 +561,31 @@ namespace CO2 {
         let rateSpot = 0;
         let delta =  0;
         let lastBeat = control.millis(); //Time at which the last beat occurred
+        let cnt = 0;
 
         MAX30105_init();
         setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
 
-        while(delta > 10*1000) {
+        while(cnt++ >= RATE_SIZE ) {
             let irValue = getIR();
 
             if (checkForBeat(irValue) == true) {
-              lastBeat = control.millis();
+                delta = control.millis() - lastBeat;
+                lastBeat = control.millis();
           
-              beatsPerMinute = 60 / (delta / 1000.0);
+                beatsPerMinute = 60 / (delta / 1000.0);
           
-              if (beatsPerMinute < 255 && beatsPerMinute > 20)
-              {
-                rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
-                rateSpot %= RATE_SIZE; //Wrap variable
-          
-                //Take average of readings
-                beatAvg = 0;
-                for (let x = 0 ; x < RATE_SIZE ; x++)
-                  beatAvg += rates[x];
-                beatAvg /= RATE_SIZE;
-              }
+                if (beatsPerMinute < 255 && beatsPerMinute > 20) {
+                    rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
+                    rateSpot %= RATE_SIZE; //Wrap variable
+            
+                    beatAvg = 0;
+                    for (let x = 0 ; x < RATE_SIZE ; x++)
+                        beatAvg += rates[x];
+                    beatAvg /= RATE_SIZE;
+                }
             }
-            delta = control.millis() - lastBeat;
-        }
-        beatsPerMinute = 0;
-        beatAvg = 0;        
+        }      
     }
 
     let irBuffer: number[] = []; //infrared LED sensor data
@@ -822,7 +819,7 @@ namespace CO2 {
       
         maxim_heart_rate_and_oxygen_saturation();
       
-        while (1) {
+        //while (1) {
             for (let i = 25; i < 100; i++) {
                 redBuffer[i - 25] = redBuffer[i];
                 irBuffer[i - 25] = irBuffer[i];
@@ -856,7 +853,7 @@ namespace CO2 {
             }
         
             maxim_heart_rate_and_oxygen_saturation();
-        }
+        //}
     }
 
     //% subcategory="SpO2"
@@ -879,7 +876,14 @@ namespace CO2 {
     export function SpO2getIR(): number {
         return getIR();
     }
-    
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2Beat
+    //% block="Measure Beat"
+    export function SpO2MeasureBeat(){
+        HeartRate();
+    }
+
     //% subcategory="SpO2"
     //% blockId=SpO2BPM
     //% block="Value BPM"
@@ -892,6 +896,13 @@ namespace CO2 {
     //% block="Value:Ave BPM"
     export function SpO2getAveBPM(): number {
         return beatAvg;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2Saturation
+    //% block="Measure Saturation"
+    export function SpO2MeasureSaturation(){
+        saturation();
     }
 
     //% subcategory="SpO2"
