@@ -820,7 +820,7 @@ namespace CO2 {
           nextSample(); //We're finished with this sample so move to next sample     
         }
       
-        maxim_heart_rate_and_oxygen_saturation(irBuffer, bufferLength, redBuffer, &spo2, &validSPO2, &heartRate, &validHeartRate);
+        maxim_heart_rate_and_oxygen_saturation();
       
         while (1) {
             for (let i = 25; i < 100; i++) {
@@ -835,7 +835,7 @@ namespace CO2 {
                 redBuffer[i] = getRed();
                 irBuffer[i] = getIR();
                 nextSample(); //We're finished with this sample so move to next sample
-        
+                /*
                 Serial.print(F("red="));
                 Serial.print(redBuffer[i], DEC);
                 Serial.print(F(", ir="));
@@ -852,12 +852,12 @@ namespace CO2 {
         
                 Serial.print(F(", SPO2Valid="));
                 Serial.println(validSPO2, DEC);
+                */
             }
         
-            maxim_heart_rate_and_oxygen_saturation(irBuffer, bufferLength, redBuffer, &spo2, &validSPO2, &heartRate, &validHeartRate);
+            maxim_heart_rate_and_oxygen_saturation();
         }
     }
-
 
     //% subcategory="SpO2"
     //% blockId=initalSpO2
