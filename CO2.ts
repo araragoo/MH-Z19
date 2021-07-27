@@ -494,7 +494,6 @@ namespace CO2 {
     
     const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012, 4096];
 
-
     function averageDCEstimator(x: number) : number {
         ir_avg_reg += (((x << 15) - ir_avg_reg) >> 4);
         return (ir_avg_reg >> 15);
@@ -552,6 +551,313 @@ namespace CO2 {
       
       return(beatDetected);
     }
+    
+    let beatsPerMinute = 0;
+    let beatAvg = 0;
+
+    function HeartRate() {
+        const RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
+        let rates: number[] = []; //Array of heart rates
+        let rateSpot = 0;
+        let delta =  0;
+        let lastBeat = control.millis(); //Time at which the last beat occurred
+
+        MAX30105_init();
+        setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
+
+        while(delta > 10*1000) {
+            let irValue = getIR();
+
+            if (checkForBeat(irValue) == true) {
+              lastBeat = control.millis();
+          
+              beatsPerMinute = 60 / (delta / 1000.0);
+          
+              if (beatsPerMinute < 255 && beatsPerMinute > 20)
+              {
+                rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
+                rateSpot %= RATE_SIZE; //Wrap variable
+          
+                //Take average of readings
+                beatAvg = 0;
+                for (let x = 0 ; x < RATE_SIZE ; x++)
+                  beatAvg += rates[x];
+                beatAvg /= RATE_SIZE;
+              }
+            }
+            delta = control.millis() - lastBeat;
+        }
+        beatsPerMinute = 0;
+        beatAvg = 0;        
+    }
+
+    let irBuffer: number[] = []; //infrared LED sensor data
+    let redBuffer: number[] = [];  //red LED sensor data
+
+    let bufferLength = 100;; //data length
+    
+    let SpO2 = 0; //SPO2 value
+    let validSpO2 = 0; //indicator to show if the SPO2 calculation is valid
+    let heartRate = 0; //heart rate value 
+    let validHeartRate = 0; //indicator to show if the heart rate calculation is valid
+
+    const FreqS = 25;    //sampling frequency
+    const BUFFER_SIZE = (FreqS * 4); 
+    const MA4_SIZE = 4; // DONOT CHANGE
+//#define min(x,y) ((x) < (y) ? (x) : (y)) //Defined in Arduino.h
+
+    //uch_spo2_table is approximated as  -45.060*ratioAverage* ratioAverage + 30.354 *ratioAverage + 94.845 ;
+    const uch_spo2_table: number[] = [95, 95, 95, 96, 96, 96, 97, 97, 97, 97, 97, 98, 98, 98, 98, 98, 99, 99, 99, 99, 
+              99, 99, 99, 99, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 
+              100, 100, 100, 100, 99, 99, 99, 99, 99, 99, 99, 99, 98, 98, 98, 98, 98, 98, 97, 97, 
+              97, 97, 96, 96, 96, 96, 95, 95, 95, 94, 94, 94, 93, 93, 93, 92, 92, 92, 91, 91, 
+              90, 90, 89, 89, 89, 88, 88, 87, 87, 86, 86, 85, 85, 84, 84, 83, 82, 82, 81, 81, 
+              80, 80, 79, 78, 78, 77, 76, 76, 75, 74, 74, 73, 72, 72, 71, 70, 69, 69, 68, 67, 
+              66, 66, 65, 64, 63, 62, 62, 61, 60, 59, 58, 57, 56, 56, 55, 54, 53, 52, 51, 50, 
+              49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 31, 30, 29, 
+              28, 27, 26, 25, 23, 22, 21, 20, 19, 17, 16, 15, 14, 12, 11, 10, 9, 7, 6, 5, 
+              3, 2, 1 ];
+    let an_x: number[] = []; //ir
+    let an_y: number[] = []; //red
+    let n_npks: number;
+
+    let an_ratio: number[];
+    let n_i_ratio_count: number;
+    let  an_ir_valley_locs: number[];
+  
+    function maxim_peaks_above_min_height(n_min_height:number) {
+
+        let i = 1, n_width;
+        n_npks = 0;
+
+        while (i < BUFFER_SIZE-1){
+            if (an_x[i] > n_min_height && an_x[i] > an_x[i-1]){      // find left edge of potential peaks
+                n_width = 1;
+                while (i+n_width < BUFFER_SIZE && an_x[i] == an_x[i+n_width])  // find flat peaks
+                    n_width++;
+                if (an_x[i] > an_x[i+n_width] && n_npks < 15 ){      // find right edge of peaks
+                    an_ir_valley_locs[n_npks++] = i;    
+                    i += n_width+1;
+                } else
+                    i += n_width;
+            } else
+                i++;
+        }
+    }
+    
+    function maxim_sort_indices_descend() {
+
+        let i, j, n_temp;
+        for (i = 1; i < BUFFER_SIZE; i++) {
+            n_temp = an_ir_valley_locs[i];
+            for (j = i; j > 0 && an_x[n_temp] > an_x[an_ir_valley_locs[j-1]]; j--)
+            an_ir_valley_locs[j] = an_ir_valley_locs[j-1];
+            an_ir_valley_locs[j] = n_temp;
+        }
+    }
+
+    function maxim_remove_close_peaks(n_min_distance:number) {
+
+        let i, j, n_old_npks, n_dist;
+        maxim_sort_indices_descend();
+
+        for ( i = -1; i < n_npks; i++ ){
+            n_old_npks = n_npks;
+            n_npks = i+1;
+            for ( j = i+1; j < n_old_npks; j++ ){
+                n_dist =  an_ir_valley_locs[j] - ( i == -1 ? -1 : an_ir_valley_locs[i] ); // lag-zero peak of autocorr is at index -1
+                if ( n_dist > n_min_distance || n_dist < -n_min_distance )
+                an_ir_valley_locs[n_npks++] = an_ir_valley_locs[j];
+            }
+        }
+        maxim_sort_ascend();
+    }
+
+    function min(x:number, y:number){
+        if (x < y) return x;
+        else       return y;
+    }
+
+    function maxim_find_peaks(n_min_height:number, n_min_distance:number, n_max_num:number) {
+        maxim_peaks_above_min_height(n_min_height );
+        maxim_remove_close_peaks(n_min_distance );
+        n_npks = min( n_npks, n_max_num );
+    }
+
+    function maxim_sort_ascend() {
+
+        let i, j, n_temp;
+        for (i = 1; i < n_i_ratio_count; i++) {
+            n_temp = an_ratio[i];
+            for (j = i; j > 0 && n_temp < an_ratio[j-1]; j--)
+                an_ratio[j] = an_ratio[j-1];
+            an_ratio[j] = n_temp;
+        }
+    }
+
+    function maxim_heart_rate_and_oxygen_saturation() {
+        let un_ir_mean;
+        let  k;
+        let  i, n_exact_ir_valley_locs_count, n_middle_idx;
+        let  n_th1;   
+        let  n_peak_interval_sum;
+
+        let n_y_ac, n_x_ac;
+        let n_spo2_calc; 
+        let n_y_dc_max, n_x_dc_max; 
+        let n_y_dc_max_idx = 0;
+        let n_x_dc_max_idx = 0; 
+        let n_ratio_average; 
+        let n_nume, n_denom ;
+
+        un_ir_mean =0; 
+        for (let k=0; k<bufferLength ; k++ )
+            un_ir_mean += irBuffer[k] ;
+        un_ir_mean =un_ir_mean/bufferLength ;
+
+        for (let k=0 ; k<bufferLength ; k++ )  
+            an_x[k] = -1*(irBuffer[k] - un_ir_mean) ;
+
+        for(k=0; k< BUFFER_SIZE-MA4_SIZE; k++){
+            an_x[k]=( an_x[k]+an_x[k+1]+ an_x[k+2]+ an_x[k+3])/(int)4;        
+        }
+
+        n_th1=0; 
+        for ( k=0 ; k<BUFFER_SIZE ;k++) {
+            n_th1 +=  an_x[k];
+        }
+        n_th1=  n_th1/ ( BUFFER_SIZE);
+        if( n_th1<30) n_th1=30; // min allowed
+        if( n_th1>60) n_th1=60; // max allowed
+
+        for ( k=0 ; k<15;k++)
+            an_ir_valley_locs[k]=0;
+        maxim_find_peaks(n_th1, 4, 15);//peak_height, peak_distance, max_num_peaks 
+        n_peak_interval_sum =0;
+        if (n_npks>=2){
+            for (k=1; k<n_npks; k++)
+                n_peak_interval_sum += (an_ir_valley_locs[k] -an_ir_valley_locs[k -1] ) ;
+            n_peak_interval_sum =n_peak_interval_sum/(n_npks-1);
+            heartRate = ( (FreqS*60)/ n_peak_interval_sum );
+            validHeartRate = 1;
+        } else { 
+            heartRate = -999; // unable to calculate because # of peaks are too small
+            validHeartRate  = 0;
+        }
+
+        for (k=0 ; k<bufferLength ; k++ ) {
+            an_x[k] =  irBuffer[k] ; 
+            an_y[k] =  redBuffer[k] ; 
+        }
+
+        n_exact_ir_valley_locs_count =n_npks; 
+
+        n_ratio_average =0; 
+        n_i_ratio_count = 0; 
+        for(k=0; k< 5; k++)
+            an_ratio[k]=0;
+        for (k=0; k< n_exact_ir_valley_locs_count; k++){
+            if (an_ir_valley_locs[k] > BUFFER_SIZE ){
+                SpO2=  -999 ; // do not use SPO2 since valley loc is out of range
+                validSpO2  = 0; 
+                return;
+            }
+        }
+        for (k=0; k< n_exact_ir_valley_locs_count-1; k++){
+            n_y_dc_max= -16777216 ; 
+            n_x_dc_max= -16777216; 
+            if (an_ir_valley_locs[k+1]-an_ir_valley_locs[k] >3){
+                for (i=an_ir_valley_locs[k]; i< an_ir_valley_locs[k+1]; i++){
+                    if (an_x[i]> n_x_dc_max) {
+                        n_x_dc_max =an_x[i]; n_x_dc_max_idx=i;
+                    }
+                    if (an_y[i]> n_y_dc_max) {
+                        n_y_dc_max =an_y[i]; n_y_dc_max_idx=i;
+                    }
+                }
+                n_y_ac= (an_y[an_ir_valley_locs[k+1]] - an_y[an_ir_valley_locs[k] ] )*(n_y_dc_max_idx -an_ir_valley_locs[k]); //red
+                n_y_ac=  an_y[an_ir_valley_locs[k]] + n_y_ac/ (an_ir_valley_locs[k+1] - an_ir_valley_locs[k])  ; 
+                n_y_ac=  an_y[n_y_dc_max_idx] - n_y_ac;    // subracting linear DC compoenents from raw 
+                n_x_ac= (an_x[an_ir_valley_locs[k+1]] - an_x[an_ir_valley_locs[k] ] )*(n_x_dc_max_idx -an_ir_valley_locs[k]); // ir
+                n_x_ac=  an_x[an_ir_valley_locs[k]] + n_x_ac/ (an_ir_valley_locs[k+1] - an_ir_valley_locs[k]); 
+                n_x_ac=  an_x[n_y_dc_max_idx] - n_x_ac;      // subracting linear DC compoenents from raw 
+                n_nume=( n_y_ac *n_x_dc_max)>>7 ; //prepare X100 to preserve floating value
+                n_denom= ( n_x_ac *n_y_dc_max)>>7;
+                if (n_denom>0  && n_i_ratio_count <5 &&  n_nume != 0) {   
+                    an_ratio[n_i_ratio_count]= (n_nume*100)/n_denom ; //formular is ( n_y_ac *n_x_dc_max) / ( n_x_ac *n_y_dc_max) ;
+                    n_i_ratio_count++;
+                }
+            }
+        }
+        maxim_sort_ascend();
+        n_middle_idx= n_i_ratio_count/2;
+
+        if (n_middle_idx >1)
+            n_ratio_average =( an_ratio[n_middle_idx-1] +an_ratio[n_middle_idx])/2; // use median
+        else
+            n_ratio_average = an_ratio[n_middle_idx ];
+
+        if( n_ratio_average>2 && n_ratio_average <184) {
+            n_spo2_calc= uch_spo2_table[n_ratio_average] ;
+            SpO2  = n_spo2_calc ;
+            validSpO2 = 1;//  float_SPO2 =  -45.060*n_ratio_average* n_ratio_average/10000 + 30.354 *n_ratio_average/100 + 94.845 ;  // for comparison with table
+        } else {
+            SpO2 = -999 ; // do not use SPO2 since signal an_ratio is out of range
+            validSpO2 = 0; 
+        }
+    }
+  
+    function saturation() {
+
+        MAX30105_init();
+
+        for (let i = 0 ; i < bufferLength ; i++) {
+          while (available()) //do we have new data?
+            check(); //Check the sensor for new data
+      
+          redBuffer[i] = getRed();
+          irBuffer[i] = getIR();
+          nextSample(); //We're finished with this sample so move to next sample     
+        }
+      
+        maxim_heart_rate_and_oxygen_saturation(irBuffer, bufferLength, redBuffer, &spo2, &validSPO2, &heartRate, &validHeartRate);
+      
+        while (1) {
+            for (let i = 25; i < 100; i++) {
+                redBuffer[i - 25] = redBuffer[i];
+                irBuffer[i - 25] = irBuffer[i];
+            }
+      
+            for (let i = 75; i < 100; i++) {
+                while (available()) //do we have new data?
+                    check(); //Check the sensor for new data
+        
+                redBuffer[i] = getRed();
+                irBuffer[i] = getIR();
+                nextSample(); //We're finished with this sample so move to next sample
+        
+                Serial.print(F("red="));
+                Serial.print(redBuffer[i], DEC);
+                Serial.print(F(", ir="));
+                Serial.print(irBuffer[i], DEC);
+        
+                Serial.print(F(", HR="));
+                Serial.print(heartRate, DEC);
+        
+                Serial.print(F(", HRvalid="));
+                Serial.print(validHeartRate, DEC);
+        
+                Serial.print(F(", SPO2="));
+                Serial.print(spo2, DEC);
+        
+                Serial.print(F(", SPO2Valid="));
+                Serial.println(validSPO2, DEC);
+            }
+        
+            maxim_heart_rate_and_oxygen_saturation(irBuffer, bufferLength, redBuffer, &spo2, &validSPO2, &heartRate, &validHeartRate);
+        }
+    }
+
 
     //% subcategory="SpO2"
     //% blockId=initalSpO2
@@ -578,28 +884,28 @@ namespace CO2 {
     //% blockId=SpO2BPM
     //% block="Value BPM"
     export function SpO2getBPM(): number {
-        return getIR();
+        return beatsPerMinute;
     }
 
     //% subcategory="SpO2"
     //% blockId=SpO2AveBPM
     //% block="Value:Ave BPM"
     export function SpO2getAveBPM(): number {
-        return getIR();
+        return beatAvg;
     }
 
     //% subcategory="SpO2"
     //% blockId=SpO2HR
     //% block="Value:HR"
     export function SpO2getHR(): number {
-        return getIR();
+        return heartRate;
     }
 
     //% subcategory="SpO2"
     //% blockId=SpO2ValidHR
     //% block="Value:Valid HR"
     export function SpO2getValidHR(): number {
-        return getIR();
+        return validHeartRate;
     }
 
     //% subcategory="SpO2"
