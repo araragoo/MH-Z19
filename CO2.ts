@@ -716,7 +716,7 @@ namespace CO2 {
             an_x[k] = -1*(irBuffer[k] - un_ir_mean) ;
 
         for(k=0; k< BUFFER_SIZE-MA4_SIZE; k++){
-            an_x[k]=( an_x[k]+an_x[k+1]+ an_x[k+2]+ an_x[k+3])/(int)4;        
+            an_x[k]=( an_x[k]+an_x[k+1]+ an_x[k+2]+ an_x[k+3])/4;        
         }
 
         n_th1=0; 
