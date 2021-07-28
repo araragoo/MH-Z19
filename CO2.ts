@@ -254,15 +254,6 @@ namespace CO2 {
     
     function readTemperature(): number {
         i2cwrite(MAX30105_ADDRESS, MAX30105_DIETEMPCONFIG, 0x01);
-    
-        /*
-        unsigned long startTime = system_timer_current_time();
-        while (system_timer_current_time() - startTime < 100) {
-            uint8_t response = readRegister8(MAX30105_ADDRESS, MAX30105_INTSTAT2);
-            if ((response & MAX30105_INT_DIE_TEMP_RDY_ENABLE) > 0) break; //We're done!
-            fiber_sleep(1); //Let's not over burden the I2C bus
-        }
-        */
         basic.pause(100);
 
         let tempInt = i2cread(MAX30105_ADDRESS, MAX30105_DIETEMPINT);
@@ -855,7 +846,7 @@ namespace CO2 {
             maxim_heart_rate_and_oxygen_saturation();
         //}
     }
-
+       
     //% subcategory="SpO2"
     //% blockId=initalSpO2
     //% block="Init SpO2"
@@ -923,14 +914,14 @@ namespace CO2 {
     //% blockId=SpO2SpO2
     //% block="Value:SpO2"
     export function SpO2getSpO2(): number {
-        return getIR();
+        return SpO2;
     }
 
     //% subcategory="SpO2"
     //% blockId=SpO2ValidSpO2
     //% block="Value:Valid SpO2"
     export function SpO2getValidSpO2(): number {
-        return getIR();
+        return validSpO2;
     }
 
     //% subcategory="SpO2"
@@ -957,5 +948,11 @@ namespace CO2 {
     //% IRAmp.min=1 IRAmp.max=0xFF
     export function SpO2SetIRAmp(RedAmp: number) {
         setPulseAmplitudeIR(RedAmp);
+    }
+    //% subcategory="SpO2"
+    //% blockId=SpO2Temperature
+    //% block="Value:Temperature"
+    export function SpO2readTemperature(): number {
+        return readTemperature();
     }
 }
