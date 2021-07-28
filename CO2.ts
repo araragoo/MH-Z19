@@ -847,19 +847,20 @@ namespace CO2 {
             maxim_heart_rate_and_oxygen_saturation();
         //}
     }
-
-
-
-
+  
+    //% subcategory="SpO2"
+    //% blockId=SpO2Temperature
+    //% block="Value:Temperature"
+    export function SpO2readTemperature(): number {
+        return readTemperature();
+    }
 
     //% subcategory="SpO2"
-    //% blockId=SpO2Mode
-    //% block="SpO2 Mode Red:1 Red&Infrared:2 %LEDMode"
-    //% LEDMode.min=1 LEDMode.max=3
-    export function SpO2SetMode(LEDMode: number) {
-        if (LEDMode == 2) setLEDMode(MAX30105_MODE_REDIRONLY); //Red and IR
-        else setLEDMode(MAX30105_MODE_REDONLY); //Red only
-        activeDiodes = LEDMode; //Used to control how many uint8_ts to read from FIFO buffer
+    //% blockId=SpO2SetIR
+    //% block="SpO2 Set IR Amp:0-50mA %IRAmp"
+    //% IRAmp.min=1 IRAmp.max=0xFF
+    export function SpO2SetIRAmp(RedAmp: number) {
+        setPulseAmplitudeIR(RedAmp);
     }
 
     //% subcategory="SpO2"
@@ -871,17 +872,13 @@ namespace CO2 {
     }
 
     //% subcategory="SpO2"
-    //% blockId=SpO2SetIR
-    //% block="SpO2 Set IR Amp:0-50mA %IRAmp"
-    //% IRAmp.min=1 IRAmp.max=0xFF
-    export function SpO2SetIRAmp(RedAmp: number) {
-        setPulseAmplitudeIR(RedAmp);
-    }
-    //% subcategory="SpO2"
-    //% blockId=SpO2Temperature
-    //% block="Value:Temperature"
-    export function SpO2readTemperature(): number {
-        return readTemperature();
+    //% blockId=SpO2Mode
+    //% block="SpO2 Mode Red:1 Red&Infrared:2 %LEDMode"
+    //% LEDMode.min=1 LEDMode.max=3
+    export function SpO2SetMode(LEDMode: number) {
+        if (LEDMode == 2) setLEDMode(MAX30105_MODE_REDIRONLY); //Red and IR
+        else setLEDMode(MAX30105_MODE_REDONLY); //Red only
+        activeDiodes = LEDMode; //Used to control how many uint8_ts to read from FIFO buffer
     }
 
     //% subcategory="SpO2"
