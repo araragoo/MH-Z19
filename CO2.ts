@@ -874,7 +874,6 @@ namespace CO2 {
     //% blockId=SpO2Beat
     //% block="Measure Beat"
     export function SpO2MeasureBeat(){
-        
         HeartRate();
     }
 
