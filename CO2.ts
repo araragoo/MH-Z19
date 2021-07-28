@@ -952,7 +952,7 @@ namespace CO2 {
     }
     
     //% subcategory="SpO2"
-    //% blockId=SpO2Red
+    //% blockId=SpO2Light
     //% block="Measure Light"
     export function SpO2MeasureLight(): number {
         return check();
