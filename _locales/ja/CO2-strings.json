@@ -5,5 +5,8 @@
 	"CO2.CO2Init|block": "CO2 初期化",
 	"CO2.CO2Value|block": "CO2値[ppm]",
 	"CO2.CO2SetOffset|block": "CO2 オフセット",
+	"CO2.SpO2Init|block": "SpO2 初期化",
+	"CO2.SpO2getRed|block": "Red値",
+	"CO2.SpO2getIR|block": "IR値",
 	"CO2.SpO2readTemperature|block": "温度値"
 }
