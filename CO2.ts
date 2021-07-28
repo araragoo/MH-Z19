@@ -874,6 +874,7 @@ namespace CO2 {
     //% subcategory="SpO2"
     //% blockId=SpO2Mode
     //% block="SpO2 Mode Red:1 Red&Infrared:2 %LEDMode"
+    //% LEDMode=1
     //% LEDMode.min=1 LEDMode.max=3
     export function SpO2SetMode(LEDMode: number) {
         if (LEDMode == 2) setLEDMode(MAX30105_MODE_REDIRONLY); //Red and IR
