@@ -847,28 +847,6 @@ namespace CO2 {
         //}
     }
        
-    //% subcategory="SpO2"
-    //% blockId=initalSpO2
-    //% block="Init SpO2"
-    export function SpO2Init () {
-        MAX30105_init();
-    }
-
-    //% subcategory="SpO2"
-    //% blockId=SpO2Red
-    //% block="Value:Red"
-    export function SpO2getRed(): number {
-        check()
-        return getRed();
-    }
-    
-    //% subcategory="SpO2"
-    //% blockId=SpO2IR
-    //% block="Value:IR"
-    export function SpO2getIR(): number {
-        check();
-        return getIR();
-    }
 
     //% subcategory="SpO2"
     //% blockId=SpO2Beat
@@ -957,4 +935,29 @@ namespace CO2 {
     export function SpO2readTemperature(): number {
         return readTemperature();
     }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2IR
+    //% block="Value:IR"
+    export function SpO2getIR(): number {
+        check();
+        return getIR();
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2Red
+    //% block="Value:Red"
+    export function SpO2getRed(): number {
+        check()
+        return getRed();
+    }
+    
+    //% subcategory="SpO2"
+    //% blockId=initalSpO2
+    //% block="Init SpO2"
+    export function SpO2Init () {
+        MAX30105_init();
+    }
+
+
 }
