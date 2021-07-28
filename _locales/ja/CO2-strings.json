@@ -17,5 +17,8 @@
 	"CO2.SpO2getValidHR|block": "有効心拍数（SPK法）",
 	"CO2.SpO2getSpO2|block": "飽和酸素濃度",
 	"CO2.SpO2getValidSpO2|block": "飽和酸素濃度平均値",
+	"CO2.SpO2SetMode|block": "測定方式 Red:1 Red&Infrared:2 %LEDMode",
+	"CO2.SpO2SetRedAmp|block": "Red強度:0-50mA",
+	"CO2.SpO2SetIRAmp|block": "Ir強度:0-50mA",
 	"CO2.SpO2readTemperature|block": "温度値"
 }
