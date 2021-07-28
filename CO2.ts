@@ -848,40 +848,9 @@ namespace CO2 {
         //}
     }
 
-    //% subcategory="SpO2"
-    //% blockId=SpO2Saturation
-    //% block="Measure Saturation"
-    export function SpO2MeasureSaturation(){
-        saturation();
-    }
 
-    //% subcategory="SpO2"
-    //% blockId=SpO2HR
-    //% block="Value:HR"
-    export function SpO2getHR(): number {
-        return heartRate;
-    }
 
-    //% subcategory="SpO2"
-    //% blockId=SpO2ValidHR
-    //% block="Value:Valid HR"
-    export function SpO2getValidHR(): number {
-        return validHeartRate;
-    }
 
-    //% subcategory="SpO2"
-    //% blockId=SpO2SpO2
-    //% block="Value:SpO2"
-    export function SpO2getSpO2(): number {
-        return SpO2;
-    }
-
-    //% subcategory="SpO2"
-    //% blockId=SpO2ValidSpO2
-    //% block="Value:Valid SpO2"
-    export function SpO2getValidSpO2(): number {
-        return validSpO2;
-    }
 
     //% subcategory="SpO2"
     //% blockId=SpO2Mode
@@ -914,7 +883,42 @@ namespace CO2 {
     export function SpO2readTemperature(): number {
         return readTemperature();
     }
-    
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2ValidSpO2
+    //% block="Value:Valid SpO2"
+    export function SpO2getValidSpO2(): number {
+        return validSpO2;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2SpO2
+    //% block="Value:SpO2"
+    export function SpO2getSpO2(): number {
+        return SpO2;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2ValidHR
+    //% block="Value:Valid HR"
+    export function SpO2getValidHR(): number {
+        return validHeartRate;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2HR
+    //% block="Value:HR"
+    export function SpO2getHR(): number {
+        return heartRate;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2Saturation
+    //% block="Measure Saturation"
+    export function SpO2MeasureSaturation(){
+        saturation();
+    }
+
     //% subcategory="SpO2"
     //% blockId=SpO2AveBPM
     //% block="Value:Ave BPM"
