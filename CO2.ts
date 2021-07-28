@@ -859,8 +859,8 @@ namespace CO2 {
     //% blockId=SpO2SetIR
     //% block="SpO2 Set IR Amp:0-50mA %IRAmp"
     //% IRAmp.min=1 IRAmp.max=0xFF
-    export function SpO2SetIRAmp(RedAmp: number) {
-        setPulseAmplitudeIR(RedAmp);
+    export function SpO2SetIRAmp(IRAmp: number) {
+        setPulseAmplitudeIR(IRAmp);
     }
 
     //% subcategory="SpO2"
