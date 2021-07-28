@@ -858,6 +858,7 @@ namespace CO2 {
     //% blockId=SpO2Red
     //% block="Value:Red"
     export function SpO2getRed(): number {
+        chevk()
         return getRed();
     }
     
@@ -865,6 +866,7 @@ namespace CO2 {
     //% blockId=SpO2IR
     //% block="Value:IR"
     export function SpO2getIR(): number {
+        check();
         return getIR();
     }
 
