@@ -847,28 +847,6 @@ namespace CO2 {
             maxim_heart_rate_and_oxygen_saturation();
         //}
     }
-       
-
-    //% subcategory="SpO2"
-    //% blockId=SpO2Beat
-    //% block="Measure Beat"
-    export function SpO2MeasureBeat(){
-        HeartRate();
-    }
-
-    //% subcategory="SpO2"
-    //% blockId=SpO2BPM
-    //% block="Value BPM"
-    export function SpO2getBPM(): number {
-        return beatsPerMinute;
-    }
-
-    //% subcategory="SpO2"
-    //% blockId=SpO2AveBPM
-    //% block="Value:Ave BPM"
-    export function SpO2getAveBPM(): number {
-        return beatAvg;
-    }
 
     //% subcategory="SpO2"
     //% blockId=SpO2Saturation
@@ -936,12 +914,32 @@ namespace CO2 {
     export function SpO2readTemperature(): number {
         return readTemperature();
     }
+    
+    //% subcategory="SpO2"
+    //% blockId=SpO2AveBPM
+    //% block="Value:Ave BPM"
+    export function SpO2getAveBPM(): number {
+        return beatAvg;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2BPM
+    //% block="Value BPM"
+    export function SpO2getBPM(): number {
+        return beatsPerMinute;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2Beat
+    //% block="Measure Beat"
+    export function SpO2MeasureBeat(){
+        HeartRate();
+    }
 
     //% subcategory="SpO2"
     //% blockId=SpO2IR
     //% block="Value:IR"
     export function SpO2getIR(): number {
-        check();
         return getIR();
     }
 
@@ -949,10 +947,16 @@ namespace CO2 {
     //% blockId=SpO2Red
     //% block="Value:Red"
     export function SpO2getRed(): number {
-        check()
         return getRed();
     }
     
+    //% subcategory="SpO2"
+    //% blockId=SpO2Red
+    //% block="Measure Light"
+    export function SpO2MeasureLight(): number {
+        return check();
+    }
+
     //% subcategory="SpO2"
     //% blockId=initalSpO2
     //% block="Init SpO2"
