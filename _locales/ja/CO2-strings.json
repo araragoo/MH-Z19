@@ -1,12 +1,16 @@
 {
 	"CO2|block": "測定",
-	"{id:subcategory}CO2": "CO2",
-	"{id:subcategory}SpO2": "SpO2",
-	"CO2.CO2Init|block": "CO2測定 初期化",
+	"{id:subcategory}CO2": "二酸化炭素CO2",
+	"{id:subcategory}SpO2": "血中酸素濃度SpO2",
+	"CO2.CO2Init|block": "CO2 初期化",
 	"CO2.CO2Value|block": "CO2値[ppm]",
 	"CO2.CO2SetOffset|block": "CO2 オフセット",
-	"CO2.SpO2Init|block": "SpO2測定 初期化",
+	"CO2.SpO2Init|block": "SpO2 初期化",
+	"CO2.SpO2MeasureLight|block": "光計測",
 	"CO2.SpO2getRed|block": "Red値",
 	"CO2.SpO2getIR|block": "IR値",
+	"CO2.SpO2MeasureBeat|block": "心拍計測（PBA法）",
+	"CO2.SpO2getBPM|block": "心拍数（PBA）",
+	"CO2.SpO2getAveBPM|block": "心拍数平均値（PBA）",
 	"CO2.SpO2readTemperature|block": "温度値"
 }
