@@ -547,7 +547,7 @@ namespace CO2 {
     let beatsPerMinute = 0;
     let beatAvg = 0;
 
-    function HeartRate() {
+    function HeartRateByPBA() {
         const RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
         let rates: number[] = []; //Array of heart rates
         let rateSpot = 0;
@@ -936,7 +936,7 @@ namespace CO2 {
     //% blockId=SpO2Beat
     //% block="Measure Beat"
     export function SpO2MeasureBeat(){
-        HeartRate();
+        HeartRateByPBA();
     }
 
     //% subcategory="SpO2"
