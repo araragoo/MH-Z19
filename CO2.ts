@@ -142,9 +142,9 @@ namespace CO2 {
 
     const STORAGE_SIZE = 25; //Each long is 4 bytes so limit this to fit on your micro
 
-    let sense_red: number[] = new Array(25);
-    let sense_IR: number[] = new Array(25);
-    let sense_green: number[] = new Array(25)
+    let sense_red: number[] = [];
+    let sense_IR: number[] = [];
+    let sense_green: number[] = [];
     let sense_head: number;
     let sense_tail: number;   
            
@@ -395,8 +395,8 @@ namespace CO2 {
             //We now have the number of readings, now calc uint8_ts to read
             //For this example we are just doing Red and IR (3 uint8_ts each)
             let bytesLeftToRead = numberOfSamples * activeDiodes * 3;
-            let temp: number[] = new Array(9); //Array of 9 uint8_ts that we will convert into longs
-            let temp2: number[] = new Array(4); //Array of 4 uint8_ts that we will convert into longs
+            let temp: number[] = []; //Array of 9 uint8_ts that we will convert into longs
+            let temp2: number[] = []; //Array of 4 uint8_ts that we will convert into longs
             let tempLong;
             let checkOffset
             
@@ -481,7 +481,7 @@ namespace CO2 {
     let negativeEdge = 0;
     let ir_avg_reg = 0;
     
-    let  cbuf: number[] = new Array(32);
+    let  cbuf: number[] = [];
     let  offset = 0;
     
     const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012, 4096];
@@ -553,7 +553,7 @@ namespace CO2 {
 
     function HeartRateByPBA() {
         const RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
-        let rates: number[] = new Array(RATE_SIZE); //Array of heart rates
+        let rates: number[] = []; //Array of heart rates
         let rateSpot = 0;
         let delta =  0;
         let lastBeat = control.millis(); //Time at which the last beat occurred
@@ -610,16 +610,16 @@ beatsPerMinute = irValue;
               28, 27, 26, 25, 23, 22, 21, 20, 19, 17, 16, 15, 14, 12, 11, 10, 9, 7, 6, 5, 
               3, 2, 1 ];
 
-    let irBuffer: number[] = new Array(BUFFER_SIZE); //infrared LED sensor data
-    let redBuffer: number[] = new Array(BUFFER_SIZE);  //red LED sensor data
+    let irBuffer: number[] = []; //infrared LED sensor data
+    let redBuffer: number[] = [];  //red LED sensor data
       
-    let an_x: number[] = new Array(BUFFER_SIZE); //ir
-    let an_y: number[] = new Array(BUFFER_SIZE); //red
+    let an_x: number[] = []; //ir
+    let an_y: number[] = []; //red
     let n_npks: number;
 
-    let an_ratio: number[] =  new Array(5);
+    let an_ratio: number[] = [];
     let n_i_ratio_count: number;
-    let  an_ir_valley_locs: number[] = new Array(15);
+    let  an_ir_valley_locs: number[] = [];
 
     function maxim_peaks_above_min_height(n_min_height:number) {
 
