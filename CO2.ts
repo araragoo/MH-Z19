@@ -500,7 +500,7 @@ namespace CO2 {
         }
         offset++;
         offset %= 32; //Wrap condition
-        beatsPerMinute = DOMPoint;
+        beatsPerMinute = din;
         return(z >> 15);
     }
 
