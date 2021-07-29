@@ -563,12 +563,14 @@ namespace CO2 {
 
             check();
             irValue = getIR();
-            if (checkForBeat(irValue) == true) {
+         //   if (checkForBeat(irValue) == true) {
                 delta = control.millis() - lastBeat;
                 lastBeat = control.millis();
           
                 beatsPerMinute = 60 * 1000 / delta;
-          
+
+                beatsPerMinute = delta;
+
 //                if (beatsPerMinute < 255 && beatsPerMinute > 20) {
                     rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
                     rateSpot %= RATE_SIZE; //Wrap variable
@@ -578,7 +580,7 @@ namespace CO2 {
                         beatAvg += rates[x];
                     beatAvg /= RATE_SIZE;
  //               }
-            }
+          //  }
         }      
     }
 
