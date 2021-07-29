@@ -488,6 +488,7 @@ namespace CO2 {
 
     function averageDCEstimator(x: number) : number {
         ir_avg_reg += (((x << 15) - ir_avg_reg) >> 4);
+beatsPerMinute = x;
         return (ir_avg_reg >> 15);
     }
 
@@ -500,7 +501,7 @@ namespace CO2 {
         }
         offset++;
         offset %= 32; //Wrap condition
-        beatsPerMinute = din;
+
         return(z >> 15);
     }
 
