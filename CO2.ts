@@ -512,7 +512,7 @@ namespace CO2 {
         let beatDetected = false;
     
         IR_AC_Signal_Previous = IR_AC_Signal_Current;
-beatsPerMinute = sample;        
+       
         IR_Average_Estimated = averageDCEstimator(sample);
         IR_AC_Signal_Current = lowPassFIRFilter(sample - IR_Average_Estimated);
 
@@ -531,21 +531,21 @@ beatsPerMinute = sample;
             }
         }
     
-      if ((IR_AC_Signal_Previous > 0) && (IR_AC_Signal_Current <= 0)) {
-        positiveEdge = 0;
-        negativeEdge = 1;
-        IR_AC_Signal_min = 0;
-      }
-    
-      if (positiveEdge && (IR_AC_Signal_Current > IR_AC_Signal_Previous)) {
-        IR_AC_Signal_max = IR_AC_Signal_Current;
-      }
-    
-      if (negativeEdge && (IR_AC_Signal_Current < IR_AC_Signal_Previous)) {
-        IR_AC_Signal_min = IR_AC_Signal_Current;
-      }
-      
-      return(beatDetected);
+        if ((IR_AC_Signal_Previous > 0) && (IR_AC_Signal_Current <= 0)) {
+            positiveEdge = 0;
+            negativeEdge = 1;
+            IR_AC_Signal_min = 0;
+        }
+        
+        if (positiveEdge && (IR_AC_Signal_Current > IR_AC_Signal_Previous)) {
+            IR_AC_Signal_max = IR_AC_Signal_Current;
+        }
+        
+        if (negativeEdge && (IR_AC_Signal_Current < IR_AC_Signal_Previous)) {
+            IR_AC_Signal_min = IR_AC_Signal_Current;
+        }
+        
+        return(beatDetected);
     }
     
     let beatsPerMinute = 0;
@@ -567,6 +567,7 @@ beatsPerMinute = sample;
 
             check();
             irValue = getIR();
+            beatsPerMinute = irValue; 
             if (checkForBeat(irValue) == true) {
                 delta = control.millis() - lastBeat;
           
