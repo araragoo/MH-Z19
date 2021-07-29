@@ -167,10 +167,10 @@ namespace CO2 {
         //return buf[0]
     }
 
+    let readbuf: number[] = [];
     function i2creads(addr: number, reg: number, size: number) {
         pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
-        let buf = pins.i2cReadBuffer(addr, size)
-        return buf;
+        readbuf = pins.i2cReadBuffer(addr, size)      
     }
 
     function bitMask(reg:number, mask:number, thing:number) {
@@ -390,7 +390,8 @@ namespace CO2 {
         if (readPointer != writePointer) {
             //Calculate the number of readings we need to get from sensor
             numberOfSamples = writePointer - readPointer;
-            if (numberOfSamples < 0) numberOfSamples += I2C_BUFFER_LENGTH; //Wrap condition
+            if (numberOfSamples < 0)
+                numberOfSamples += I2C_BUFFER_LENGTH; //Wrap condition
 
             //We now have the number of readings, now calc uint8_ts to read
             //For this example we are just doing Red and IR (3 uint8_ts each)
@@ -413,10 +414,10 @@ namespace CO2 {
                 while(toGet > 0) {
 
                     //i2c.readRegister(MAX30105_ADDRESS, (uint8_t)MAX30105_FIFODATA, temp, toGet);
-                    //temp = i2creads(MAX30105_ADDRESS, MAX30105_FIFODATA, toGet);
-                    for (let led = 0; led < activeDiodes*3; led++) {
-                        temp[led] = i2cread(MAX30105_ADDRESS, MAX30105_FIFODATA);
-                    }
+                    i2creads(MAX30105_ADDRESS, MAX30105_FIFODATA, toGet);
+                    //for (let led = 0; led < activeDiodes*3; led++) {
+                    //    temp[led] = i2cread(MAX30105_ADDRESS, MAX30105_FIFODATA);
+                    //}
                     sense_head++; //Advance the head of the storage struct
                     sense_head %= STORAGE_SIZE; //Wrap condition
                     for (let led = 0; led < activeDiodes; led++) {
@@ -428,10 +429,10 @@ namespace CO2 {
                         temp2[2] = temp[checkOffset];
                         memcpy(&tempLong, temp2, sizeof(tempLong)); //tempLong is 4 bytes, we only need 3
                         tempLong &= 0x3FFFF;
-                        */
                         tempLong = (temp[checkOffset]<<16 | temp[1 + checkOffset]<<8 | temp[2 + checkOffset] ) & 0x3FFFF;
-                        switch (led)
-                        {
+                        */
+                        tempLong = (readbuf[checkOffset]<<16 | readbuf[1 + checkOffset]<<8 | readbuf[2 + checkOffset] ) & 0x3FFFF;
+                        switch (led) {
                             case 0:
                                 sense_red[sense_head] = tempLong;//Long;//Store this reading into the sense array
                                 break;
@@ -525,8 +526,7 @@ namespace CO2 {
             IR_AC_Signal_max = 0;
         
             if ((IR_AC_Max - IR_AC_Min) > 20 && (IR_AC_Max - IR_AC_Min) < 1000) {
-            //Heart beat!!!
-            beatDetected = true;
+                beatDetected = true;
             }
         }
     
@@ -559,14 +559,14 @@ namespace CO2 {
         let cnt = 0;
         let irValue;
 
-        MAX30105_init();
+        //MAX30105_init();
         setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
 
         while(cnt++ <= RATE_SIZE ) {
 
             check();
             irValue = getIR();
-beatsPerMinute = irValue;
+beatsPerMinute = getIR();
             if (checkForBeat(irValue) == true) {
                 delta = control.millis() - lastBeat;
           
@@ -646,7 +646,7 @@ beatsPerMinute = irValue;
         for (i = 1; i < BUFFER_SIZE; i++) {
             n_temp = an_ir_valley_locs[i];
             for (j = i; j > 0 && an_x[n_temp] > an_x[an_ir_valley_locs[j-1]]; j--)
-            an_ir_valley_locs[j] = an_ir_valley_locs[j-1];
+                an_ir_valley_locs[j] = an_ir_valley_locs[j-1];
             an_ir_valley_locs[j] = n_temp;
         }
     }
@@ -662,7 +662,7 @@ beatsPerMinute = irValue;
             for ( j = i+1; j < n_old_npks; j++ ){
                 n_dist =  an_ir_valley_locs[j] - ( i == -1 ? -1 : an_ir_valley_locs[i] ); // lag-zero peak of autocorr is at index -1
                 if ( n_dist > n_min_distance || n_dist < -n_min_distance )
-                an_ir_valley_locs[n_npks++] = an_ir_valley_locs[j];
+                    an_ir_valley_locs[n_npks++] = an_ir_valley_locs[j];
             }
         }
         maxim_sort_ascend();
