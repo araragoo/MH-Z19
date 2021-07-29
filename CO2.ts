@@ -558,14 +558,13 @@ namespace CO2 {
         MAX30105_init();
         setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
 
-        while(cnt++ <= RATE_SIZE ) {
+        while(cnt++ <= 1000 ) {
             let irValue;
 
             check();
             irValue = getIR();
-         //   if (checkForBeat(irValue) == true) {
+            if (checkForBeat(irValue) == true) {
                 delta = control.millis() - lastBeat;
-                //lastBeat = control.millis();
           
                 beatsPerMinute = 60 * 1000 / delta;
 
@@ -578,7 +577,7 @@ namespace CO2 {
                         beatAvg += rates[x];
                     beatAvg /= RATE_SIZE;
  //               }
-          //  }
+            }
         }      
     }
 
