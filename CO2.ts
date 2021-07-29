@@ -853,7 +853,73 @@ namespace CO2 {
             maxim_heart_rate_and_oxygen_saturation();
         //}
     }
-  
+
+    function SpO2readTemperature(): number {
+        return readTemperature();
+    }
+
+    function SpO2SetIRAmp(IRAmp: number) {
+        setPulseAmplitudeIR(IRAmp);
+    }
+
+    function SpO2SetRedAmp(RedAmp: number) {
+        setPulseAmplitudeRed(RedAmp);
+    }
+
+    function SpO2SetMode(LEDMode: number) {
+        if (LEDMode == 2) setLEDMode(MAX30105_MODE_REDIRONLY); //Red and IR
+        else setLEDMode(MAX30105_MODE_REDONLY); //Red only
+        activeDiodes = LEDMode; //Used to control how many uint8_ts to read from FIFO buffer
+    }
+
+    function SpO2getValidSpO2(): number {
+        return validSpO2;
+    }
+
+    function SpO2getSpO2(): number {
+        return SpO2;
+    }
+
+    function SpO2getValidHR(): number {
+        return validHeartRate;
+    }
+
+    function SpO2getHR(): number {
+        return heartRate;
+    }
+
+    function SpO2MeasureSaturation(){
+        saturation();
+    }
+
+    function SpO2getAveBPM(): number {
+        return beatAvg;
+    }
+
+    function SpO2getBPM(): number {
+        return beatsPerMinute;
+    }
+
+    function SpO2MeasureBeat() {
+        HeartRateByPBA();
+    }
+
+    function SpO2getIR(): number {
+        return getIR();
+    }
+
+    function SpO2getRed(): number {
+        return getRed();
+    }
+    
+    function SpO2MeasureLight() {
+        check();
+    }
+
+    function SpO2Init () {
+        MAX30105_init();
+    }   
+/*
     //% subcategory="SpO2"
     //% blockId=SpO2Temperature
     //% block="Value:Temperature"
@@ -970,6 +1036,5 @@ namespace CO2 {
     export function SpO2Init () {
         MAX30105_init();
     }
-
-
+*/
 }
