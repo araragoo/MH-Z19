@@ -561,13 +561,14 @@ namespace CO2 {
         let irValue;
 
         MAX30105_init();
-        setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
-
+//        setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
+check();
+beatsPerMinute = getIR();
         while(cnt++ <= RATE_SIZE ) {
 
             check();
             irValue = getIR();
-beatsPerMinute =sense_IR[sense_head];
+
             if (checkForBeat(irValue) == true) {
                 delta = control.millis() - lastBeat;
           
