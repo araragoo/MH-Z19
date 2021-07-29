@@ -569,8 +569,6 @@ namespace CO2 {
           
                 beatsPerMinute = 60 * 1000 / delta;
 
-                beatsPerMinute = delta;
-
 //                if (beatsPerMinute < 255 && beatsPerMinute > 20) {
                     rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
                     rateSpot %= RATE_SIZE; //Wrap variable
