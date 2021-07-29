@@ -567,7 +567,7 @@ namespace CO2 {
                 delta = control.millis() - lastBeat;
                 lastBeat = control.millis();
           
-                beatsPerMinute = 60 / (delta / 1000.0);
+                beatsPerMinute = 60 * 1000 / delta;
           
 //                if (beatsPerMinute < 255 && beatsPerMinute > 20) {
                     rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
