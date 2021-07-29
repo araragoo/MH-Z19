@@ -563,7 +563,7 @@ namespace CO2 {
 
             check();
             irValue = getIR();
-//            if (checkForBeat(irValue) == true) {
+            if (checkForBeat(irValue) == true) {
                 delta = control.millis() - lastBeat;
                 lastBeat = control.millis();
           
@@ -578,7 +578,7 @@ namespace CO2 {
                         beatAvg += rates[x];
                     beatAvg /= RATE_SIZE;
  //               }
-  //          }
+            }
         }      
     }
 
@@ -935,7 +935,7 @@ namespace CO2 {
     //% subcategory="SpO2"
     //% blockId=SpO2Beat
     //% block="Measure Beat"
-    export function SpO2MeasureBeat(){
+    export function SpO2MeasureBeat() {
         HeartRateByPBA();
     }
 
