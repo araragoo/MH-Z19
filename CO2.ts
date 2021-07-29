@@ -167,7 +167,7 @@ namespace CO2 {
         //return buf[0]
     }
 
-    let readbuf: number[] = [];
+    let readbuf: Buffer;
     function i2creads(addr: number, reg: number, size: number) {
         pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
         readbuf = pins.i2cReadBuffer(addr, size)      
