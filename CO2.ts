@@ -558,7 +558,7 @@ namespace CO2 {
         MAX30105_init();
         setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
 
-        while(cnt++ >= RATE_SIZE ) {
+        while(cnt++ <= RATE_SIZE ) {
             let irValue;
 
             check();
