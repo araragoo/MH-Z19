@@ -500,7 +500,7 @@ namespace CO2 {
         }
         offset++;
         offset %= 32; //Wrap condition
-
+        beatsPerMinute = DOMPoint;
         return(z >> 15);
     }
 
@@ -511,7 +511,7 @@ namespace CO2 {
     
       IR_Average_Estimated = averageDCEstimator(sample);
       IR_AC_Signal_Current = lowPassFIRFilter(sample - IR_Average_Estimated);
-      beatsPerMinute = IR_AC_Signal_Current;
+
       if ((IR_AC_Signal_Previous < 0) && (IR_AC_Signal_Current >= 0)) {
       
         IR_AC_Max = IR_AC_Signal_max; //Adjust our AC max and min
