@@ -935,7 +935,7 @@ beatsPerMinute = getIR();
     //% blockId=SpO2BPM
     //% block="Value BPM"
     export function SpO2getBPM(): number {
-        return beatsPerMinute;
+        return getIR();//beatsPerMinute;
     }
 
     //% subcategory="SpO2"
