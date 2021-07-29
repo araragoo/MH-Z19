@@ -565,11 +565,11 @@ namespace CO2 {
             irValue = getIR();
          //   if (checkForBeat(irValue) == true) {
                 delta = control.millis() - lastBeat;
-                lastBeat = control.millis();
+                //lastBeat = control.millis();
           
                 beatsPerMinute = 60 * 1000 / delta;
 
-                beatsPerMinute = lastBeat;
+                beatsPerMinute = delta;
 
 //                if (beatsPerMinute < 255 && beatsPerMinute > 20) {
                     rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
