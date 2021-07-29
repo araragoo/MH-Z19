@@ -567,7 +567,7 @@ namespace CO2 {
 
             check();
             irValue = getIR();
-beatsPerMinute = irValue; 
+beatsPerMinute =getIR();
             if (checkForBeat(irValue) == true) {
                 delta = control.millis() - lastBeat;
           
