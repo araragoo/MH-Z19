@@ -487,12 +487,14 @@ namespace CO2 {
     const FIRCoeffs = [172, 321, 579, 927, 1360, 1858, 2390, 2916, 3391, 3768, 4012, 4096];
 
     function averageDCEstimator(x: number) : number {
+
         ir_avg_reg += (((x << 15) - ir_avg_reg) >> 4);
-beatsPerMinute = x;
+
         return (ir_avg_reg >> 15);
     }
 
     function lowPassFIRFilter(din: number) { 
+
         cbuf[offset] = din;
         let z = FIRCoeffs[11] * cbuf[(offset - 11) & 0x1F];
         
@@ -506,27 +508,28 @@ beatsPerMinute = x;
     }
 
     function checkForBeat(sample: number) {
-      let beatDetected = false;
-    
-      IR_AC_Signal_Previous = IR_AC_Signal_Current;
-    
-      IR_Average_Estimated = averageDCEstimator(sample);
-      IR_AC_Signal_Current = lowPassFIRFilter(sample - IR_Average_Estimated);
 
-      if ((IR_AC_Signal_Previous < 0) && (IR_AC_Signal_Current >= 0)) {
-      
-        IR_AC_Max = IR_AC_Signal_max; //Adjust our AC max and min
-        IR_AC_Min = IR_AC_Signal_min;
+        let beatDetected = false;
     
-        positiveEdge = 1;
-        negativeEdge = 0;
-        IR_AC_Signal_max = 0;
-    
-        if ((IR_AC_Max - IR_AC_Min) > 20 && (IR_AC_Max - IR_AC_Min) < 1000) {
-          //Heart beat!!!
-          beatDetected = true;
+        IR_AC_Signal_Previous = IR_AC_Signal_Current;
+beatsPerMinute = sample;        
+        IR_Average_Estimated = averageDCEstimator(sample);
+        IR_AC_Signal_Current = lowPassFIRFilter(sample - IR_Average_Estimated);
+
+        if ((IR_AC_Signal_Previous < 0) && (IR_AC_Signal_Current >= 0)) {
+        
+            IR_AC_Max = IR_AC_Signal_max; //Adjust our AC max and min
+            IR_AC_Min = IR_AC_Signal_min;
+        
+            positiveEdge = 1;
+            negativeEdge = 0;
+            IR_AC_Signal_max = 0;
+        
+            if ((IR_AC_Max - IR_AC_Min) > 20 && (IR_AC_Max - IR_AC_Min) < 1000) {
+            //Heart beat!!!
+            beatDetected = true;
+            }
         }
-      }
     
       if ((IR_AC_Signal_Previous > 0) && (IR_AC_Signal_Current <= 0)) {
         positiveEdge = 0;
