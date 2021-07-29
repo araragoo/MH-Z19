@@ -558,12 +558,12 @@ namespace CO2 {
         let delta =  0;
         let lastBeat = control.millis(); //Time at which the last beat occurred
         let cnt = 0;
+        let irValue;
 
         MAX30105_init();
         setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
 
         while(cnt++ <= RATE_SIZE ) {
-            let irValue;
 
             check();
             irValue = getIR();
