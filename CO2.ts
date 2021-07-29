@@ -340,10 +340,10 @@ namespace CO2 {
     }
     
     function available() : number{
-      let numberOfSamples = sense_head - sense_tail;
-      if (numberOfSamples < 0) numberOfSamples += STORAGE_SIZE;
-    
-      return (numberOfSamples);
+        let numberOfSamples = sense_head - sense_tail;
+        if (numberOfSamples < 0) numberOfSamples += STORAGE_SIZE;
+        
+        return (numberOfSamples);
     }
 
     function getRed() : number{
@@ -414,9 +414,8 @@ namespace CO2 {
 
                     //i2c.readRegister(MAX30105_ADDRESS, (uint8_t)MAX30105_FIFODATA, temp, toGet);
                     //temp = i2creads(MAX30105_ADDRESS, MAX30105_FIFODATA, toGet);
-                    for (let led = 0; led < activeDiodes; led++) {
-                        checkOffset = led * 3;
-                        temp[checkOffset] = i2cread(MAX30105_ADDRESS, MAX30105_FIFODATA);
+                    for (let led = 0; led < activeDiodes*3; led++) {
+                        temp[led] = i2cread(MAX30105_ADDRESS, MAX30105_FIFODATA);
                     }
                     sense_head++; //Advance the head of the storage struct
                     sense_head %= STORAGE_SIZE; //Wrap condition
@@ -561,9 +560,8 @@ namespace CO2 {
         let irValue;
 
         MAX30105_init();
-//        setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
-check();
-beatsPerMinute = getIR();
+        setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
+
         while(cnt++ <= RATE_SIZE ) {
 
             check();
@@ -935,7 +933,6 @@ beatsPerMinute = getIR();
     //% blockId=SpO2BPM
     //% block="Value BPM"
     export function SpO2getBPM(): number {
-        beatsPerMinute=getIR();
         return beatsPerMinute;
     }
 
