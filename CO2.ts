@@ -1046,8 +1046,7 @@ namespace CO2 {
     let  an_ir_valley_locs: number[] = [];
     let an_ratio: number[] = [];
     const MA4_SIZE = 4;
-
-    let  cbuf: number[] = [];
+    let cbuf: number[] = [];
 
     basic.showNumber(beatsPerMinute)
 */
