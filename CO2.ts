@@ -855,7 +855,7 @@ namespace CO2 {
             maxim_heart_rate_and_oxygen_saturation();
         //}
     }
-
+/*
     function SpO2readTemperature(): number {
         return readTemperature();
     }
@@ -920,8 +920,9 @@ namespace CO2 {
 
     function SpO2Init () {
         MAX30105_init();
-    }   
-/*
+    }
+*/   
+/* */
     //% subcategory="SpO2"
     //% blockId=SpO2Temperature
     //% block="Value:Temperature"
@@ -1038,7 +1039,7 @@ namespace CO2 {
     export function SpO2Init () {
         MAX30105_init();
     }
-*/
+/**/
 }
 
 /*
