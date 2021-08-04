@@ -1048,6 +1048,9 @@ namespace CO2 {
     let an_ratio: number[] = [];
     const MA4_SIZE = 4;
     let cbuf: number[] = [];
+    
+    →　let cbuf　が
+        function lowPassFIRFilter　の中で定義されていたら、グローバルに変更する。
 
     basic.showNumber(beatsPerMinute)
 */
