@@ -528,11 +528,12 @@ namespace CO2 {
     function averageDCEstimator(x: number) : number {
 
         ir_avg_reg += (((x << 15) - ir_avg_reg) >> 4);
+        let temp = ir_avg_reg >> 15;
 
-        return (ir_avg_reg >> 15);
+        return temp;
     }
 
-    function lowPassFIRFilter(din: number) { 
+    function lowPassFIRFilter(din: number) : number { 
 
         cbuf[offset] = din;
         let z = FIRCoeffs[11] * cbuf[(offset - 11) & 0x1F];
@@ -543,12 +544,13 @@ namespace CO2 {
         offset++;
         offset %= 32; //Wrap condition
 
-        return(z >> 15);
+        let temp = z >> 15
+        return temp;
     }
 
-    function checkForBeat(sample: number) {
+    function checkForBeat(sample: number) : number {
 
-        let beatDetected = false;
+        let beatDetected = 0;
     
         IR_AC_Signal_Previous = IR_AC_Signal_Current;
        
@@ -565,7 +567,7 @@ namespace CO2 {
             IR_AC_Signal_max = 0;
         
             if ((IR_AC_Max - IR_AC_Min) > 20 && (IR_AC_Max - IR_AC_Min) < 1000) {
-                beatDetected = true;
+                beatDetected = 1;
             }
         }
     
@@ -592,18 +594,17 @@ namespace CO2 {
         let rateSpot = 0;
         let delta =  0;
         let lastBeat = control.millis(); //Time at which the last beat occurred
-        let cnt = 0;
         let irValue;
 
         //MAX30105_init();
         setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
 
-        while(cnt++ <= RATE_SIZE ) {
+        for(let i = 0; i <= RATE_SIZE; i++ ) {
 
             check();
             irValue = getIR();
 
-            if (checkForBeat(irValue) == true) {
+            if (checkForBeat(irValue) == 1) {
                 delta = control.millis() - lastBeat;
           
                 beatsPerMinute = 60 * 1000 / delta;
@@ -1039,3 +1040,14 @@ namespace CO2 {
     }
 */
 }
+
+/*
+    let redBuffer: number[] = [];  //red LED sensor data
+    let an_y: number[] = []; //red
+    let  an_ir_valley_locs: number[] = [];
+    let an_ratio: number[] = [];
+    const MA4_SIZE = 4;
+    let cbuf: number[] = [];
+
+    basic.showNumber(beatsPerMinute)
+*/
