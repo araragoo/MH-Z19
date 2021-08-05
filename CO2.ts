@@ -588,38 +588,33 @@ namespace CO2 {
         return(beatDetected);
     }
 
+    const RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
+    let rates: number[] = []; //Array of heart rates
+    let lastBeat: number;
+    let rateSpot = 0;
+
     function HeartRateByPBA() {
-        const RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
-        let rates: number[] = []; //Array of heart rates
-        let rateSpot = 0;
         let delta =  0;
-        let lastBeat = control.millis(); //Time at which the last beat occurred
         let irValue;
 
-        //MAX30105_init();
-        setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
+        check();
+        irValue = getIR();
 
-        for(let i = 0; i <= RATE_SIZE; i++ ) {
-
-            check();
-            irValue = getIR();
-
-            if (checkForBeat(irValue) == 1) {
-                delta = control.millis() - lastBeat;
+        if (checkForBeat(irValue) == 1) {
+            delta = control.millis() - lastBeat;
           
-                beatsPerMinute = 60 * 1000 / delta;
+            beatsPerMinute = 60 * 1000 / delta;
 
-//                if (beatsPerMinute < 255 && beatsPerMinute > 20) {
-                    rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
-                    rateSpot %= RATE_SIZE; //Wrap variable
+//          if (beatsPerMinute < 255 && beatsPerMinute > 20) {
+                rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
+                rateSpot %= RATE_SIZE; //Wrap variable
             
-                    beatAvg = 0;
-                    for (let x = 0 ; x < RATE_SIZE ; x++)
-                        beatAvg += rates[x];
-                    beatAvg /= RATE_SIZE;
- //               }
-            }
-        }      
+                beatAvg = 0;
+                for (byte x = 0 ; x < RATE_SIZE ; x++)
+                    beatAvg += rates[x];
+                beatAvg /= RATE_SIZE;
+ //         }
+        }
     }
 
     function maxim_peaks_above_min_height(n_min_height:number) {
@@ -906,6 +901,12 @@ namespace CO2 {
         HeartRateByPBA();
     }
 
+    function SpO2MeasureBeatInit() {
+        MAX30105_init();
+        setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
+        lastBeat = control.millis(); //Time at which the last beat occurred
+    }
+
     function SpO2getIR(): number {
         return getIR();
     }
@@ -1010,6 +1011,15 @@ namespace CO2 {
     //% block="Measure Beat"
     export function SpO2MeasureBeat() {
         HeartRateByPBA();
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2BeatInit
+    //% block="Measure Beat Init"
+    export function SpO2MeasureBeatInit() {
+        MAX30105_init();
+        setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
+        lastBeat = control.millis(); //Time at which the last beat occurred
     }
 
     //% subcategory="SpO2"
