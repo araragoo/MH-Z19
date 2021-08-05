@@ -594,16 +594,16 @@ namespace CO2 {
     let rateSpot = 0;
 
     function HeartRateByPBA() {
-        let delta =  0;
+        let nowBeat =  0;
         let irValue;
 
         check();
         irValue = getIR();
 
         if (checkForBeat(irValue) == 1) {
-            delta = control.millis() - lastBeat;
-          
-            beatsPerMinute = 60 * 1000 / delta;
+            nowBeat = control.millis();          
+            beatsPerMinute = 60 * 1000 / (nowBeat - lastBeat);
+            lastBeat = nowBeat;
 
           　if (beatsPerMinute < 255 && beatsPerMinute > 20) {
                 rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
