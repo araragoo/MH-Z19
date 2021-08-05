@@ -9,6 +9,7 @@
 	"CO2.SpO2MeasureLight|block": "光計測",
 	"CO2.SpO2getRed|block": "Red値",
 	"CO2.SpO2getIR|block": "IR値",
+	"CO2.SpO2MeasureBeatInit|block": "心拍計測（PBA法）初期化",
 	"CO2.SpO2MeasureBeat|block": "心拍計測（PBA法）",
 	"CO2.SpO2getBPM|block": "心拍数（PBA法）",
 	"CO2.SpO2getAveBPM|block": "心拍数平均値（PBA法）",
