@@ -610,7 +610,7 @@ namespace CO2 {
                 rateSpot %= RATE_SIZE; //Wrap variable
             
                 beatAvg = 0;
-                for (byte x = 0 ; x < RATE_SIZE ; x++)
+                for (let x = 0 ; x < RATE_SIZE ; x++)
                     beatAvg += rates[x];
                 beatAvg /= RATE_SIZE;
  //         }
