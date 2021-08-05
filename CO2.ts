@@ -590,7 +590,7 @@ namespace CO2 {
 
     const RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
     let rates: number[] = []; //Array of heart rates
-    let lastBeat: number;
+    let lastBeat: number = 0;
     let rateSpot = 0;
 
     function HeartRateByPBA() {
@@ -605,7 +605,7 @@ namespace CO2 {
             beatsPerMinute = 60 * 1000 / (nowBeat - lastBeat);
             lastBeat = nowBeat;
 
-          　if (beatsPerMinute < 255 && beatsPerMinute > 20) {
+            //　if (beatsPerMinute < 255 && beatsPerMinute > 20) {
                 rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
                 rateSpot %= RATE_SIZE; //Wrap variable
             
@@ -613,7 +613,7 @@ namespace CO2 {
                 for (let x = 0 ; x < RATE_SIZE ; x++)
                     beatAvg += rates[x];
                 beatAvg /= RATE_SIZE;
-            }
+            // }
         }
     }
 
