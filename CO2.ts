@@ -605,7 +605,7 @@ namespace CO2 {
           
             beatsPerMinute = 60 * 1000 / delta;
 
-//          if (beatsPerMinute < 255 && beatsPerMinute > 20) {
+          　if (beatsPerMinute < 255 && beatsPerMinute > 20) {
                 rates[rateSpot++] = beatsPerMinute; //Store this reading in the array
                 rateSpot %= RATE_SIZE; //Wrap variable
             
@@ -613,7 +613,7 @@ namespace CO2 {
                 for (let x = 0 ; x < RATE_SIZE ; x++)
                     beatAvg += rates[x];
                 beatAvg /= RATE_SIZE;
- //         }
+            }
         }
     }
 
