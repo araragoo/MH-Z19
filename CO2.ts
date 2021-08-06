@@ -469,9 +469,6 @@ namespace CO2 {
         setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange); //Configure sensor with these settings
     }
     
-    let IR_AC_Max = 20;
-    let IR_AC_Min = -20;
-    
     let IR_AC_Signal_Current = 0;
     let IR_AC_Signal_Previous = 0;
     let IR_AC_Signal_min = 0;
@@ -559,14 +556,11 @@ namespace CO2 {
 
         if ((IR_AC_Signal_Previous < 0) && (IR_AC_Signal_Current >= 0)) {
         
-            IR_AC_Max = IR_AC_Signal_max; //Adjust our AC max and min
-            IR_AC_Min = IR_AC_Signal_min;
-        
             positiveEdge = 1;
             negativeEdge = 0;
             IR_AC_Signal_max = 0;
         
-            if ((IR_AC_Max - IR_AC_Min) > 20 && (IR_AC_Max - IR_AC_Min) < 1000) {
+            if ((IR_AC_Signal_max - IR_AC_Signal_min) > 20 && (IR_AC_Signal_max - IR_AC_Signal_min) < 1000) {
                 beatDetected = 1;
             }
         }
