@@ -140,7 +140,7 @@ namespace CO2 {
 
     let activeDiodes = 3; //Gets set during setup. Allows check() to calculate how many bytes to read from FIFO
 
-    const STORAGE_SIZE = 25; //Each long is 4 bytes so limit this to fit on your micro
+    const STORAGE_SIZE = 4; //Each long is 4 bytes so limit this to fit on your micro
 
     let sense_red: number[] = [];
     let sense_IR: number[] = [];
@@ -368,13 +368,13 @@ namespace CO2 {
         //    return(0); //Sensor failed to find new data
     }
     
-    function nextSample() {
+    function nextSample(): number{
         if(available()) { //Only advance the tail if new data is available
             sense_tail++;
             sense_tail %= STORAGE_SIZE; //Wrap condition
-            return true;
+            return 1;
         } else {
-            return false;
+            return 0;
         }
     }
 
