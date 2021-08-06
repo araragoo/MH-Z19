@@ -339,14 +339,14 @@ namespace CO2 {
         clearFIFO(); //Reset the FIFO before we begin checking the sensor
     }
     
-    function available() : number{
+    function available(): number {
         let numberOfSamples = sense_head - sense_tail;
         if (numberOfSamples < 0) numberOfSamples += STORAGE_SIZE;
         
         return (numberOfSamples);
     }
 
-    function getRed() : number{
+    function getRed(): number {
         //if(safeCheck(250)){
             return sense_red[sense_head];
         //}
@@ -522,7 +522,7 @@ namespace CO2 {
     let beatsPerMinute = 0;
     let beatAvg = 0;
 
-    function averageDCEstimator(x: number) : number {
+    function averageDCEstimator(x: number): number {
 
         ir_avg_reg += (((x << 15) - ir_avg_reg) >> 4);
         let temp = ir_avg_reg >> 15;
@@ -530,7 +530,7 @@ namespace CO2 {
         return temp;
     }
 
-    function lowPassFIRFilter(din: number) : number { 
+    function lowPassFIRFilter(din: number): number { 
 
         cbuf[offset] = din;
         let z = FIRCoeffs[11] * cbuf[(offset - 11) & 0x1F];
@@ -545,7 +545,7 @@ namespace CO2 {
         return temp;
     }
 
-    function checkForBeat(sample: number) : number {
+    function checkForBeat(sample: number): number {
 
         let beatDetected = 0;
     
@@ -659,7 +659,7 @@ namespace CO2 {
         maxim_sort_ascend();
     }
 
-    function min(x:number, y:number){
+    function min(x:number, y:number): number {
         if (x < y) return x;
         else       return y;
     }
@@ -1053,6 +1053,7 @@ namespace CO2 {
     let an_ratio: number[] = [];
     const MA4_SIZE = 4;
     let cbuf: number[] = [];
+    let rateSpot = 0;
     
     →　let cbuf　が
         function lowPassFIRFilter　の中で定義されていたら、グローバルに変更する。
