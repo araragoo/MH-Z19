@@ -665,6 +665,7 @@ namespace CO2 {
     }
 
     function maxim_find_peaks(n_min_height:number, n_min_distance:number, n_max_num:number) {
+ 
         maxim_peaks_above_min_height(n_min_height );
         maxim_remove_close_peaks(n_min_distance );
         n_npks = min( n_npks, n_max_num );
@@ -682,6 +683,7 @@ namespace CO2 {
     }
 
     function maxim_heart_rate_and_oxygen_saturation() {
+    
         let un_ir_mean;
         let  k;
         let  i, n_exact_ir_valley_locs_count, n_middle_idx;
@@ -699,7 +701,7 @@ namespace CO2 {
         un_ir_mean =0; 
         for (let k=0; k<bufferLength ; k++ )
             un_ir_mean += irBuffer[k] ;
-        un_ir_mean =un_ir_mean/bufferLength ;
+        un_ir_mean = un_ir_mean/bufferLength ;
 
         for (let k=0 ; k<bufferLength ; k++ )  
             an_x[k] = -1*(irBuffer[k] - un_ir_mean) ;
