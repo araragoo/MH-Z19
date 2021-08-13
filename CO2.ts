@@ -796,16 +796,16 @@ namespace CO2 {
     }
   
     function saturation() {
-
-        //MAX30105_init();
+        /*
+        MAX30105_init();
 
         for (let i = 0 ; i < bufferLength ; i++) {
-          //while (available()) //do we have new data?
+          while (available()) //do we have new data?
             check(); //Check the sensor for new data
       
           redBuffer[i] = getRed();
           irBuffer[i] = getIR();
-          //nextSample(); //We're finished with this sample so move to next sample     
+          nextSample(); //We're finished with this sample so move to next sample     
         }
       
         maxim_heart_rate_and_oxygen_saturation();
@@ -815,9 +815,10 @@ namespace CO2 {
                 redBuffer[i - 25] = redBuffer[i];
                 irBuffer[i - 25] = irBuffer[i];
             }
-      
-            for (let i = 75; i < 100; i++) {
-                //while (available()) //do we have new data?
+        */
+            //for (let i = 75; i < 100; i++) {
+            for (let i = 0; i < 100; i++) {
+                    //while (available()) //do we have new data?
                     check(); //Check the sensor for new data
         
                 redBuffer[i] = getRed();
