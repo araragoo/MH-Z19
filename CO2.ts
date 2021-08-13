@@ -797,7 +797,7 @@ namespace CO2 {
   
     function saturation() {
 
-        MAX30105_init();
+        //MAX30105_init();
 
         for (let i = 0 ; i < bufferLength ; i++) {
           //while (available()) //do we have new data?
