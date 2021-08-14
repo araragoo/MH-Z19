@@ -669,6 +669,7 @@ namespace CO2 {
         maxim_peaks_above_min_height(n_min_height );
         maxim_remove_close_peaks(n_min_distance );
         n_npks = min( n_npks, n_max_num );
+basic.showNumber(n_npks)
     }
 
     function maxim_sort_ascend() {
@@ -714,7 +715,7 @@ namespace CO2 {
             n_th1 +=  an_x[k];
         }
         n_th1 = n_th1/ ( BUFFER_SIZE);
-basic.showNumber(n_th1)
+
         if( n_th1<30) n_th1=30; // min allowed
         if( n_th1>60) n_th1=60; // max allowed
 
