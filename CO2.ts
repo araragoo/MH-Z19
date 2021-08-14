@@ -669,7 +669,7 @@ namespace CO2 {
         maxim_peaks_above_min_height(n_min_height );
         maxim_remove_close_peaks(n_min_distance );
         n_npks = min( n_npks, n_max_num );
-basic.showNumber(n_npks)
+
     }
 
     function maxim_sort_ascend() {
@@ -785,7 +785,7 @@ basic.showNumber(n_npks)
             n_ratio_average =( an_ratio[n_middle_idx-1] +an_ratio[n_middle_idx])/2; // use median
         else
             n_ratio_average = an_ratio[n_middle_idx ];
-
+basic.showNumber(n_i_ratio_count)
         if( n_ratio_average>2 && n_ratio_average <184) {
             n_spo2_calc= uch_spo2_table[n_ratio_average] ;
             SpO2  = n_spo2_calc ;
