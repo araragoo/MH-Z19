@@ -702,7 +702,6 @@ namespace CO2 {
         for (let k=0; k<bufferLength ; k++ )
             un_ir_mean += irBuffer[k] ;
         un_ir_mean = un_ir_mean/bufferLength ;
-basic.showNumber(un_ir_mean)
         for (let k=0 ; k<bufferLength ; k++ )  
             an_x[k] = -1*(irBuffer[k] - un_ir_mean) ;
 
@@ -714,7 +713,8 @@ basic.showNumber(un_ir_mean)
         for ( k=0 ; k<BUFFER_SIZE ;k++) {
             n_th1 +=  an_x[k];
         }
-        n_th1=  n_th1/ ( BUFFER_SIZE);
+        n_th1 = n_th1/ ( BUFFER_SIZE);
+basic.showNumber(n_th1)
         if( n_th1<30) n_th1=30; // min allowed
         if( n_th1>60) n_th1=60; // max allowed
 
