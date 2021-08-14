@@ -702,7 +702,7 @@ namespace CO2 {
         for (let k=0; k<bufferLength ; k++ )
             un_ir_mean += irBuffer[k] ;
         un_ir_mean = un_ir_mean/bufferLength ;
-
+basic.showNumber(un_ir_mean)
         for (let k=0 ; k<bufferLength ; k++ )  
             an_x[k] = -1*(irBuffer[k] - un_ir_mean) ;
 
