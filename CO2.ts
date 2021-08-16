@@ -1066,26 +1066,26 @@ namespace CO2 {
     const MLX90614_TARANGE = 35; //0x23;
     const MLX90614_EMISS = 36; //0x24
     
-    //% subcategory="CO2"
+    //% subcategory="Temp"
     //% blockId=setEmiss
     //% block="Set Emissivity"
-    function TempSetEmiss(ereg: number) {
+    export function TempSetEmiss(ereg: number) {
         i2cwrite(MLX90614_I2CADDR, MLX90614_EMISS, ereg);
     }
-    //% subcategory="CO2"
+    //% subcategory="Temp"
     //% blockId=readEmiss
     //% block="Read Emissivity"
-    function TempReadEmiss(): number {
+    export function TempReadEmiss(): number {
         let ereg = i2cread(MLX90614_I2CADDR, MLX90614_EMISS);
         if (ereg == 0)
           return 0;
         return ereg / 65535.0;
     }
 
-    //% subcategory="CO2"
+    //% subcategory="Temp"
     //% blockId=readTemp
     //% block="Read Temperature"
-    function TempReadTempC(): number {
+    export function TempReadTempC(): number {
         let temp = i2cread(MLX90614_I2CADDR, MLX90614_TARANGE);
         if (temp == 0)
           return 999;
