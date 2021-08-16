@@ -2,6 +2,7 @@
 	"CO2|block": "測定",
 	"{id:subcategory}CO2": "二酸化炭素CO2",
 	"{id:subcategory}SpO2": "血中酸素濃度SpO2",
+	"{id:subcategory}Temp": "体温",
 	"CO2.CO2Init|block": "CO2 初期化",
 	"CO2.CO2Value|block": "CO2値[ppm]",
 	"CO2.CO2SetOffset|block": "CO2 オフセット",
@@ -21,5 +22,8 @@
 	"CO2.SpO2SetMode|block": "測定方式 Red:1 Red&Infrared:2 %LEDMode",
 	"CO2.SpO2SetRedAmp|block": "Red強度:0-50mA",
 	"CO2.SpO2SetIRAmp|block": "Ir強度:0-50mA",
-	"CO2.SpO2readTemperature|block": "温度値"
+	"CO2.SpO2readTemperature|block": "温度",
+	"Temp.TempReadTempC|block": "表面温度[℃]",
+	"Temp.TempReadEmiss|block": "放射率",
+	"Temp.TempSetEmiss|block": "放射率 設定"
 }
