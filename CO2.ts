@@ -1076,7 +1076,7 @@ namespace CO2 {
     //% blockId=readEmiss
     //% block="Read Emissivity"
     export function TempReadEmiss(): number {
-        i2creads(MLX90614_I2CADDR, MLX90614_EMISS, 2);
+        i2creads(MLX90614_I2CADDR, MLX90614_EMISS, 3);
         let ereg = readbuf[0] + readbuf[1]<<8; 
         if (ereg == 0)
           return 0;
@@ -1087,8 +1087,8 @@ namespace CO2 {
     //% blockId=readTemp
     //% block="Read Temperature"
     export function TempReadTempC(): number {
-        i2creads(MLX90614_I2CADDR, MLX90614_TA, 2);
-        let temp = readbuf[1] + readbuf[0]<<8; 
+        i2creads(MLX90614_I2CADDR, MLX90614_TA, 3);
+        let temp = readbuf[0] + readbuf[1]<<8; 
         if (temp == 0)
           return 999;
         temp *= 0.02;
