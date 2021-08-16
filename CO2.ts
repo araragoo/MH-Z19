@@ -1088,7 +1088,7 @@ namespace CO2 {
     //% block="Read Temperature"
     export function TempReadTempC(): number {
         i2creads(MLX90614_I2CADDR, MLX90614_TA, 2);
-        let temp = readbuf.getNumber(NumberFormat.UInt8BE, 0) + readbuf.getNumber(NumberFormat.UInt8BE, 1)<<8; 
+        let temp = readbuf[1] + readbuf[0]<<8; 
         if (temp == 0)
           return 999;
         temp *= 0.02;
