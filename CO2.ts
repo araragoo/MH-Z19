@@ -1064,6 +1064,7 @@ namespace CO2 {
 /**/
     const MLX90614_I2CADDR = 90; //0x5A;
     const MLX90614_TA = 6; //0x06
+    const MLX90614_TOBJ1 = 7; //0x07
     const MLX90614_EMISS = 36; //0x24
     
     //% subcategory="Temp"
@@ -1087,7 +1088,7 @@ namespace CO2 {
     //% blockId=readTemp
     //% block="Read Temperature"
     export function TempReadTempC(): number {
-        i2creads(MLX90614_I2CADDR, MLX90614_TA, 3);
+        i2creads(MLX90614_I2CADDR, MLX90614_TOBJ1, 3);
         let temp = readbuf[0] + readbuf[1]<<8; 
         if (temp == 0)
           return 999;
