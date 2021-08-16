@@ -168,9 +168,11 @@ namespace CO2 {
     }
 
     let readbuf: Buffer;
+
     function i2creads(addr: number, reg: number, size: number) {
         pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
-        readbuf = pins.i2cReadBuffer(addr, size)      
+        readbuf = pins.i2cReadBuffer(addr, size)
+basic.showNumber(readbuf[0]);      
     }
 
     function bitMask(reg:number, mask:number, thing:number) {
