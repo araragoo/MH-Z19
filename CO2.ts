@@ -1072,7 +1072,7 @@ namespace CO2 {
     function TempSetEmiss(ereg: number) {
         i2cwrite(MLX90614_I2CADDR, MLX90614_EMISS, ereg);
     }
-        //% subcategory="Temp"
+    //% subcategory="Temp"
     //% blockId=readEmiss
     //% block="Read Emissivity"
     function TempReadEmiss(): number {
