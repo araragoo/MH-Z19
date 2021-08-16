@@ -169,8 +169,7 @@ namespace CO2 {
 
     let readbuf: Buffer;
     function i2creads(addr: number, reg: number, size: number) {
-//        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
-        pins.i2cWriteNumber(addr, reg, size);
+        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
         readbuf = pins.i2cReadBuffer(addr, size)      
     }
 
@@ -1064,7 +1063,7 @@ namespace CO2 {
 */
 /**/
     const MLX90614_I2CADDR = 90; //0x5A;
-    const MLX90614_TARANGE = 35; //0x23;
+    const MLX90614_TA = 6; //0x06
     const MLX90614_EMISS = 36; //0x24
     
     //% subcategory="Temp"
@@ -1088,7 +1087,7 @@ namespace CO2 {
     //% blockId=readTemp
     //% block="Read Temperature"
     export function TempReadTempC(): number {
-        i2creads(MLX90614_I2CADDR, MLX90614_TARANGE, 2);
+        i2creads(MLX90614_I2CADDR, MLX90614_TA, 2);
         let temp = readbuf[0] + readbuf[1]<<8; 
         if (temp == 0)
           return 999;
