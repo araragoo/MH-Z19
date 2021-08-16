@@ -785,7 +785,6 @@ namespace CO2 {
             n_ratio_average =( an_ratio[n_middle_idx-1] +an_ratio[n_middle_idx])/2; // use median
         else
             n_ratio_average = an_ratio[n_middle_idx ];
-basic.showNumber(n_i_ratio_count)
         if( n_ratio_average>2 && n_ratio_average <184) {
             n_spo2_calc= uch_spo2_table[n_ratio_average] ;
             SpO2  = n_spo2_calc ;
@@ -1047,8 +1046,6 @@ basic.showNumber(n_i_ratio_count)
     export function SpO2Init () {
         MAX30105_init();
     }
-/**/
-}
 
 /*
     let redBuffer: number[] = [];  //red LED sensor data
@@ -1064,3 +1061,38 @@ basic.showNumber(n_i_ratio_count)
 
     basic.showNumber(beatsPerMinute)
 */
+/**/
+    const MLX90614_I2CADDR = 90; //0x5A;
+    const MLX90614_TARANGE = 35; //0x23;
+    const MLX90614_EMISS = 36; //0x24
+    
+    //% subcategory="Temp"
+    //% blockId=setEmiss
+    //% block="Set Emissivity"
+    function setEmiss(ereg: number) {
+        i2cwrite(MLX90614_I2CADDR, MLX90614_EMISS, ereg);
+    }
+        //% subcategory="Temp"
+    //% blockId=readEmiss
+    //% block="Read Emissivity"
+    function readEmiss(): number {
+        let ereg = i2cread(MLX90614_I2CADDR, MLX90614_EMISS);
+        if (ereg == 0)
+          return 0;
+        return ereg / 65535.0;
+    }
+
+    //% subcategory="Temp"
+    //% blockId=readTemp
+    //% block="Read Temperature"
+    function readObjectTempC(): number {
+        let temp = i2cread(MLX90614_I2CADDR, MLX90614_TARANGE);
+        if (temp == 0)
+          return 999;
+        temp *= .02;
+        temp -= 273.15;
+        return temp;
+    }
+
+}
+
