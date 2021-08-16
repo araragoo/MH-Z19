@@ -1069,13 +1069,13 @@ namespace CO2 {
     //% subcategory="Temp"
     //% blockId=setEmiss
     //% block="Set Emissivity"
-    function setEmiss(ereg: number) {
+    function TempSetEmiss(ereg: number) {
         i2cwrite(MLX90614_I2CADDR, MLX90614_EMISS, ereg);
     }
         //% subcategory="Temp"
     //% blockId=readEmiss
     //% block="Read Emissivity"
-    function readEmiss(): number {
+    function TempReadEmiss(): number {
         let ereg = i2cread(MLX90614_I2CADDR, MLX90614_EMISS);
         if (ereg == 0)
           return 0;
@@ -1085,7 +1085,7 @@ namespace CO2 {
     //% subcategory="Temp"
     //% blockId=readTemp
     //% block="Read Temperature"
-    function readObjectTempC(): number {
+    function TempReadTempC(): number {
         let temp = i2cread(MLX90614_I2CADDR, MLX90614_TARANGE);
         if (temp == 0)
           return 999;
