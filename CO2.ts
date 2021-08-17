@@ -1084,7 +1084,7 @@ namespace CO2 {
       
     //% subcategory="Temp"
     //% blockId=setEmiss
-    //% block="Set Emissivity"
+    //% block="Set Emissivity %emiss"
     export function TempSetEmiss(emiss: number) {
         i2cwrite(MLX90614_I2CADDR, MLX90614_EMISS, emiss * 0xffff);
     }
