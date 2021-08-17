@@ -925,7 +925,7 @@ namespace CO2 {
     //% subcategory="SpO2"
     //% blockId=SpO2Temperature
     //% block="Value:Temperature"
-    export function SpO2readTemperature(): number {
+    export function SpO2readTemp(): number {
         return readTemperature();
     }
 
