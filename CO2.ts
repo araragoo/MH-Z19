@@ -1109,16 +1109,11 @@ namespace CO2 {
 
     //% subcategory="Temp"
     //% blockId=readTemp
-    //% block="Read Temperature %loc"
-    export function TempReadTempC(loc: TemperatureLocation): number{
-        switch (loc){
-            case 0:
+    //% block="Read Temperature"
+    export function TempReadTempC(): number{
+
                 return objectTemp();
-            case 1:
-                return ambientTemp();
-            default:
-                return 0;
-        }
+
     }
 }
 
