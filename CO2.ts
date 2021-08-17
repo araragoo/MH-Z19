@@ -1081,19 +1081,11 @@ namespace CO2 {
         temp -= 273.15
         return temp
     }
-
-    function objectTemp(): number{
-        return readTemp(MLX90614_TOBJ1)
-    }
-
-    function ambientTemp(): number{
-        return readTemp(MLX90614_TA)
-    }
    
     //% subcategory="Temp"
     //% blockId=readEmiss
-    //% block="Read Emissivity"
-    export function TempReadEmiss(): number {
+    //% block="Measure  Emissivity"
+    export function TempEmiss(): number {
         let ereg = read16(MLX90614_EMISS)
         if (ereg == 0)
           return 0;
@@ -1101,12 +1093,17 @@ namespace CO2 {
     }
 
     //% subcategory="Temp"
-    //% blockId=readTemp
-    //% block="Read Temperature"
-    export function TempReadTempC(): number{
+    //% blockId=ambientTemp
+    //% block="Measure Ambient Temperature"
+    export function TempAmbientTemp(): number{
+        return readTemp(MLX90614_TA)
+    }
 
-                return objectTemp();
-
+    //% subcategory="Temp"
+    //% blockId=objectTemp
+    //% block="Measure Object Temperature"
+    export function TempObjectTemp(): number{
+        return readTemp(MLX90614_TOBJ1)
     }
 }
 
