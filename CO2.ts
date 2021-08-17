@@ -1067,10 +1067,37 @@ namespace CO2 {
     const MLX90614_TA = 0x06;
     const MLX90614_TOBJ1 = 0x07;
     const MLX90614_EMISS = 0x24;
+    
+    let crcBuf: number[] = [];
+    function crc8(len: number): number {
+    // The PEC calculation includes all bits except the START, REPEATED START, STOP,
+    // ACK, and NACK bits. The PEC is a CRC-8 with polynomial X8+X2+X1+1.
+    {
+      let crc = 0;
+      for (let j = 0; j < len; j++) {
+        let inbyte = crcBuf[j];
+        for (let i = 8; i; i--) {
+          let carry = (crc ^ inbyte) & 0x80;
+          crc <<= 1;
+          if (carry)
+            crc ^= 0x7;
+          inbyte <<= 1;
+        }
+      }
+      return crc;
+    }
 
     function write16(reg: NumberFormat.UInt8BE, value: number) {
-        pins.i2cWriteNumber(MLX90614_I2CADDR, reg, NumberFormat.UInt8BE, false);
-        pins.i2cWriteNumber(MLX90614_I2CADDR, value, NumberFormat.UInt16LE, false);
+        crcBuf[0] = MLX90614_I2CADDR <<1;
+        crcBuf[1] = reg;
+        crcBuf[2] = value & 0xff;
+        crcBuf[3] = (value>>8) & 0xff;
+        let pec = crc8(4);
+        crcBuf[0] = crcBuf[1];
+        crcBuf[1] = crcBuf[2];
+        crcBuf[2] = crcBuf[3];
+        crcBuf[3] = pec;
+        pins.i2cWriteNumber(MLX90614_I2CADDR, reg, NumberFormat.UInt32BE, false);
     }
 
     function read16(reg: NumberFormat.UInt8BE): number {
