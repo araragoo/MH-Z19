@@ -22,8 +22,9 @@
 	"CO2.SpO2SetMode|block": "測定方式 Red:1 Red&Infrared:2 %LEDMode",
 	"CO2.SpO2SetRedAmp|block": "Red強度:0-50mA %RedAmp",
 	"CO2.SpO2SetIRAmp|block": "Ir強度:0-50mA %IRAmp",
-	"CO2.SpO2readTemperature|block": "温度",
-	"Temp.TempReadTempC|block": "表面温度[℃]",
-	"Temp.TempReadEmiss|block": "放射率",
+	"CO2.SpO2readTemp|block": "温度",
+	"Temp.TempObjectTemp|block": "体温[℃]",
+	"Temp.TempAmbientTemp|block": "周囲温度[℃]",
+	"Temp.TempEmiss|block": "放射率",
 	"Temp.TempSetEmiss|block": "放射率 設定"
 }
