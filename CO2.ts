@@ -1,12 +1,5 @@
 // https://github.com/araragoo/CO2
 
-enum TemperatureLocation {
-    //%block="Object"
-    Object,
-    //%block="Ambiant"
-    Ambiant
-}
-
 //% weight=5 color=#0fbc11 icon="\uf112" block="Measurement"
 namespace CO2 {
 
