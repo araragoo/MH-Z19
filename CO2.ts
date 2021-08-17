@@ -171,8 +171,7 @@ namespace CO2 {
 
     function i2creads(addr: number, reg: number, size: number) {
         pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
-        readbuf = pins.i2cReadBuffer(addr, size)
-basic.showNumber(readbuf[0]);      
+        readbuf = pins.i2cReadBuffer(addr, size)    
     }
 
     function bitMask(reg:number, mask:number, thing:number) {
@@ -1064,40 +1063,62 @@ basic.showNumber(readbuf[0]);
     basic.showNumber(beatsPerMinute)
 */
 /**/
-    const MLX90614_I2CADDR = 90; //0x5A;
-    const MLX90614_TA = 6; //0x06
-    const MLX90614_TOBJ1 = 7; //0x07
+    const MLX90614_I2CADDR = 0x5A;
+    const MLX90614_TA = 0x06
+    const MLX90614_TOBJ1 = 0x07
     const MLX90614_EMISS = 36; //0x24
-    
-    //% subcategory="Temp"
-    //% blockId=setEmiss
-    //% block="Set Emissivity"
-    export function TempSetEmiss(ereg: number) {
-        i2cwrite(MLX90614_I2CADDR, MLX90614_EMISS, ereg * 65535);
+
+    function read16(reg: NumberFormat.UInt8BE): number {
+        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE, true);
+        let ret = pins.i2cReadNumber(addr, NumberFormat.UInt16LE, true);
+        //ret |= pins.i2cReadNumber(addr, NumberFormat.UInt16LE) << 8
+        return ret
     }
+
+    function readTemp(reg: NumberFormat.UInt8BE): number {
+        let temp = read16(reg)
+        temp *= .02
+        temp -= 273.15
+        return temp
+    }
+
+    function objectTemp(): number{
+        return readTemp(MLX90614_TOBJ1)
+    }
+
+    function ambientTemp(): number{
+        return readTemp(MLX90614_TA)
+    }
+   
     //% subcategory="Temp"
     //% blockId=readEmiss
     //% block="Read Emissivity"
     export function TempReadEmiss(): number {
-        i2creads(MLX90614_I2CADDR, MLX90614_EMISS, 3);
-        let ereg = readbuf[0] + readbuf[1]<<8; 
+        let ereg = read16(MLX90614_EMISS)
         if (ereg == 0)
           return 0;
         return ereg / 65535.0;
     }
 
-    //% subcategory="Temp"
-    //% blockId=readTemp
-    //% block="Read Temperature"
-    export function TempReadTempC(): number {
-        i2creads(MLX90614_I2CADDR, MLX90614_TOBJ1, 3);
-        let temp = readbuf[0] + readbuf[1]<<8; 
-        if (temp == 0)
-          return 999;
-        temp *= 0.02;
-        temp -= 273.15;
-        return temp;
+    enum TemperatureLocation {
+        //%block="Object"
+        Object,
+        //%block="Ambiant"
+        Ambiant
     }
 
+    //% subcategory="Temp"
+    //% blockId=readTemp
+    //% block="Read Temperature %loc"
+    export function TempReadTempC(loc: TemperatureLocation): number{
+        switch (loc){
+            case 0:
+                return objectTemp();
+            case 1:
+                return ambientTemp();
+            default:
+                return 0;
+        }
+    }
 }
 
