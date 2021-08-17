@@ -1,5 +1,12 @@
 // https://github.com/araragoo/CO2
 
+enum TemperatureLocation {
+    //%block="Object"
+    Object,
+    //%block="Ambiant"
+    Ambiant
+}
+
 //% weight=5 color=#0fbc11 icon="\uf112" block="Measurement"
 namespace CO2 {
 
@@ -1098,13 +1105,6 @@ namespace CO2 {
         if (ereg == 0)
           return 0;
         return ereg / 65535.0;
-    }
-
-    enum TemperatureLocation {
-        //%block="Object"
-        Object,
-        //%block="Ambiant"
-        Ambiant
     }
 
     //% subcategory="Temp"
