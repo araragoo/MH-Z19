@@ -1071,13 +1071,13 @@ namespace CO2 {
 */
 /**/
     const MLX90614_I2CADDR = 0x5A;
-    const MLX90614_TA = 0x06
-    const MLX90614_TOBJ1 = 0x07
-    const MLX90614_EMISS = 36; //0x24
+    const MLX90614_TA = 0x06;
+    const MLX90614_TOBJ1 = 0x07;
+    const MLX90614_EMISS = 0x24;
 
     function read16(reg: NumberFormat.UInt8BE): number {
-        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE, true);
-        let ret = pins.i2cReadNumber(addr, NumberFormat.UInt16LE, true);
+        pins.i2cWriteNumber(MLX90614_I2CADDR, reg, NumberFormat.UInt8BE, true);
+        let ret = pins.i2cReadNumber(MLX90614_I2CADDR, NumberFormat.UInt16LE, true);
         //ret |= pins.i2cReadNumber(addr, NumberFormat.UInt16LE) << 8
         return ret
     }
