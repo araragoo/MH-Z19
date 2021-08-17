@@ -1071,8 +1071,8 @@ namespace CO2 {
     function write16(reg: NumberFormat.UInt8BE, value: number) {
         let buf = pins.createBuffer(3);
         buf[0] = reg;
-        buf[1] = value & 0xff;
-        buf[2] = (value >> 8) & 0xff;
+        buf[1] = 0xff // value & 0xff;
+        buf[2] = 0xff //(value >> 8) & 0xff;
         pins.i2cWriteBuffer(MLX90614_I2CADDR, buf, false);
     }
 
