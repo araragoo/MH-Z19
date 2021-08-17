@@ -1068,12 +1068,9 @@ namespace CO2 {
     const MLX90614_TOBJ1 = 0x07;
     const MLX90614_EMISS = 0x24;
 
-    function write16(reg: NumberFormat.UInt8BE, value: number) {
-        let buf = pins.createBuffer(3);
-        buf[0] = reg;
-        buf[1] = 0xff // value & 0xff;
-        buf[2] = 0xff //(value >> 8) & 0xff;
-        pins.i2cWriteBuffer(MLX90614_I2CADDR, buf, false);
+    function write16(reg: NumberFormat.UInt8BE, value: NumberFormat.UInt16BE) {
+        let buf = reg<<24 + value<<8; 
+        pins.i2cWriteNumber(MLX90614_I2CADDR, buf, NumberFormat.UInt32BE, true);
     }
 
     function read16(reg: NumberFormat.UInt8BE): number {
@@ -1093,6 +1090,7 @@ namespace CO2 {
     //% subcategory="Temp"
     //% blockId=setEmiss
     //% block="Set Emissivity %emiss"
+    //% emiss.defl=1
     export function TempSetEmiss(emiss: number) {
         write16(MLX90614_EMISS, emiss * 0xffff);
     }
