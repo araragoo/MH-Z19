@@ -1069,7 +1069,7 @@ namespace CO2 {
     const MLX90614_EMISS = 0x24;
 
     function write16(reg: NumberFormat.UInt8BE, value: number) {
-        pins.i2cWriteNumber(MLX90614_I2CADDR, reg, NumberFormat.UInt8BE, true);
+        pins.i2cWriteNumber(MLX90614_I2CADDR, reg, NumberFormat.UInt8BE, false);
         pins.i2cWriteNumber(MLX90614_I2CADDR, value, NumberFormat.UInt16LE, false);
     }
 
