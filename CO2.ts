@@ -1081,10 +1081,17 @@ namespace CO2 {
         temp -= 273.15
         return temp
     }
-   
+      
+    //% subcategory="Temp"
+    //% blockId=setEmiss
+    //% block="Set Emissivity"
+    export function TempSetEmiss(emiss: number) {
+        i2cwrite(MLX90614_I2CADDR, MLX90614_EMISS, emiss * 0xffff);
+    }
+
     //% subcategory="Temp"
     //% blockId=readEmiss
-    //% block="Measure  Emissivity"
+    //% block="Read Emissivity"
     export function TempEmiss(): number {
         let ereg = read16(MLX90614_EMISS)
         if (ereg == 0)
