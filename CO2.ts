@@ -1166,14 +1166,14 @@ namespace CO2 {
     //% subcategory="Temp"
     //% blockId=bodyTempAve
     //% block="Body Temperature Average %num"
-    //% num.defl=10 num.min=1 num.max=1000
+    //% num.defl=100 num.min=1 num.max=1000
     export function TempBodyTempAve(num: number): number {
         let sum = 0;
         
         for(let i=0; i < num; i++) {
             sum += readTemp(MLX90614_TOBJ1);
+            sum = sum * k_body / num;        }
         }
-        sum = sum * k_body / num;
         return sum;
     }
 }
