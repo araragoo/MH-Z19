@@ -1096,7 +1096,7 @@ namespace CO2 {
         //    let buf = crcBuf[1]<<24 + crcBuf[2]<<16 + crcBuf[3]<<8 + pec;
                 let b = crcBuf[1] + crcBuf[2]<<8 + crcBuf[3]<<16 + pec<<24;
                 basic.showNumber(b)
-        pins.i2cWriteNumber(MLX90614_I2CADDR, buf, NumberFormat.UInt32BE, false);
+        pins.i2cWriteNumber(MLX90614_I2CADDR, b, NumberFormat.UInt32BE, false);
     }
 
     function read16(reg: NumberFormat.UInt8BE): number {
