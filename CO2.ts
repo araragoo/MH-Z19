@@ -1127,9 +1127,9 @@ namespace CO2 {
     //% emiss.defl=1
     export function TempSetEmiss(emiss: number) {
         write16(MLX90614_EMISS, 0);
-        basic.pause(10)
+        basic.pause(100)
         write16(MLX90614_EMISS, emiss * 0xffff);
-        basic.pause(10)
+        basic.pause(100)
     }
 
     //% subcategory="Temp"
@@ -1166,7 +1166,7 @@ namespace CO2 {
     //% subcategory="Temp"
     //% blockId=bodyTempAve
     //% block="Body Temperature Average %num"
-    //% num.defl=10 num.min=1 num.max=100
+    //% num.defl=10 num.min=1 num.max=1000
     export function TempBodyTempAve(num: number): number {
         let sum = 0;
         
