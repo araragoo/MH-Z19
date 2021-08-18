@@ -1165,7 +1165,7 @@ namespace CO2 {
 
     //% subcategory="Temp"
     //% blockId=bodyTempAve
-    //% block="Body Temperature Average"
+    //% block="Body Temperature Average %num"
     //% num.defl=10 num.min=1 num.max=100
     export function TempBodyTempAve(num: number): number {
         let sum = 0;
