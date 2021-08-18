@@ -1097,7 +1097,7 @@ namespace CO2 {
         crcBuf[1] = crcBuf[2];
         crcBuf[2] = crcBuf[3];
         crcBuf[3] = pec;
-        pins.i2cWriteNumber(MLX90614_I2CADDR, reg, NumberFormat.UInt32BE, false);
+        pins.i2cWriteNumber(MLX90614_I2CADDR, crcBuf, NumberFormat.UInt32BE, false);
     }
 
     function read16(reg: NumberFormat.UInt8BE): number {
