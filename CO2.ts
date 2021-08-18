@@ -1172,8 +1172,8 @@ namespace CO2 {
         
         for(let i=0; i < num; i++) {
             sum += readTemp(MLX90614_TOBJ1);
-            sum = sum * k_body / num;        }
         }
+        sum = sum * k_body / num;
         return sum;
     }
 }
