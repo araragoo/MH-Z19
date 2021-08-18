@@ -1112,13 +1112,13 @@ namespace CO2 {
         return temp
     }
     
-    let k_MLX90614 = 1.05;
+    let k_body = 1.05;
     //% subcategory="Temp"
     //% blockId=setPrm
-    //% block="Set Correction Value %prm"
+    //% block="Set Body temperature correction value %prm"
     //% prm.defl=1.05
     export function TempSetPrm(prm: number) {
-        k_MLX90614 = prm;
+        k_body = prm;
     }
 
     //% subcategory="Temp"
@@ -1145,15 +1145,36 @@ namespace CO2 {
     //% subcategory="Temp"
     //% blockId=ambientTemp
     //% block="Measure Ambient Temperature"
-    export function TempAmbientTemp(): number{
-        return readTemp(MLX90614_TA) * k_MLX90614;
+    export function TempAmbientTemp(): number {
+        return readTemp(MLX90614_TA);
     }
 
     //% subcategory="Temp"
     //% blockId=objectTemp
     //% block="Measure Object Temperature"
-    export function TempObjectTemp(): number{
-        return readTemp(MLX90614_TOBJ1) * k_MLX90614;
+    export function TempObjectTemp(): number {
+        return readTemp(MLX90614_TOBJ1);
+    }
+
+    //% subcategory="Temp"
+    //% blockId=bodyTemp
+    //% block="Measure Body Temperature"
+    export function TempBodyTemp(): number {
+        return readTemp(MLX90614_TOBJ1) * k_body;
+    }
+
+    //% subcategory="Temp"
+    //% blockId=bodyTempAve
+    //% block="Body Temperature Average"
+    //% num.defl=10 num.min=1 num.max=100
+    export function TempBodyTempAve(num: number): number {
+        let sum = 0;
+        
+        for(let i=0; i < num; i++) {
+            sum += readTemp(MLX90614_TOBJ1);
+        }
+        sum = sum * k_body / num;
+        return sum;
     }
 }
 
