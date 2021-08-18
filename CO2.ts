@@ -1111,16 +1111,21 @@ namespace CO2 {
         temp -= 273.15
         return temp
     }
-      
+    
+    let prm_MLX90614 = 1;
     //% subcategory="Temp"
-    //% blockId=setEmiss
-    //% block="Set Emissivity %emiss"
-    //% emiss.defl=1
-    export function TempSetEmiss(emiss: number) {
-        write16(MLX90614_EMISS, 0);
-        basic.pause(10)
-        write16(MLX90614_EMISS, emiss * 0xffff);
-        basic.pause(10)
+    //% blockId=CalPrm
+    //% block="Calibration Value %prm"
+    //% prm.defl=1
+    export function TempCalPrm(prm: number) {
+        prm_MLX90614 = prm;
+    }
+    
+    //% subcategory="Temp"
+    //% blockId=objectTemp
+    //% block="Measure Object Temperature"
+    export function TempObjectTemp(): number{
+        return readTemp(MLX90614_TOBJ1)
     }
 
     //% subcategory="Temp"
@@ -1137,17 +1142,17 @@ namespace CO2 {
     //% blockId=ambientTemp
     //% block="Measure Ambient Temperature"
     export function TempAmbientTemp(): number{
-        return readTemp(MLX90614_TA)
+        return readTemp(MLX90614_TA) * prm_MLX90614;
     }
 
     //% subcategory="Temp"
     //% blockId=objectTemp
     //% block="Measure Object Temperature"
     export function TempObjectTemp(): number{
-        return readTemp(MLX90614_TOBJ1)
+        return readTemp(MLX90614_TOBJ1) * prm_MLX90614;
     }
 
-}
+
 
 
 
