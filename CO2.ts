@@ -1093,8 +1093,8 @@ namespace CO2 {
         crcBuf[2] = value & 0xff;
         crcBuf[3] = (value >> 8) & 0xff;
         let pec = crc8(4);
-        let buf = (crcBuf[1]<<24) + (crcBuf[2]<<16) + (crcBuf[3]<<8) + pec;
-        pins.i2cWriteNumber(MLX90614_I2CADDR, buf, NumberFormat.UInt32BE, false);
+        let b = (crcBuf[1]<<24) + (crcBuf[2]<<16) + (crcBuf[3]<<8) + pec;
+        pins.i2cWriteNumber(MLX90614_I2CADDR, b, NumberFormat.UInt32BE, false);
     }
 
     function read16(reg: NumberFormat.UInt8BE): number {
