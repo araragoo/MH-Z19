@@ -1118,6 +1118,7 @@ basic.showNumber(inbyte)
     //% block="Set Emissivity %emiss"
     //% emiss.defl=1
     export function TempSetEmiss(emiss: number) {
+        write16(MLX90614_EMISS, 0);
         write16(MLX90614_EMISS, emiss * 0xffff);
     }
 
