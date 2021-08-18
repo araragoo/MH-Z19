@@ -1155,7 +1155,7 @@ namespace CO2 {
     export function TempObjectTemp(): number{
         return readTemp(MLX90614_TOBJ1) * k_MLX90614;
     }
-
+}
 
 
 
