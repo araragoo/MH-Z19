@@ -1048,21 +1048,6 @@ namespace CO2 {
         MAX30105_init();
     }
 
-/*
-    let redBuffer: number[] = [];  //red LED sensor data
-    let an_y: number[] = []; //red
-    let  an_ir_valley_locs: number[] = [];
-    let an_ratio: number[] = [];
-    const MA4_SIZE = 4;
-    let cbuf: number[] = [];
-    let rateSpot = 0;
-    
-    →　let cbuf　が
-        function lowPassFIRFilter　の中で定義されていたら、グローバルに変更する。
-
-    basic.showNumber(beatsPerMinute)
-*/
-/**/
     const MLX90614_I2CADDR = 0x5A;
     const MLX90614_TA = 0x06;
     const MLX90614_TOBJ1 = 0x07;
@@ -1145,5 +1130,23 @@ namespace CO2 {
     export function TempObjectTemp(): number{
         return readTemp(MLX90614_TOBJ1)
     }
+    
+/*
+    let redBuffer: number[] = [];  //red LED sensor data
+    let an_y: number[] = []; //red
+    let  an_ir_valley_locs: number[] = [];
+    let an_ratio: number[] = [];
+    const MA4_SIZE = 4;
+    let cbuf: number[] = [];
+    let rateSpot = 0;
+    
+    →　let cbuf　が
+        function lowPassFIRFilter　の中で定義されていたら、グローバルに変更する。
+
+    basic.showNumber(beatsPerMinute)
+*/
+/**/
 }
+
+
 
