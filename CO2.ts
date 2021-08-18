@@ -1112,11 +1112,11 @@ namespace CO2 {
         return temp
     }
     
-    let k_body = 1.05;
+    let k_body = 1.045;
     //% subcategory="Temp"
     //% blockId=setPrm
     //% block="Set Body temperature correction value %prm"
-    //% prm.defl=1.05
+    //% prm.defl=1.045
     export function TempSetPrm(prm: number) {
         k_body = prm;
     }
