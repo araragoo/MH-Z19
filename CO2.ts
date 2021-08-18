@@ -432,7 +432,7 @@ namespace CO2 {
                         tempLong &= 0x3FFFF;
                         tempLong = (temp[checkOffset]<<16 | temp[1 + checkOffset]<<8 | temp[2 + checkOffset] ) & 0x3FFFF;
                         */
-                        tempLong = (readbuf[checkOffset]<<16 | readbuf[1 + checkOffset]<<8 | readbuf[2 + checkOffset] ) & 0x3FFFF;
+                        tempLong = ((readbuf[checkOffset]<<16) | (readbuf[1 + checkOffset]<<8) | readbuf[2 + checkOffset] ) & 0x3FFFF;
                         let led2 = led;
                         switch (led2) {
                             case 0:
@@ -1088,15 +1088,13 @@ namespace CO2 {
     }
 
     function write16(reg: NumberFormat.UInt8BE, value: number) {
-        crcBuf[0] = MLX90614_I2CADDR<<1;
+        crcBuf[0] = MLX90614_I2CADDR << 1;
         crcBuf[1] = reg;
         crcBuf[2] = value & 0xff;
-        crcBuf[3] = (value>>8) & 0xff;
+        crcBuf[3] = (value >> 8) & 0xff;
         let pec = crc8(4);
-        //    let buf = crcBuf[1]<<24 + crcBuf[2]<<16 + crcBuf[3]<<8 + pec;
-                let b = crcBuf[1] + crcBuf[2]<<8 + crcBuf[3]<<16 + pec<<24;
-                basic.showNumber(b)
-        pins.i2cWriteNumber(MLX90614_I2CADDR, b, NumberFormat.UInt32BE, false);
+        let buf = (crcBuf[1]<<24) + (crcBuf[2]<<16) + (crcBuf[3]<<8) + pec;
+        pins.i2cWriteNumber(MLX90614_I2CADDR, buf, NumberFormat.UInt32BE, false);
     }
 
     function read16(reg: NumberFormat.UInt8BE): number {
