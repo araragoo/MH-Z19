@@ -1089,7 +1089,7 @@ basic.showNumber(inbyte)
     }
 
     function write16(reg: NumberFormat.UInt8BE, value: number) {
-        crcBuf[0] = MLX90614_I2CADDR;
+        crcBuf[0] = MLX90614_I2CADDR<<1;
         crcBuf[1] = reg;
         crcBuf[2] = value & 0xff;
         crcBuf[3] = (value>>8) & 0xff;
