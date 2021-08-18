@@ -1073,18 +1073,18 @@ namespace CO2 {
     function crc8(len: number): number {
     // The PEC calculation includes all bits except the START, REPEATED START, STOP,
     // ACK, and NACK bits. The PEC is a CRC-8 with polynomial X8+X2+X1+1.
-      let crc = 0;
-      for (let j = 0; j < len; j++) {
-        let inbyte = crcBuf[j];
-        for (let i = 8; i; i--) {
-          let carry = (crc ^ inbyte) & 0x80;
-          crc <<= 1;
-          if (carry)
-            crc ^= 0x7;
-          inbyte <<= 1;
+        let crc = 0;
+        for (let j = 0; j < len; j++) {
+            let inbyte = crcBuf[j];
+            for (let i = 8; i; i--) {
+                let carry = (crc ^ inbyte) & 0x80;
+                crc <<= 1;
+                if (carry)
+                    crc ^= 0x7;
+                inbyte <<= 1;
+            }
         }
-      }
-      return crc & 0xFF;
+        return crc & 0xFF;
     }
 
     function write16(reg: NumberFormat.UInt8BE, value: number) {
@@ -1093,9 +1093,10 @@ namespace CO2 {
         crcBuf[2] = value & 0xff;
         crcBuf[3] = (value >> 8) & 0xff;
         let pec = crc8(4);
-        let b = (crcBuf[1]<<24) + (crcBuf[2]<<16) + (crcBuf[3]<<8) + pec;
-        basic.showNumber(b)
-        pins.i2cWriteNumber(MLX90614_I2CADDR, b, NumberFormat.UInt32BE, false);
+            let buf = (crcBuf[1]<<24) + (crcBuf[2]<<16) + (crcBuf[3]<<8) + pec;
+        //let b = crcBuf[1] + crcBuf[2] << 8 + crcBuf[3] << 16 + (pec << 24);
+        basic.showNumber(buf)
+        pins.i2cWriteNumber(MLX90614_I2CADDR, buf, NumberFormat.UInt32BE, false);
     }
 
     function read16(reg: NumberFormat.UInt8BE): number {
@@ -1117,8 +1118,8 @@ namespace CO2 {
     //% block="Set Emissivity %emiss"
     //% emiss.defl=1
     export function TempSetEmiss(emiss: number) {
-    //    write16(MLX90614_EMISS, 0);
-    //    basic.pause(10)
+        write16(MLX90614_EMISS, 0);
+        basic.pause(10)
         write16(MLX90614_EMISS, emiss * 0xffff);
         basic.pause(10)
     }
