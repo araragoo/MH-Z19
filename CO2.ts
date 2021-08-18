@@ -1076,7 +1076,6 @@ namespace CO2 {
       let crc = 0;
       for (let j = 0; j < len; j++) {
         let inbyte = crcBuf[j];
-basic.showNumber(inbyte)
         for (let i = 8; i; i--) {
           let carry = (crc ^ inbyte) & 0x80;
           crc <<= 1;
@@ -1085,11 +1084,12 @@ basic.showNumber(inbyte)
           inbyte <<= 1;
         }
       }
-      return crc;
+      basic.showNumber(crc)
+      return crc & 0xFF;
     }
 
     function write16(reg: NumberFormat.UInt8BE, value: number) {
-        crcBuf[0] = MLX90614_I2CADDR;
+        crcBuf[0] = MLX90614_I2CADDR<<1;
         crcBuf[1] = reg;
         crcBuf[2] = value & 0xff;
         crcBuf[3] = (value>>8) & 0xff;
