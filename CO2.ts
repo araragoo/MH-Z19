@@ -1112,11 +1112,11 @@ namespace CO2 {
         return temp
     }
     
-    let k_MLX90614 = 1;
+    let k_MLX90614 = 1.05;
     //% subcategory="Temp"
     //% blockId=setPrm
     //% block="Set Correction Value %prm"
-    //% prm.defl=1
+    //% prm.defl=1.05
     export function TempSetPrm(prm: number) {
         k_MLX90614 = prm;
     }
