@@ -1076,6 +1076,7 @@ namespace CO2 {
       let crc = 0;
       for (let j = 0; j < len; j++) {
         let inbyte = crcBuf[j];
+basic.showNumber(inbyte)
         for (let i = 8; i; i--) {
           let carry = (crc ^ inbyte) & 0x80;
           crc <<= 1;
