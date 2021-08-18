@@ -23,9 +23,11 @@
 	"CO2.SpO2SetRedAmp|block": "Red強度:0-50mA %RedAmp",
 	"CO2.SpO2SetIRAmp|block": "Ir強度:0-50mA %IRAmp",
 	"CO2.SpO2readTemp|block": "温度",
+	"CO2.TempBodyTempAve|block": "平均体温[℃] %num",
+	"CO2.TempBodyTemp|block": "体温[℃]",
 	"CO2.TempObjectTemp|block": "対象温度[℃]",
 	"CO2.TempAmbientTemp|block": "周囲温度[℃]",
 	"CO2.TempEmiss|block": "放射率",
-	"CO2.TempSetPrm|block": "補正値 設定 %prm",	
+	"CO2.TempSetPrm|block": "体温補正値 設定 %prm",	
 	"CO2.TempSetEmiss|block": "放射率 設定 %emiss"
 }
