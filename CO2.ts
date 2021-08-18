@@ -1133,13 +1133,6 @@ namespace CO2 {
     }
 
     //% subcategory="Temp"
-    //% blockId=objectTemp
-    //% block="Measure Object Temperature"
-    export function TempObjectTemp(): number{
-        return readTemp(MLX90614_TOBJ1)
-    }
-
-    //% subcategory="Temp"
     //% blockId=readEmiss
     //% block="Read Emissivity"
     export function TempEmiss(): number {
