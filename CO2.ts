@@ -1115,9 +1115,9 @@ namespace CO2 {
     let prm_MLX90614 = 1;
     //% subcategory="Temp"
     //% blockId=CalPrm
-    //% block="Calibration Value %prm"
+    //% block="Correction Value %prm"
     //% prm.defl=1
-    export function TempCalPrm(prm: number) {
+    export function TempSetPrm(prm: number) {
         prm_MLX90614 = prm;
     }
     
