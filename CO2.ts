@@ -1116,8 +1116,10 @@ namespace CO2 {
     //% block="Set Emissivity %emiss"
     //% emiss.defl=1
     export function TempSetEmiss(emiss: number) {
-        write16(MLX90614_EMISS, 0);
+    //    write16(MLX90614_EMISS, 0);
+    //    basic.pause(10)
         write16(MLX90614_EMISS, emiss * 0xffff);
+        basic.pause(10)
     }
 
     //% subcategory="Temp"
