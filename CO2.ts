@@ -1095,7 +1095,7 @@ basic.showNumber(inbyte)
         crcBuf[3] = (value>>8) & 0xff;
         let pec = crc8(4);
         //    let buf = crcBuf[1]<<24 + crcBuf[2]<<16 + crcBuf[3]<<8 + pec;
-                let bu f= crcBuf[1] + crcBuf[2]<<8 + crcBuf[3]<<16 + pec<<24;
+                let buf= crcBuf[1] + crcBuf[2]<<8 + crcBuf[3]<<16 + pec<<24;
         pins.i2cWriteNumber(MLX90614_I2CADDR, buf, NumberFormat.UInt32BE, false);
     }
 
