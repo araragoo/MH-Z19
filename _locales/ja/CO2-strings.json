@@ -26,5 +26,6 @@
 	"CO2.TempObjectTemp|block": "対象温度[℃]",
 	"CO2.TempAmbientTemp|block": "周囲温度[℃]",
 	"CO2.TempEmiss|block": "放射率",
+	"CO2.TempSetPrm|block": "補正値 設定 %prm",	
 	"CO2.TempSetEmiss|block": "放射率 設定 %emiss"
 }
