@@ -1094,6 +1094,7 @@ namespace CO2 {
         crcBuf[3] = (value >> 8) & 0xff;
         let pec = crc8(4);
         let b = (crcBuf[1]<<24) + (crcBuf[2]<<16) + (crcBuf[3]<<8) + pec;
+        basic.showNumber(b)
         pins.i2cWriteNumber(MLX90614_I2CADDR, b, NumberFormat.UInt32BE, false);
     }
 
