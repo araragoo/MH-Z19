@@ -1092,7 +1092,8 @@ namespace CO2 {
         crcBuf[1] = reg;
         crcBuf[2] = value & 0xff;
         crcBuf[3] = (value>>8) & 0xff;
-        let buf= crcBuf[1]<<24 + crcBuf[2]<<16 + crcBuf[3]<<8 + crc8(4);
+//        let buf= crcBuf[1]<<24 + crcBuf[2]<<16 + crcBuf[3]<<8 + crc8(4);
+        let buf= crcBuf[1] + crcBuf[2]<<8 + crcBuf[3]<<16 + crc8(4)<<24;
         pins.i2cWriteNumber(MLX90614_I2CADDR, buf, NumberFormat.UInt32BE, false);
     }
 
