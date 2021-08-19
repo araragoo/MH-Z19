@@ -1100,7 +1100,7 @@ namespace CO2 {
 
     function read16(reg: NumberFormat.UInt8BE): number {
         pins.i2cWriteNumber(MLX90614_I2CADDR, reg, NumberFormat.UInt8BE, true);
-        let ret = pins.i2cReadNumber(MLX90614_I2CADDR, NumberFormat.UInt16LE, true);
+        let ret = pins.i2cReadNumber(MLX90614_I2CADDR, NumberFormat.UInt16LE, false);
         //ret |= pins.i2cReadNumber(addr, NumberFormat.UInt16LE) << 8
         return ret
     }
@@ -1173,7 +1173,7 @@ namespace CO2 {
         for(let i=0; i < num; i++) {
             sum += readTemp(MLX90614_TOBJ1);
         }
-        sum = sum / num;// * k_body;
+        sum = sum * k_body / num ;
         return sum;
     }
 }
