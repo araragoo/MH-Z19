@@ -1112,11 +1112,11 @@ namespace CO2 {
         return temp
     }
     
-    let k_body = 1.045;
+    let k_body = 1.06;
     //% subcategory="Temp"
     //% blockId=setPrm
     //% block="Set Body temperature correction value %prm"
-    //% prm.defl=1.045
+    //% prm.defl=1.06
     export function TempSetPrm(prm: number) {
         k_body = prm;
     }
@@ -1166,7 +1166,7 @@ namespace CO2 {
     //% subcategory="Temp"
     //% blockId=bodyTempAve
     //% block="Body Temperature Average %num"
-    //% num.defl=100 num.min=1 num.max=1000
+    //% num.defl=1000 num.min=1 num.max=10000
     export function TempBodyTempAve(num: number): number {
         let sum = 0;
         
