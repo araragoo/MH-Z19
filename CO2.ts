@@ -82,6 +82,137 @@ namespace CO2 {
     }
 
 
+
+    const MLX90614_I2CADDR = 0x5A;
+    const MLX90614_TA = 0x06;
+    const MLX90614_TOBJ1 = 0x07;
+    const MLX90614_EMISS = 0x24;
+    
+    let crcBuf: number[] = [];
+    function crc8(len: number): number {
+    // The PEC calculation includes all bits except the START, REPEATED START, STOP,
+    // ACK, and NACK bits. The PEC is a CRC-8 with polynomial X8+X2+X1+1.
+        let crc = 0;
+        for (let j = 0; j < len; j++) {
+            let inbyte = crcBuf[j];
+            for (let i = 8; i; i--) {
+                let carry = (crc ^ inbyte) & 0x80;
+                crc <<= 1;
+                if (carry)
+                    crc ^= 0x7;
+                inbyte <<= 1;
+            }
+        }
+        return crc & 0xFF;
+    }
+
+    function write16(reg: NumberFormat.UInt8BE, value: number) {
+        crcBuf[0] = MLX90614_I2CADDR << 1;
+        crcBuf[1] = reg;
+        crcBuf[2] = value & 0xff;
+        crcBuf[3] = (value >> 8) & 0xff;
+        let pec = crc8(4);
+        let buf = (crcBuf[1]<<24) + (crcBuf[2]<<16) + (crcBuf[3]<<8) + pec;
+        //let b = crcBuf[1] + crcBuf[2] << 8 + crcBuf[3] << 16 + (pec << 24);
+        pins.i2cWriteNumber(MLX90614_I2CADDR, buf, NumberFormat.UInt32BE, false);
+    }
+
+    function read16(reg: NumberFormat.UInt8BE): number {
+        pins.i2cWriteNumber(MLX90614_I2CADDR, reg, NumberFormat.UInt8BE, true);
+        let ret = pins.i2cReadNumber(MLX90614_I2CADDR, NumberFormat.UInt16LE, false);
+        //ret |= pins.i2cReadNumber(addr, NumberFormat.UInt16LE) << 8
+        return ret
+    }
+
+    function readTemp(reg: NumberFormat.UInt8BE): number {
+        let temp = read16(reg)
+        temp *= .02
+        temp -= 273.15
+        return temp
+    }
+    
+    let k_body = 1.06;
+    //% subcategory="Temp"
+    //% blockId=setPrm
+    //% block="Set Body temperature correction value %prm"
+    //% prm.defl=1.06
+    export function TempSetPrm(prm: number) {
+        k_body = prm;
+    }
+
+    //% subcategory="Temp"
+    //% blockId=setEmiss
+    //% block="Set Emissivity %emiss"
+    //% emiss.defl=1
+    export function TempSetEmiss(emiss: number) {
+        write16(MLX90614_EMISS, 0);
+        basic.pause(100)
+        write16(MLX90614_EMISS, emiss * 0xffff);
+        basic.pause(100)
+    }
+
+    //% subcategory="Temp"
+    //% blockId=readEmiss
+    //% block="Read Emissivity"
+    export function TempEmiss(): number {
+        let ereg = read16(MLX90614_EMISS)
+        if (ereg == 0)
+          return 0;
+        return ereg / 65535.0;
+    }
+
+    //% subcategory="Temp"
+    //% blockId=ambientTemp
+    //% block="Measure Ambient Temperature"
+    export function TempAmbientTemp(): number {
+        return readTemp(MLX90614_TA);
+    }
+
+    //% subcategory="Temp"
+    //% blockId=objectTemp
+    //% block="Measure Object Temperature"
+    export function TempObjectTemp(): number {
+        return readTemp(MLX90614_TOBJ1);
+    }
+
+    //% subcategory="Temp"
+    //% blockId=bodyTemp
+    //% block="Measure Body Temperature"
+    export function TempBodyTemp(): number {
+        return readTemp(MLX90614_TOBJ1) * k_body;
+    }
+
+    //% subcategory="Temp"
+    //% blockId=bodyTempAve
+    //% block="Body Temperature Average %num"
+    //% num.defl=1000 num.min=1 num.max=10000
+    export function TempBodyTempAve(num: number): number {
+        let sum = 0;
+        
+        for(let i=0; i < num; i++) {
+            sum += readTemp(MLX90614_TOBJ1);
+        }
+        sum = sum * k_body / num ;
+        return sum;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     const MAX30105_ADDRESS = 0x57; //7-bit I2C Address
     const I2C_BUFFER_LENGTH = 32;
 
@@ -1064,118 +1195,7 @@ namespace CO2 {
 */
 /**/
 
-    const MLX90614_I2CADDR = 0x5A;
-    const MLX90614_TA = 0x06;
-    const MLX90614_TOBJ1 = 0x07;
-    const MLX90614_EMISS = 0x24;
-    
-    let crcBuf: number[] = [];
-    function crc8(len: number): number {
-    // The PEC calculation includes all bits except the START, REPEATED START, STOP,
-    // ACK, and NACK bits. The PEC is a CRC-8 with polynomial X8+X2+X1+1.
-        let crc = 0;
-        for (let j = 0; j < len; j++) {
-            let inbyte = crcBuf[j];
-            for (let i = 8; i; i--) {
-                let carry = (crc ^ inbyte) & 0x80;
-                crc <<= 1;
-                if (carry)
-                    crc ^= 0x7;
-                inbyte <<= 1;
-            }
-        }
-        return crc & 0xFF;
-    }
-
-    function write16(reg: NumberFormat.UInt8BE, value: number) {
-        crcBuf[0] = MLX90614_I2CADDR << 1;
-        crcBuf[1] = reg;
-        crcBuf[2] = value & 0xff;
-        crcBuf[3] = (value >> 8) & 0xff;
-        let pec = crc8(4);
-        let buf = (crcBuf[1]<<24) + (crcBuf[2]<<16) + (crcBuf[3]<<8) + pec;
-        //let b = crcBuf[1] + crcBuf[2] << 8 + crcBuf[3] << 16 + (pec << 24);
-        pins.i2cWriteNumber(MLX90614_I2CADDR, buf, NumberFormat.UInt32BE, false);
-    }
-
-    function read16(reg: NumberFormat.UInt8BE): number {
-        pins.i2cWriteNumber(MLX90614_I2CADDR, reg, NumberFormat.UInt8BE, true);
-        let ret = pins.i2cReadNumber(MLX90614_I2CADDR, NumberFormat.UInt16LE, false);
-        //ret |= pins.i2cReadNumber(addr, NumberFormat.UInt16LE) << 8
-        return ret
-    }
-
-    function readTemp(reg: NumberFormat.UInt8BE): number {
-        let temp = read16(reg)
-        temp *= .02
-        temp -= 273.15
-        return temp
-    }
-    
-    let k_body = 1.06;
-    //% subcategory="Temp"
-    //% blockId=setPrm
-    //% block="Set Body temperature correction value %prm"
-    //% prm.defl=1.06
-    export function TempSetPrm(prm: number) {
-        k_body = prm;
-    }
-
-    //% subcategory="Temp"
-    //% blockId=setEmiss
-    //% block="Set Emissivity %emiss"
-    //% emiss.defl=1
-    export function TempSetEmiss(emiss: number) {
-        write16(MLX90614_EMISS, 0);
-        basic.pause(100)
-        write16(MLX90614_EMISS, emiss * 0xffff);
-        basic.pause(100)
-    }
-
-    //% subcategory="Temp"
-    //% blockId=readEmiss
-    //% block="Read Emissivity"
-    export function TempEmiss(): number {
-        let ereg = read16(MLX90614_EMISS)
-        if (ereg == 0)
-          return 0;
-        return ereg / 65535.0;
-    }
-
-    //% subcategory="Temp"
-    //% blockId=ambientTemp
-    //% block="Measure Ambient Temperature"
-    export function TempAmbientTemp(): number {
-        return readTemp(MLX90614_TA);
-    }
-
-    //% subcategory="Temp"
-    //% blockId=objectTemp
-    //% block="Measure Object Temperature"
-    export function TempObjectTemp(): number {
-        return readTemp(MLX90614_TOBJ1);
-    }
-
-    //% subcategory="Temp"
-    //% blockId=bodyTemp
-    //% block="Measure Body Temperature"
-    export function TempBodyTemp(): number {
-        return readTemp(MLX90614_TOBJ1) * k_body;
-    }
-
-    //% subcategory="Temp"
-    //% blockId=bodyTempAve
-    //% block="Body Temperature Average %num"
-    //% num.defl=1000 num.min=1 num.max=10000
-    export function TempBodyTempAve(num: number): number {
-        let sum = 0;
-        
-        for(let i=0; i < num; i++) {
-            sum += readTemp(MLX90614_TOBJ1);
-        }
-        sum = sum * k_body / num ;
-        return sum;
-    }
+ 
 }
 
 
