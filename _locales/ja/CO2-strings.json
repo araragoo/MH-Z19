@@ -6,6 +6,13 @@
 	"CO2.CO2Init|block": "CO2 初期化",
 	"CO2.CO2Value|block": "CO2値[ppm]",
 	"CO2.CO2SetOffset|block": "CO2 オフセット",
+	"CO2.TempBodyTempAve|block": "平均体温[℃] %num",
+	"CO2.TempBodyTemp|block": "体温[℃]",
+	"CO2.TempObjectTemp|block": "対象温度[℃]",
+	"CO2.TempAmbientTemp|block": "周囲温度[℃]",
+	"CO2.TempEmiss|block": "放射率",
+	"CO2.TempSetPrm|block": "体温補正値 設定 %prm",	
+	"CO2.TempSetEmiss|block": "放射率 設定 %emiss",
 	"CO2.SpO2Init|block": "SpO2 初期化",
 	"CO2.SpO2MeasureLight|block": "光計測",
 	"CO2.SpO2getRed|block": "Red値",
@@ -22,12 +29,5 @@
 	"CO2.SpO2SetMode|block": "測定方式 Red:1 Red&Infrared:2 %LEDMode",
 	"CO2.SpO2SetRedAmp|block": "Red強度:0-50mA %RedAmp",
 	"CO2.SpO2SetIRAmp|block": "Ir強度:0-50mA %IRAmp",
-	"CO2.SpO2readTemp|block": "温度",
-	"CO2.TempBodyTempAve|block": "平均体温[℃] %num",
-	"CO2.TempBodyTemp|block": "体温[℃]",
-	"CO2.TempObjectTemp|block": "対象温度[℃]",
-	"CO2.TempAmbientTemp|block": "周囲温度[℃]",
-	"CO2.TempEmiss|block": "放射率",
-	"CO2.TempSetPrm|block": "体温補正値 設定 %prm",	
-	"CO2.TempSetEmiss|block": "放射率 設定 %emiss"
+	"CO2.SpO2readTemp|block": "温度"
 }
