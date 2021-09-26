@@ -200,40 +200,77 @@ namespace CO2 {
 
 
 
+
+
+
+
+
+
+
+const MAX30100_I2C_ADDRESS              = 0x57;
+
+// Mode Configuration register
+const MAX30100_REG_MODE_CONFIGURATION   = 0x06;
+const MAX30100_REG_SPO2_CONFIGURATION   = 0x07;
+const MAX30100_REG_LED_CONFIGURATION    = 0x09;
+
+const MAX30100_SPC_SPO2_HI_RES_EN       = 1 << 6;
+
+    function i2cwrite(addr: number, reg: number, value: number) {
+        //pins.i2cWriteNumber(addr, reg * 256 + value, NumberFormat.UInt16BE)
+        //NG:pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE, true);
+        //NG:pins.i2cWriteNumber(addr, value, NumberFormat.UInt8BE, false);
+        let buf = pins.createBuffer(2);
+        buf[0] = reg;
+        buf[1] = value;
+        pins.i2cWriteBuffer(addr, buf, false);
+    }
+
+    function i2cread(addr: number, reg: number): number {
+        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
+        return pins.i2cReadNumber(addr, NumberFormat.UInt8BE);
+        //let X
+        //let buf = pins.createBufferFromArray([X]) // ex. [X, Y, Z]
+        //buf = pins.i2cReadBuffer(addr, 1)
+        //return buf[0]
+    }
+
+    let readbuf: Buffer;
+
+    function i2creads(addr: number, reg: number, size: number) {
+        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
+        readbuf = pins.i2cReadBuffer(addr, size)    
+    }
+
+
     let irDCRemover: number;
     let redDCRemover: number;
     let spo2_state: number;
     
-
-    function setMode(Mode mode)
-    {
-        writeRegister(MAX30100_REG_MODE_CONFIGURATION, mode);
+    function setMode(mode: number) {
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, mode);
     }
     
-    function setLedsPulseWidth(LEDPulseWidth ledPulseWidth)
-    {
-        uint8_t previous = readRegister(MAX30100_REG_SPO2_CONFIGURATION);
-        writeRegister(MAX30100_REG_SPO2_CONFIGURATION, (previous & 0xfc) | ledPulseWidth);
+    function setLedsPulseWidth(ledPulseWidth: number) {
+        let previous = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_SPO2_CONFIGURATION);
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_SPO2_CONFIGURATION, (previous & 0xfc) | ledPulseWidth);
     }
     
-    function setSamplingRate(SamplingRate samplingRate)
-    {
-        uint8_t previous = readRegister(MAX30100_REG_SPO2_CONFIGURATION);
-        writeRegister(MAX30100_REG_SPO2_CONFIGURATION, (previous & 0xe3) | (samplingRate << 2));
+    function setSamplingRate(samplingRate: number) {
+        let previous = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_SPO2_CONFIGURATION);
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_SPO2_CONFIGURATION, (previous & 0xe3) | (samplingRate << 2));
     }
     
-    function setLedsCurrent(LEDCurrent irLedCurrent, LEDCurrent redLedCurrent)
-    {
-        writeRegister(MAX30100_REG_LED_CONFIGURATION, redLedCurrent << 4 | irLedCurrent);
+    function setLedsCurrent(irLedCurrent: number, redLedCurrent: number) {
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_LED_CONFIGURATION, redLedCurrent << 4 | irLedCurrent);
     }
     
-    function setHighresModeEnabled(bool enabled)
-    {
-        uint8_t previous = readRegister(MAX30100_REG_SPO2_CONFIGURATION);
+    function setHighresModeEnabled(enabled: boolean){
+        let previous = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_SPO2_CONFIGURATION);
         if (enabled) {
-            writeRegister(MAX30100_REG_SPO2_CONFIGURATION, previous | MAX30100_SPC_SPO2_HI_RES_EN);
+            i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_SPO2_CONFIGURATION, previous | MAX30100_SPC_SPO2_HI_RES_EN);
         } else {
-            writeRegister(MAX30100_REG_SPO2_CONFIGURATION, previous & ~MAX30100_SPC_SPO2_HI_RES_EN);
+            i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_SPO2_CONFIGURATION, previous & ~MAX30100_SPC_SPO2_HI_RES_EN);
         }
     }
 
