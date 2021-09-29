@@ -261,14 +261,9 @@ const RINGBUFFER_SIZE                   = 16;
 const RED_LED_CURRENT_START             = MAX30100_LED_CURR_27_1MA;
 const DC_REMOVER_ALPHA                  = 0.95;
 
-//const PULSEOXIMETER_STATE_INIT      = 0;
+const PULSEOXIMETER_STATE_INIT      = 0;
 const PULSEOXIMETER_STATE_IDLE      = 1;
-//const PULSEOXIMETER_STATE_DETECTING = 2;
-
-//const PULSEOXIMETER_DEBUGGINGMODE_NONE        = 0;
-//const PULSEOXIMETER_DEBUGGINGMODE_RAW_VALUES  = 1;
-//const PULSEOXIMETER_DEBUGGINGMODE_AC_VALUES   = 2;
-//const PULSEOXIMETER_DEBUGGINGMODE_PULSEDETECT = 3;
+const PULSEOXIMETER_STATE_DETECTING = 2;
 
 const MAX30100_REG_FIFO_WRITE_POINTER           = 0x02;
 //const MAX30100_REG_FIFO_OVERFLOW_COUNTER      = 0x03;
@@ -277,8 +272,6 @@ const MAX30100_REG_FIFO_DATA                    = 0x05;  // Burst read does not 
 
 let redLedCurrentIndex = RED_LED_CURRENT_START;
 let irLedCurrent = DEFAULT_IR_LED_CURRENT;
-
-
 
     function i2cwrite(addr: number, reg: number, value: number) {
         //pins.i2cWriteNumber(addr, reg * 256 + value, NumberFormat.UInt16BE)
@@ -305,8 +298,6 @@ let irLedCurrent = DEFAULT_IR_LED_CURRENT;
         readbuf = pins.i2cReadBuffer(addr, size)    
     }
 
-    let spo2_state: number;
-    
     function setMode(mode: number) {
         i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, mode);
     }
@@ -338,6 +329,29 @@ let irLedCurrent = DEFAULT_IR_LED_CURRENT;
         i2creads(MAX30100_I2C_ADDRESS, baseAddress, length);
     }
 
+    let sense_red: number[] = [];
+    let sense_IR: number[] = [];
+//    let sense_green: number[] = [];
+    let sense_head = 0;
+    let sense_tail = 0;   
+    
+    function available(): number {
+        let numberOfSamples = sense_head - sense_tail;
+        if (numberOfSamples < 0) numberOfSamples += RINGBUFFER_SIZE;
+        
+        return (numberOfSamples);
+    }
+
+    function nextSample(): number{
+        if(available()) { //Only advance the tail if new data is available
+            sense_tail++;
+            sense_tail %= RINGBUFFER_SIZE; //Wrap condition
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
     let ringbuf: Buffer;
     function readFifoData() {
         let toRead = (i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_WRITE_POINTER) - i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_READ_POINTER)) & (MAX30100_FIFO_DEPTH-1);
@@ -346,16 +360,151 @@ let irLedCurrent = DEFAULT_IR_LED_CURRENT;
             burstRead(MAX30100_REG_FIFO_DATA, 4 * toRead);
     
             for (let i=0 ; i < toRead ; ++i) {
-                // Warning: the values are always left-aligned
-                readoutsBuffer.push({
-                        .ir=(uint16_t)((buffer[i*4] << 8) | buffer[i*4 + 1]),
-                        .red=(uint16_t)((buffer[i*4 + 2] << 8) | buffer[i*4 + 3])});
+                sense_head++;
+                sense_head %= RINGBUFFER_SIZE;
+                sense_IR[sense_head]  = (buffer[i*4] << 8) | buffer[i*4 + 1];
+                sense_red[sense_head] = (buffer[i*4 + 2] << 8) | buffer[i*4 + 3];
             }
         }
     }
 
-    let beatPeriod: number;
-    
+
+    function update() {
+        readFifoData();
+    }
+
+const BEATDETECTOR_INIT_HOLDOFF                 = 2000    // in ms, how long to wait before counting
+const BEATDETECTOR_MASKING_HOLDOFF              = 200     // in ms, non-retriggerable window after beat detection
+const BEATDETECTOR_BPFILTER_ALPHA               = 0.6     // EMA factor for the beat period value
+const BEATDETECTOR_MIN_THRESHOLD                = 20      // minimum threshold (filtered) value
+const BEATDETECTOR_MAX_THRESHOLD                = 800     // maximum threshold (filtered) value
+const BEATDETECTOR_STEP_RESILIENCY              = 30      // maximum negative jump that triggers the beat edge
+const BEATDETECTOR_THRESHOLD_FALLOFF_TARGET    = 0.3     // thr chasing factor of the max value when beat
+const BEATDETECTOR_THRESHOLD_DECAY_FACTOR      = 0.99    // thr chasing factor when no beat
+const BEATDETECTOR_INVALID_READOUT_DELAY        = 2000    // in ms, no-beat time to cause a reset
+const BEATDETECTOR_SAMPLES_PERIOD              = 10      // in ms, 1/Fs
+
+const BEATDETECTOR_STATE_INIT               = 0;
+const BEATDETECTOR_STATE_WAITING            = 1;
+const BEATDETECTOR_STATE_FOLLOWING_SLOPE    = 2;
+const BEATDETECTOR_STATE_MAYBE_DETECTED     = 3;
+const BEATDETECTOR_STATE_MASKING            = 4;
+
+let beatState = BEATDETECTOR_STATE_INIT;
+let threshold = BEATDETECTOR_MIN_THRESHOLD;
+let tsLastBeat = 0;
+let lastMaxValue = 0;
+let beatPeriod = 0;
+
+let irCDalpha = DC_REMOVER_ALPHA;
+let irDCdcw: number;
+let irOldDCdcw: number;
+let redCDalpha = DC_REMOVER_ALPHA;
+let redDCdcw: number;
+let redOldDCdcw: number;
+let filterV0: number;
+let filterV1: number;
+     
+    function irDCRemoverStep(x: number): number {
+		irOldDCdcw = irDCdcw;
+		irDCdcw = x + irCDalpha * irDCdcw;
+
+		return irDCdcw - irOldDCdcw;
+	}
+
+    function redDCRemoverStep(x: number): number {
+		redOldDCdcw = redDCdcw;
+		redDCdcw = x + redCDalpha * redDCdcw;
+
+		return redDCdcw - redOldDCdcw;
+	}
+
+    function filterBuLp1Step(x: number): number {
+        filterV0 = filterV1;
+    	filterV1 = (2.452372752527856026e-1 * x)
+                + (0.50952544949442879485 * filterV0);
+		return filterV0 + filterV1;
+	}
+
+    function decreaseThreshold() {
+        // When a valid beat rate readout is present, target the
+        if (lastMaxValue > 0 && beatPeriod > 0) {
+            threshold -= lastMaxValue * (1 - BEATDETECTOR_THRESHOLD_FALLOFF_TARGET) /
+                    (beatPeriod / BEATDETECTOR_SAMPLES_PERIOD);
+        } else {
+            // Asymptotic decay
+            threshold *= BEATDETECTOR_THRESHOLD_DECAY_FACTOR;
+        }
+
+        if (threshold < BEATDETECTOR_MIN_THRESHOLD) {
+            threshold = BEATDETECTOR_MIN_THRESHOLD;
+        }
+    }
+
+    function checkForBeat(sample: number): number {
+        let beatDetected = 0;
+
+        switch (beatState) {
+            case BEATDETECTOR_STATE_INIT:
+                if (control.millis() > BEATDETECTOR_INIT_HOLDOFF) {
+                    beatState = BEATDETECTOR_STATE_WAITING;
+                }
+                break;
+
+            case BEATDETECTOR_STATE_WAITING:
+                if (sample > threshold) {
+                    //threshold = min(sample, BEATDETECTOR_MAX_THRESHOLD);
+                    threshold = sample <  BEATDETECTOR_MAX_THRESHOLD ? sample : BEATDETECTOR_MAX_THRESHOLD; 
+                    beatState = BEATDETECTOR_STATE_FOLLOWING_SLOPE;
+                }
+
+                // Tracking lost, resetting
+                if (control.millis() - tsLastBeat > BEATDETECTOR_INVALID_READOUT_DELAY) {
+                    beatPeriod = 0;
+                    lastMaxValue = 0;
+                }
+
+                decreaseThreshold();
+                break;
+
+            case BEATDETECTOR_STATE_FOLLOWING_SLOPE:
+                if (sample < threshold) {
+                    beatState = BEATDETECTOR_STATE_MAYBE_DETECTED;
+                } else {
+                    //threshold = min(sample, BEATDETECTOR_MAX_THRESHOLD);
+                    threshold = sample <  BEATDETECTOR_MAX_THRESHOLD ? sample : BEATDETECTOR_MAX_THRESHOLD; 
+                }
+                break;
+
+            case BEATDETECTOR_STATE_MAYBE_DETECTED:
+                if (sample + BEATDETECTOR_STEP_RESILIENCY < threshold) {
+                    // Found a beat
+                    beatDetected = 1;
+                    lastMaxValue = sample;
+                    beatState = BEATDETECTOR_STATE_MASKING;
+                    let delta = control.millis() - tsLastBeat;
+                    if (delta) {
+                        beatPeriod = BEATDETECTOR_BPFILTER_ALPHA * delta +
+                                (1 - BEATDETECTOR_BPFILTER_ALPHA) * beatPeriod;
+                    }
+
+                    tsLastBeat = control.millis();
+                } else {
+                    beatState = BEATDETECTOR_STATE_FOLLOWING_SLOPE;
+                }
+                break;
+
+            case BEATDETECTOR_STATE_MASKING:
+                if (control.millis() - tsLastBeat > BEATDETECTOR_MASKING_HOLDOFF) {
+                    beatState = BEATDETECTOR_STATE_WAITING;
+                }
+                decreaseThreshold();
+                break;
+        }
+
+        return beatDetected;
+    }
+
     function getRate(): number {
         if (beatPeriod != 0) {
             return 1 / beatPeriod * 1000 * 60;
@@ -364,14 +513,75 @@ let irLedCurrent = DEFAULT_IR_LED_CURRENT;
         }
     }
 
-    function update() {
-        readFifoData();
+const CALCULATE_EVERY_N_BEATS   = 3;
+const spO2LUT: number[] = [100,100,100,100,99,99,99,99,99,99,98,98,98,98,
+    98,97,97,97,97,97,97,96,96,96,96,96,96,95,95,
+    95,95,95,95,94,94,94,94,94,93,93,93,93,93];
+
+let pulseState = PULSEOXIMETER_STATE_INIT;
+let irACValueSqSum = 0;
+let redACValueSqSum = 0;
+let beatsDetectedNum = 0;
+let samplesRecorded = 0;
+let spO2 = 0;
+
+    function spO2CalculatorReset() {
+        samplesRecorded = 0;
+        redACValueSqSum = 0;
+        irACValueSqSum = 0;
+        beatsDetectedNum = 0;
+        spO2 = 0;
     }
 
-    let irCDalpha: number;
-    let irDCdcw: number;
-    let redCDalpha: number;
-    let redDCdcw: number;
+    function spO2CalculatorUpdate(irACValue: number, redACValue: number, beatDetected: number) {
+    irACValueSqSum += irACValue * irACValue;
+    redACValueSqSum += redACValue * redACValue;
+    ++samplesRecorded;
+
+    if (beatDetected) {
+        ++beatsDetectedNum;
+        if (beatsDetectedNum == CALCULATE_EVERY_N_BEATS) {
+            let acSqRatio = 100.0 * log(redACValueSqSum/samplesRecorded) / log(irACValueSqSum/samplesRecorded);
+            let index = 0;
+
+            if (acSqRatio > 66) {
+                index = acSqRatio - 66;
+            } else if (acSqRatio > 50) {
+                index = acSqRatio - 50;
+            }
+            spO2CalculatorReset();
+
+            spO2 = spO2LUT[index];
+        }
+    }
+}
+    
+    function checkSample() {
+
+        while (1) {
+            let rawIRValue = sense_IR[sense_head];
+            let rawRedValue = sense_red[sense_head];
+
+            let irACValue = irDCRemoverStep(rawIRValue);
+            let redACValue = redDCRemoverStep(rawRedValue);
+
+            let filteredPulseValue = filterBuLp1Step(-irACValue);
+            let beatDetected = checkForBeat(filteredPulseValue);
+
+            if (getRate() > 0) {
+                pulseState = PULSEOXIMETER_STATE_DETECTING;
+                spO2CalculatorUpdate(irACValue, redACValue, beatDetected);
+            } else if (pulseState == PULSEOXIMETER_STATE_DETECTING) {
+                pulseState = PULSEOXIMETER_STATE_IDLE;
+                spO2CalculatorReset();
+            }
+
+            //if (beatDetected && onBeatDetected) {
+            //    onBeatDetected();
+            //}
+        }
+    }
+
 
 
 //% subcategory="SpO2"
@@ -387,11 +597,6 @@ let irLedCurrent = DEFAULT_IR_LED_CURRENT;
     //
         setMode(MAX30100_MODE_SPO2_HR);
         setLedsCurrent(irLedCurrent, redLedCurrentIndex);
-    
-        irCDalpha = DC_REMOVER_ALPHA;
-        redCDalpha = DC_REMOVER_ALPHA;
-    
-        spo2_state = PULSEOXIMETER_STATE_IDLE;
     }
     
 
