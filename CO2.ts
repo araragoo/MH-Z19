@@ -209,12 +209,76 @@ namespace CO2 {
 
 const MAX30100_I2C_ADDRESS              = 0x57;
 
+const MAX30100_FIFO_DEPTH               = 0x10;
+
 // Mode Configuration register
 const MAX30100_REG_MODE_CONFIGURATION   = 0x06;
 const MAX30100_REG_SPO2_CONFIGURATION   = 0x07;
 const MAX30100_REG_LED_CONFIGURATION    = 0x09;
-
 const MAX30100_SPC_SPO2_HI_RES_EN       = 1 << 6;
+
+const MAX30100_MODE_HRONLY              = 0x02;
+const MAX30100_MODE_SPO2_HR             = 0x03;
+
+//const MAX30100_SAMPRATE_50HZ            = 0x00;
+const MAX30100_SAMPRATE_100HZ           = 0x01;
+//const MAX30100_SAMPRATE_167HZ           = 0x02;
+//const MAX30100_SAMPRATE_200HZ           = 0x03;
+//const MAX30100_SAMPRATE_400HZ           = 0x04;
+//const MAX30100_SAMPRATE_600HZ           = 0x05;
+//const MAX30100_SAMPRATE_800HZ           = 0x06;
+//const MAX30100_SAMPRATE_1000HZ          = 0x07;
+
+//const MAX30100_SPC_PW_200US_13BITS    = 0x00;
+//const MAX30100_SPC_PW_400US_14BITS    = 0x01;
+//const MAX30100_SPC_PW_800US_15BITS    = 0x02;
+const MAX30100_SPC_PW_1600US_16BITS   = 0x03;
+
+//const MAX30100_LED_CURR_0MA           = 0x00;
+//const MAX30100_LED_CURR_4_4MA         = 0x01;
+//const MAX30100_LED_CURR_7_6MA         = 0x02;
+//const MAX30100_LED_CURR_11MA          = 0x03;
+//const MAX30100_LED_CURR_14_2MA        = 0x04;
+//const MAX30100_LED_CURR_17_4MA        = 0x05;
+//const MAX30100_LED_CURR_20_8MA        = 0x06;
+//const MAX30100_LED_CURR_24MA          = 0x07;
+const MAX30100_LED_CURR_27_1MA        = 0x08;
+//const MAX30100_LED_CURR_30_6MA        = 0x09;
+//const MAX30100_LED_CURR_33_8MA        = 0x0a;
+//const MAX30100_LED_CURR_37MA          = 0x0b;
+//const MAX30100_LED_CURR_40_2MA        = 0x0c;
+//const MAX30100_LED_CURR_43_6MA        = 0x0d;
+//const MAX30100_LED_CURR_46_8MA        = 0x0e;
+const MAX30100_LED_CURR_50MA            = 0x0f;
+
+const DEFAULT_MODE                      = MAX30100_MODE_HRONLY;
+const DEFAULT_SAMPLING_RATE             = MAX30100_SAMPRATE_100HZ;
+const DEFAULT_PULSE_WIDTH               = MAX30100_SPC_PW_1600US_16BITS;
+const DEFAULT_RED_LED_CURRENT           = MAX30100_LED_CURR_50MA;
+const DEFAULT_IR_LED_CURRENT            = MAX30100_LED_CURR_50MA;
+const RINGBUFFER_SIZE                   = 16;
+
+const RED_LED_CURRENT_START             = MAX30100_LED_CURR_27_1MA;
+const DC_REMOVER_ALPHA                  = 0.95;
+
+//const PULSEOXIMETER_STATE_INIT      = 0;
+const PULSEOXIMETER_STATE_IDLE      = 1;
+//const PULSEOXIMETER_STATE_DETECTING = 2;
+
+//const PULSEOXIMETER_DEBUGGINGMODE_NONE        = 0;
+//const PULSEOXIMETER_DEBUGGINGMODE_RAW_VALUES  = 1;
+//const PULSEOXIMETER_DEBUGGINGMODE_AC_VALUES   = 2;
+//const PULSEOXIMETER_DEBUGGINGMODE_PULSEDETECT = 3;
+
+const MAX30100_REG_FIFO_WRITE_POINTER           = 0x02;
+//const MAX30100_REG_FIFO_OVERFLOW_COUNTER      = 0x03;
+const MAX30100_REG_FIFO_READ_POINTER            = 0x04;
+const MAX30100_REG_FIFO_DATA                    = 0x05;  // Burst read does not autoincrement addr
+
+let redLedCurrentIndex = RED_LED_CURRENT_START;
+let irLedCurrent = DEFAULT_IR_LED_CURRENT;
+
+
 
     function i2cwrite(addr: number, reg: number, value: number) {
         //pins.i2cWriteNumber(addr, reg * 256 + value, NumberFormat.UInt16BE)
@@ -236,15 +300,11 @@ const MAX30100_SPC_SPO2_HI_RES_EN       = 1 << 6;
     }
 
     let readbuf: Buffer;
-
     function i2creads(addr: number, reg: number, size: number) {
         pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
         readbuf = pins.i2cReadBuffer(addr, size)    
     }
 
-
-    let irDCRemover: number;
-    let redDCRemover: number;
     let spo2_state: number;
     
     function setMode(mode: number) {
@@ -265,7 +325,7 @@ const MAX30100_SPC_SPO2_HI_RES_EN       = 1 << 6;
         i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_LED_CONFIGURATION, redLedCurrent << 4 | irLedCurrent);
     }
     
-    function setHighresModeEnabled(enabled: boolean){
+    function setHighresModeEnabled(enabled: boolean) {
         let previous = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_SPO2_CONFIGURATION);
         if (enabled) {
             i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_SPO2_CONFIGURATION, previous | MAX30100_SPC_SPO2_HI_RES_EN);
@@ -274,7 +334,47 @@ const MAX30100_SPC_SPO2_HI_RES_EN       = 1 << 6;
         }
     }
 
-    //% subcategory="SpO2"
+    function burstRead(baseAddress: number, length: number) {
+        i2creads(MAX30100_I2C_ADDRESS, baseAddress, length);
+    }
+
+    let ringbuf: Buffer;
+    function readFifoData() {
+        let toRead = (i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_WRITE_POINTER) - i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_READ_POINTER)) & (MAX30100_FIFO_DEPTH-1);
+    
+        if (toRead) {
+            burstRead(MAX30100_REG_FIFO_DATA, 4 * toRead);
+    
+            for (let i=0 ; i < toRead ; ++i) {
+                // Warning: the values are always left-aligned
+                readoutsBuffer.push({
+                        .ir=(uint16_t)((buffer[i*4] << 8) | buffer[i*4 + 1]),
+                        .red=(uint16_t)((buffer[i*4 + 2] << 8) | buffer[i*4 + 3])});
+            }
+        }
+    }
+
+    let beatPeriod: number;
+    
+    function getRate(): number {
+        if (beatPeriod != 0) {
+            return 1 / beatPeriod * 1000 * 60;
+        } else {
+            return 0;
+        }
+    }
+
+    function update() {
+        readFifoData();
+    }
+
+    let irCDalpha: number;
+    let irDCdcw: number;
+    let redCDalpha: number;
+    let redDCdcw: number;
+
+
+//% subcategory="SpO2"
     //% blockId=initalSpO2
     //% block="Init SpO2"
     export function SpO2Init () {
@@ -286,10 +386,10 @@ const MAX30100_SPC_SPO2_HI_RES_EN       = 1 << 6;
         setHighresModeEnabled(true);
     //
         setMode(MAX30100_MODE_SPO2_HR);
-        setLedsCurrent(irLedCurrent, (LEDCurrent)redLedCurrentIndex);
+        setLedsCurrent(irLedCurrent, redLedCurrentIndex);
     
-        irDCRemover = DCRemover(DC_REMOVER_ALPHA);
-        redDCRemover = DCRemover(DC_REMOVER_ALPHA);
+        irCDalpha = DC_REMOVER_ALPHA;
+        redCDalpha = DC_REMOVER_ALPHA;
     
         spo2_state = PULSEOXIMETER_STATE_IDLE;
     }
