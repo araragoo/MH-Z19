@@ -258,6 +258,7 @@ const DEFAULT_RED_LED_CURRENT           = MAX30100_LED_CURR_50MA;
 const DEFAULT_IR_LED_CURRENT            = MAX30100_LED_CURR_50MA;
 const RINGBUFFER_SIZE                   = 16;
 
+const CURRENT_ADJUSTMENT_PERIOD_MS      = 500;
 const RED_LED_CURRENT_START             = MAX30100_LED_CURR_27_1MA;
 const DC_REMOVER_ALPHA                  = 0.95;
 
@@ -371,6 +372,8 @@ let irLedCurrent = DEFAULT_IR_LED_CURRENT;
 
     function update() {
         readFifoData();
+        checkSample();
+        checkCurrentBias();
     }
 
 const BEATDETECTOR_INIT_HOLDOFF                 = 2000    // in ms, how long to wait before counting
@@ -408,14 +411,12 @@ let filterV1: number;
     function irDCRemoverStep(x: number): number {
 		irOldDCdcw = irDCdcw;
 		irDCdcw = x + irCDalpha * irDCdcw;
-
 		return irDCdcw - irOldDCdcw;
 	}
 
     function redDCRemoverStep(x: number): number {
 		redOldDCdcw = redDCdcw;
 		redDCdcw = x + redCDalpha * redDCdcw;
-
 		return redDCdcw - redOldDCdcw;
 	}
 
@@ -512,6 +513,54 @@ let filterV1: number;
             return 0;
         }
     }
+    
+    function sublog(z: number): number {
+        let	y;
+        let	b, k;
+        let	n;
+
+        if( z==2.0 ){	return( 0.6931471805599449 );	}
+        y = ( z - 1 );
+        b = y;
+        n = 2;
+        while( true ){
+            b = b * ( z - 1 );
+            k = b / n;
+            if( -0.0000001<k && k<0.0000001 )	break;
+            if( (n % 2)==0 ){
+                y = y - k;
+            }
+            else{
+                y = y + k;
+            }
+            n++;
+        }
+        return( y );
+    }
+
+    function log(x: number): number {
+        let	y = 0.0;
+        let	d, e, c;
+        
+            if( x==2 ){
+                return( 0.6931471805599449 );
+            }
+            else if( x<2 ){
+                y = sublog( x );
+            }
+            else{
+                c = 1.0;
+                d = 1.0;
+                while( true ){
+                    d *= 2.0;
+                    e = x / d;
+                    if( e<=2.0 )	break;
+                    c++;
+                }
+                y = c * 0.6931471805599449 + sublog( e );
+            }
+            return( y );
+        }
 
 const CALCULATE_EVERY_N_BEATS   = 3;
 const spO2LUT: number[] = [100,100,100,100,99,99,99,99,99,99,98,98,98,98,
@@ -534,27 +583,27 @@ let spO2 = 0;
     }
 
     function spO2CalculatorUpdate(irACValue: number, redACValue: number, beatDetected: number) {
-    irACValueSqSum += irACValue * irACValue;
-    redACValueSqSum += redACValue * redACValue;
-    ++samplesRecorded;
+        irACValueSqSum += irACValue * irACValue;
+        redACValueSqSum += redACValue * redACValue;
+        ++samplesRecorded;
 
-    if (beatDetected) {
-        ++beatsDetectedNum;
-        if (beatsDetectedNum == CALCULATE_EVERY_N_BEATS) {
-            let acSqRatio = 100.0 * log(redACValueSqSum/samplesRecorded) / log(irACValueSqSum/samplesRecorded);
-            let index = 0;
+        if (beatDetected) {
+            ++beatsDetectedNum;
+            if (beatsDetectedNum == CALCULATE_EVERY_N_BEATS) {
+                let acSqRatio = 100.0 * log(redACValueSqSum/samplesRecorded) / log(irACValueSqSum/samplesRecorded);
+                let index = 0;
 
-            if (acSqRatio > 66) {
-                index = acSqRatio - 66;
-            } else if (acSqRatio > 50) {
-                index = acSqRatio - 50;
+                if (acSqRatio > 66) {
+                    index = acSqRatio - 66;
+                } else if (acSqRatio > 50) {
+                    index = acSqRatio - 50;
+                }
+                spO2CalculatorReset();
+
+                spO2 = spO2LUT[index];
             }
-            spO2CalculatorReset();
-
-            spO2 = spO2LUT[index];
         }
     }
-}
     
     function checkSample() {
 
@@ -581,10 +630,36 @@ let spO2 = 0;
             //}
         }
     }
+   
+    let tsLastBiasCheck = 0;
+    let tsLastCurrentAdjustment = 0;
+    function checkCurrentBias()
+    {
+        if (control.millis() - tsLastBiasCheck > CURRENT_ADJUSTMENT_PERIOD_MS) {
+            let changed = false;
+            if (irDCdcw - redDCdcw > 70000 && redLedCurrentIndex < MAX30100_LED_CURR_50MA) {
+                ++redLedCurrentIndex;
+                changed = true;
+            } else if (redDCdcw - irDCdcw > 70000 && redLedCurrentIndex > 0) {
+                --redLedCurrentIndex;
+                changed = true;
+            }
 
+            if (changed) {
+                setLedsCurrent(irLedCurrent, redLedCurrentIndex);
+                tsLastCurrentAdjustment = control.millis();
 
+                //if (debuggingMode != PULSEOXIMETER_DEBUGGINGMODE_NONE) {
+                    //Serial.print("I:");
+                    //Serial.println(redLedCurrentIndex);
+                //}
+            }
 
-//% subcategory="SpO2"
+            tsLastBiasCheck = millis();
+        }
+    }
+
+    //% subcategory="SpO2"
     //% blockId=initalSpO2
     //% block="Init SpO2"
     export function SpO2Init () {
