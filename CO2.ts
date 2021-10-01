@@ -251,6 +251,8 @@ const MAX30100_LED_CURR_27_1MA        = 0x08;
 //const MAX30100_LED_CURR_46_8MA        = 0x0e;
 const MAX30100_LED_CURR_50MA            = 0x0f;
 
+
+
 const DEFAULT_MODE                      = MAX30100_MODE_HRONLY;
 const DEFAULT_SAMPLING_RATE             = MAX30100_SAMPRATE_100HZ;
 const DEFAULT_PULSE_WIDTH               = MAX30100_SPC_PW_1600US_16BITS;
@@ -271,8 +273,64 @@ const MAX30100_REG_FIFO_WRITE_POINTER           = 0x02;
 const MAX30100_REG_FIFO_READ_POINTER            = 0x04;
 const MAX30100_REG_FIFO_DATA                    = 0x05;  // Burst read does not autoincrement addr
 
+const SPO2_MEASUREMENT_TIME_MS = 1000;
+
+const BEATDETECTOR_INIT_HOLDOFF                 = 2000;    // in ms, how long to wait before counting
+const BEATDETECTOR_MASKING_HOLDOFF              = 200;     // in ms, non-retriggerable window after beat detection
+const BEATDETECTOR_BPFILTER_ALPHA               = 0.6;     // EMA factor for the beat period value
+const BEATDETECTOR_MIN_THRESHOLD                = 20;      // minimum threshold (filtered) value
+const BEATDETECTOR_MAX_THRESHOLD                = 800;     // maximum threshold (filtered) value
+const BEATDETECTOR_STEP_RESILIENCY              = 30;      // maximum negative jump that triggers the beat edge
+const BEATDETECTOR_THRESHOLD_FALLOFF_TARGET     = 0.3;     // thr chasing factor of the max value when beat
+const BEATDETECTOR_THRESHOLD_DECAY_FACTOR       = 0.99;    // thr chasing factor when no beat
+const BEATDETECTOR_INVALID_READOUT_DELAY        = 2000;    // in ms, no-beat time to cause a reset
+const BEATDETECTOR_SAMPLES_PERIOD               = 10       // in ms, 1/Fs
+
+const BEATDETECTOR_STATE_INIT               = 0;
+const BEATDETECTOR_STATE_WAITING            = 1;
+const BEATDETECTOR_STATE_FOLLOWING_SLOPE    = 2;
+const BEATDETECTOR_STATE_MAYBE_DETECTED     = 3;
+const BEATDETECTOR_STATE_MASKING            = 4;
+
+const CALCULATE_EVERY_N_BEATS   = 3;
+const spO2LUT: number[] = [100,100,100,100,99,99,99,99,99,99,98,98,98,98,
+    98,97,97,97,97,97,97,96,96,96,96,96,96,95,95,
+    95,95,95,95,94,94,94,94,94,93,93,93,93,93];
+
+let irCDalpha = DC_REMOVER_ALPHA;
+let irDCdcw: number;
+let irOldDCdcw: number;
+let redCDalpha = DC_REMOVER_ALPHA;
+let redDCdcw: number;
+let redOldDCdcw: number;
+let filterV0: number;
+let filterV1: number;
+
 let redLedCurrentIndex = RED_LED_CURRENT_START;
 let irLedCurrent = DEFAULT_IR_LED_CURRENT;
+let readbuf: Buffer;
+
+let sense_red: number[] = [];
+let sense_IR: number[] = [];
+//    let sense_green: number[] = [];
+let sense_head = 0;
+let sense_tail = 0;   
+let tsLastBiasCheck = 0;
+let tsLastCurrentAdjustment = 0;
+
+let beatState = BEATDETECTOR_STATE_INIT;
+let threshold = BEATDETECTOR_MIN_THRESHOLD;
+let tsLastBeat = 0;
+let lastMaxValue = 0;
+let beatPeriod = 0;
+
+let pulseState = PULSEOXIMETER_STATE_INIT;
+let irACValueSqSum = 0;
+let redACValueSqSum = 0;
+let beatsDetectedNum = 0;
+let samplesRecorded = 0;
+let spO2 = 0;
+let HeartRate = 0;
 
     function i2cwrite(addr: number, reg: number, value: number) {
         //pins.i2cWriteNumber(addr, reg * 256 + value, NumberFormat.UInt16BE)
@@ -293,7 +351,6 @@ let irLedCurrent = DEFAULT_IR_LED_CURRENT;
         //return buf[0]
     }
 
-    let readbuf: Buffer;
     function i2creads(addr: number, reg: number, size: number) {
         pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
         readbuf = pins.i2cReadBuffer(addr, size)    
@@ -330,12 +387,6 @@ let irLedCurrent = DEFAULT_IR_LED_CURRENT;
         i2creads(MAX30100_I2C_ADDRESS, baseAddress, length);
     }
 
-    let sense_red: number[] = [];
-    let sense_IR: number[] = [];
-//    let sense_green: number[] = [];
-    let sense_head = 0;
-    let sense_tail = 0;   
-    
     function available(): number {
         let numberOfSamples = sense_head - sense_tail;
         if (numberOfSamples < 0) numberOfSamples += RINGBUFFER_SIZE;
@@ -368,44 +419,11 @@ let irLedCurrent = DEFAULT_IR_LED_CURRENT;
         }
     }
 
-
     function SPO2update() {
         readFifoData();
         checkSample();
         checkCurrentBias();
     }
-
-const BEATDETECTOR_INIT_HOLDOFF                 = 2000    // in ms, how long to wait before counting
-const BEATDETECTOR_MASKING_HOLDOFF              = 200     // in ms, non-retriggerable window after beat detection
-const BEATDETECTOR_BPFILTER_ALPHA               = 0.6     // EMA factor for the beat period value
-const BEATDETECTOR_MIN_THRESHOLD                = 20      // minimum threshold (filtered) value
-const BEATDETECTOR_MAX_THRESHOLD                = 800     // maximum threshold (filtered) value
-const BEATDETECTOR_STEP_RESILIENCY              = 30      // maximum negative jump that triggers the beat edge
-const BEATDETECTOR_THRESHOLD_FALLOFF_TARGET    = 0.3     // thr chasing factor of the max value when beat
-const BEATDETECTOR_THRESHOLD_DECAY_FACTOR      = 0.99    // thr chasing factor when no beat
-const BEATDETECTOR_INVALID_READOUT_DELAY        = 2000    // in ms, no-beat time to cause a reset
-const BEATDETECTOR_SAMPLES_PERIOD              = 10      // in ms, 1/Fs
-
-const BEATDETECTOR_STATE_INIT               = 0;
-const BEATDETECTOR_STATE_WAITING            = 1;
-const BEATDETECTOR_STATE_FOLLOWING_SLOPE    = 2;
-const BEATDETECTOR_STATE_MAYBE_DETECTED     = 3;
-const BEATDETECTOR_STATE_MASKING            = 4;
-
-let beatState = BEATDETECTOR_STATE_INIT;
-let threshold = BEATDETECTOR_MIN_THRESHOLD;
-let tsLastBeat = 0;
-let lastMaxValue = 0;
-let beatPeriod = 0;
-
-let irCDalpha = DC_REMOVER_ALPHA;
-let irDCdcw: number;
-let irOldDCdcw: number;
-let redCDalpha = DC_REMOVER_ALPHA;
-let redDCdcw: number;
-let redOldDCdcw: number;
-let filterV0: number;
-let filterV1: number;
      
     function irDCRemoverStep(x: number): number {
 		irOldDCdcw = irDCdcw;
@@ -529,8 +547,7 @@ let filterV1: number;
             if( -0.0000001<k && k<0.0000001 )	break;
             if( (n % 2)==0 ){
                 y = y - k;
-            }
-            else{
+            }else{
                 y = y + k;
             }
             n++;
@@ -542,38 +559,23 @@ let filterV1: number;
         let	y = 0.0;
         let	d, e, c;
         
-            if( x==2 ){
-                return( 0.6931471805599449 );
+        if(x == 2){
+            return( 0.6931471805599449 );
+        }else if( x<2 ){
+            y = sublog( x );
+        }else{
+            c = 1.0;
+            d = 1.0;
+            while( true ){
+                d *= 2.0;
+                e = x / d;
+                if( e<=2.0 )	break;
+                c++;
             }
-            else if( x<2 ){
-                y = sublog( x );
-            }
-            else{
-                c = 1.0;
-                d = 1.0;
-                while( true ){
-                    d *= 2.0;
-                    e = x / d;
-                    if( e<=2.0 )	break;
-                    c++;
-                }
-                y = c * 0.6931471805599449 + sublog( e );
-            }
-            return( y );
+            y = c * 0.6931471805599449 + sublog( e );
         }
-
-const CALCULATE_EVERY_N_BEATS   = 3;
-const spO2LUT: number[] = [100,100,100,100,99,99,99,99,99,99,98,98,98,98,
-    98,97,97,97,97,97,97,96,96,96,96,96,96,95,95,
-    95,95,95,95,94,94,94,94,94,93,93,93,93,93];
-
-let pulseState = PULSEOXIMETER_STATE_INIT;
-let irACValueSqSum = 0;
-let redACValueSqSum = 0;
-let beatsDetectedNum = 0;
-let samplesRecorded = 0;
-let spO2 = 0;
-let HeartRate = 0;
+        return( y );
+    }
 
     function spO2CalculatorReset() {
         samplesRecorded = 0;
@@ -633,10 +635,7 @@ let HeartRate = 0;
         }
     }
    
-    let tsLastBiasCheck = 0;
-    let tsLastCurrentAdjustment = 0;
-    function checkCurrentBias()
-    {
+    function checkCurrentBias(){
         if (control.millis() - tsLastBiasCheck > CURRENT_ADJUSTMENT_PERIOD_MS) {
             let changed = false;
             if (irDCdcw - redDCdcw > 70000 && redLedCurrentIndex < MAX30100_LED_CURR_50MA) {
@@ -675,8 +674,7 @@ let HeartRate = 0;
         setMode(MAX30100_MODE_SPO2_HR);
         setLedsCurrent(irLedCurrent, redLedCurrentIndex);
     }
-    
-    const SPO2_MEASUREMENT_TIME_MS = 1000;
+
     //% subcategory="SpO2"
     //% blockId=measureSpO2
     //% block="Measure SpO2"
