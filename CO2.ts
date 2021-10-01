@@ -353,7 +353,6 @@ let irLedCurrent = DEFAULT_IR_LED_CURRENT;
         }
     }
 
-    let ringbuf: Buffer;
     function readFifoData() {
         let toRead = (i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_WRITE_POINTER) - i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_READ_POINTER)) & (MAX30100_FIFO_DEPTH-1);
     
@@ -363,14 +362,14 @@ let irLedCurrent = DEFAULT_IR_LED_CURRENT;
             for (let i=0 ; i < toRead ; ++i) {
                 sense_head++;
                 sense_head %= RINGBUFFER_SIZE;
-                sense_IR[sense_head]  = (buffer[i*4] << 8) | buffer[i*4 + 1];
-                sense_red[sense_head] = (buffer[i*4 + 2] << 8) | buffer[i*4 + 3];
+                sense_IR[sense_head]  = (readbuf[i*4] << 8) | readbuf[i*4 + 1];
+                sense_red[sense_head] = (readbuf[i*4 + 2] << 8) | readbuf[i*4 + 3];
             }
         }
     }
 
 
-    function update() {
+    function SPO2update() {
         readFifoData();
         checkSample();
         checkCurrentBias();
@@ -508,10 +507,11 @@ let filterV1: number;
 
     function getRate(): number {
         if (beatPeriod != 0) {
-            return 1 / beatPeriod * 1000 * 60;
+            HeartRate = 1 / beatPeriod * 1000 * 60;
         } else {
-            return 0;
+            HeartRate = 0;
         }
+        return HeartRate;
     }
     
     function sublog(z: number): number {
@@ -573,6 +573,7 @@ let redACValueSqSum = 0;
 let beatsDetectedNum = 0;
 let samplesRecorded = 0;
 let spO2 = 0;
+let HeartRate = 0;
 
     function spO2CalculatorReset() {
         samplesRecorded = 0;
@@ -580,6 +581,7 @@ let spO2 = 0;
         irACValueSqSum = 0;
         beatsDetectedNum = 0;
         spO2 = 0;
+        HeartRate = 0;
     }
 
     function spO2CalculatorUpdate(irACValue: number, redACValue: number, beatDetected: number) {
@@ -655,7 +657,7 @@ let spO2 = 0;
                 //}
             }
 
-            tsLastBiasCheck = millis();
+            tsLastBiasCheck = control.millis();
         }
     }
 
@@ -674,11 +676,32 @@ let spO2 = 0;
         setLedsCurrent(irLedCurrent, redLedCurrentIndex);
     }
     
+    //% subcategory="SpO2"
+    //% blockId=measureSpO2
+    //% block="Measure SpO2"
+    const SPO2_MEASUREMENT_TIME_MS = 1000;
+    export function measureSpO2 () {
+        let t = control.millis();
 
+        while(control.millis() - t < SPO2_MEASUREMENT_TIME_MS) {
+           SPO2update();
+        } 
+    }
 
+    //% subcategory="SpO2"
+    //% blockId=SpO2Value
+    //% block="SpO2[%]"
+    export function SpO2Value(): number {
+        return spO2;
+    }
 
-
-
+    //% subcategory="SpO2"
+    //% blockId=HRValue
+    //% block="HR[b/m]"
+    export function HRValue(): number {
+        return HeartRate;
+    }
+}
 
 
 
