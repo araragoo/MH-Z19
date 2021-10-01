@@ -690,7 +690,7 @@ let HeartRate = 0;
 
     //% subcategory="SpO2"
     //% blockId=SpO2Value
-    //% block="SpO2[\%]"
+    //% block="SpO2[/]"
     export function SpO2Value(): number {
         return spO2;
     }
