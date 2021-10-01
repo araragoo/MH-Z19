@@ -410,9 +410,14 @@ let HeartRate = 0;
         if (toRead) {
             burstRead(MAX30100_REG_FIFO_DATA, 4 * toRead);
     
+            sense_tail = sense_head;
             for (let i=0 ; i < toRead ; ++i) {
                 sense_head++;
                 sense_head %= RINGBUFFER_SIZE;
+                if(sense_head == sense_tail){
+                    sense_tail = sense_head + 1;
+                    sense_tail %= RINGBUFFER_SIZE;    
+                }
                 sense_IR[sense_head]  = (readbuf[i*4] << 8) | readbuf[i*4 + 1];
                 sense_red[sense_head] = (readbuf[i*4 + 2] << 8) | readbuf[i*4 + 3];
             }
@@ -610,11 +615,14 @@ let HeartRate = 0;
     }
     
     function checkSample() {
-
-        while (1) {
-            let rawIRValue = sense_IR[sense_head];
-            let rawRedValue = sense_red[sense_head];
-
+        let index = sense_head;
+        while (index != sense_tail) {
+            let rawIRValue = sense_IR[index];
+            let rawRedValue = sense_red[index];
+            index--;
+            if(index < 0) {
+                index = RINGBUFFER_SIZE - 1;
+            }
             let irACValue = irDCRemoverStep(rawIRValue);
             let redACValue = redDCRemoverStep(rawRedValue);
 
