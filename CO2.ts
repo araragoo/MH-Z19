@@ -676,10 +676,10 @@ let HeartRate = 0;
         setLedsCurrent(irLedCurrent, redLedCurrentIndex);
     }
     
+    const SPO2_MEASUREMENT_TIME_MS = 1000;
     //% subcategory="SpO2"
     //% blockId=measureSpO2
     //% block="Measure SpO2"
-    const SPO2_MEASUREMENT_TIME_MS = 1000;
     export function measureSpO2 () {
         let t = control.millis();
 
