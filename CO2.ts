@@ -408,7 +408,6 @@ let HeartRate = 0;
         let readPointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_READ_POINTER)
         let writePointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_WRITE_POINTER);
         let toRead = (writePointer - readPointer) & (MAX30100_FIFO_DEPTH-1);
-        toRead = 1;  
         basic.showNumber(toRead);
         if (toRead) {
             burstRead(MAX30100_REG_FIFO_DATA, 4 * toRead);
@@ -691,11 +690,11 @@ let HeartRate = 0;
     //% blockId=measureSpO2
     //% block="Measure SpO2"
     export function measureSpO2 () {
-        let t = control.millis();
+//        let t = control.millis();
 
-        while(control.millis() - t < SPO2_MEASUREMENT_TIME_MS) {
+//        while(control.millis() - t < SPO2_MEASUREMENT_TIME_MS) {
            SPO2update();
-        } 
+//        } 
     }
 
     //% subcategory="SpO2"
