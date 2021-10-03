@@ -404,6 +404,13 @@ let HeartRate = 0;
         }
     }
 
+    
+    function resetFifo() {
+        i2cwrite(MAX30100_REG_FIFO_WRITE_POINTER, 0);
+        i2cwrite(MAX30100_REG_FIFO_READ_POINTER, 0);
+        i2cwrite(MAX30100_REG_FIFO_OVERFLOW_COUNTER, 0);
+    }
+
     function readFifoData() {
         let readPointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_READ_POINTER)
         let writePointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_WRITE_POINTER);
@@ -683,6 +690,7 @@ let HeartRate = 0;
     //
         setMode(MAX30100_MODE_SPO2_HR);
         setLedsCurrent(irLedCurrent, redLedCurrentIndex);
+        resetFifo();
 
 i2creads(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, 1);
 basic.showNumber(readbuf[0]);
