@@ -409,7 +409,6 @@ let HeartRate = 0;
         let writePointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_WRITE_POINTER);
         let toRead = (writePointer - readPointer) & (MAX30100_FIFO_DEPTH-1);
 //        basic.showNumber(toRead);
-toRead = 1;
         if (toRead) {
             burstRead(MAX30100_REG_FIFO_DATA, 4 * toRead);
     
@@ -423,7 +422,6 @@ toRead = 1;
                 }
                 sense_IR[sense_head]  = (readbuf[i*4] << 8) | readbuf[i*4 + 1];
                 sense_red[sense_head] = (readbuf[i*4 + 2] << 8) | readbuf[i*4 + 3];
-basic.showNumber(sense_IR[sense_head]);
             }
         }
     }
@@ -686,7 +684,9 @@ basic.showNumber(sense_IR[sense_head]);
         setMode(MAX30100_MODE_SPO2_HR);
         setLedsCurrent(irLedCurrent, redLedCurrentIndex);
 
-basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION));
+i2creads(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, 1);
+basic.showNumber(readbuf[0]);
+//basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION));
     }
 
     //% subcategory="SpO2"
