@@ -408,7 +408,8 @@ let HeartRate = 0;
         let readPointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_READ_POINTER)
         let writePointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_WRITE_POINTER);
         let toRead = (writePointer - readPointer) & (MAX30100_FIFO_DEPTH-1);
-        basic.showNumber(toRead);
+//        basic.showNumber(toRead);
+toRead = 1;
         if (toRead) {
             burstRead(MAX30100_REG_FIFO_DATA, 4 * toRead);
     
@@ -422,7 +423,7 @@ let HeartRate = 0;
                 }
                 sense_IR[sense_head]  = (readbuf[i*4] << 8) | readbuf[i*4 + 1];
                 sense_red[sense_head] = (readbuf[i*4 + 2] << 8) | readbuf[i*4 + 3];
-//basic.showNumber(sense_IR[sense_head]);
+basic.showNumber(sense_IR[sense_head]);
             }
         }
     }
