@@ -429,6 +429,7 @@ basic.showNumber(toRead);
                 }
                 sense_IR[sense_head]  = (readbuf[i*4] << 8) | readbuf[i*4 + 1];
                 sense_red[sense_head] = (readbuf[i*4 + 2] << 8) | readbuf[i*4 + 3];
+basic.showNumber(sense_IR[sense_head];
             }
         }
     }
