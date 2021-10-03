@@ -251,8 +251,6 @@ const MAX30100_LED_CURR_27_1MA        = 0x08;
 //const MAX30100_LED_CURR_46_8MA        = 0x0e;
 const MAX30100_LED_CURR_50MA            = 0x0f;
 
-
-
 const DEFAULT_MODE                      = MAX30100_MODE_HRONLY;
 const DEFAULT_SAMPLING_RATE             = MAX30100_SAMPRATE_100HZ;
 const DEFAULT_PULSE_WIDTH               = MAX30100_SPC_PW_1600US_16BITS;
@@ -269,7 +267,7 @@ const PULSEOXIMETER_STATE_IDLE      = 1;
 const PULSEOXIMETER_STATE_DETECTING = 2;
 
 const MAX30100_REG_FIFO_WRITE_POINTER           = 0x02;
-//const MAX30100_REG_FIFO_OVERFLOW_COUNTER      = 0x03;
+const MAX30100_REG_FIFO_OVERFLOW_COUNTER        = 0x03;
 const MAX30100_REG_FIFO_READ_POINTER            = 0x04;
 const MAX30100_REG_FIFO_DATA                    = 0x05;  // Burst read does not autoincrement addr
 
@@ -403,12 +401,11 @@ let HeartRate = 0;
             return 0;
         }
     }
-
     
     function resetFifo() {
-        i2cwrite(MAX30100_REG_FIFO_WRITE_POINTER, 0);
-        i2cwrite(MAX30100_REG_FIFO_READ_POINTER, 0);
-        i2cwrite(MAX30100_REG_FIFO_OVERFLOW_COUNTER, 0);
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_WRITE_POINTER, 0);
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_READ_POINTER, 0);
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_OVERFLOW_COUNTER, 0);
     }
 
     function readFifoData() {
