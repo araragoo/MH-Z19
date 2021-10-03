@@ -685,6 +685,8 @@ basic.showNumber(sense_IR[sense_head]);
     //
         setMode(MAX30100_MODE_SPO2_HR);
         setLedsCurrent(irLedCurrent, redLedCurrentIndex);
+
+basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION));
     }
 
     //% subcategory="SpO2"
