@@ -410,12 +410,12 @@ let HeartRate = 0;
 
     function readFifoData() {
         let writePointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_WRITE_POINTER);
-basic.showNumber(writePointer);
+//basic.showNumber(writePointer);
         let readPointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_READ_POINTER);
-basic.showNumber(readPointer);
+//basic.showNumber(readPointer);
         let toRead = (writePointer - readPointer) & (MAX30100_FIFO_DEPTH-1);
+basic.showNumber(readPointer);
 
-toRead=1;
         if (toRead) {
             burstRead(MAX30100_REG_FIFO_DATA, 4 * toRead);
     
