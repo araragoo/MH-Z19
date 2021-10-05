@@ -418,8 +418,11 @@ let HeartRate = 0;
         let readPointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_READ_POINTER);
 //basic.showNumber(readPointer);
         let toRead = (writePointer - readPointer) & (MAX30100_FIFO_DEPTH-1);
+
+basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_OVERFLOW_COUNTER));
+
 toRead = 16;
-basic.showNumber(toRead);
+//basic.showNumber(toRead);
 
         if (toRead) {
             burstRead(MAX30100_REG_FIFO_DATA, 4 * toRead);
@@ -688,8 +691,7 @@ basic.showNumber(sense_IR[sense_head]);
     //% block="Init SpO2"
     export function SpO2Init () {
     
-        resetFifo();
-        setMode(DEFAULT_MODE);
+         setMode(DEFAULT_MODE);
         setLedsPulseWidth(DEFAULT_PULSE_WIDTH);
         setSamplingRate(DEFAULT_SAMPLING_RATE);
         setLedsCurrent(DEFAULT_IR_LED_CURRENT, DEFAULT_RED_LED_CURRENT);
@@ -697,11 +699,12 @@ basic.showNumber(sense_IR[sense_head]);
     
         setMode(MAX30100_MODE_SPO2_HR);
         setLedsCurrent(irLedCurrent, redLedCurrentIndex);
+        resetFifo();
 
 
 //i2creads(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, 1);
 //basic.showNumber(readbuf[0]+5);
-basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+1);
+basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+2);
     }
 
     //% subcategory="SpO2"
