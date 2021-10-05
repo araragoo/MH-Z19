@@ -741,8 +741,8 @@ basic.showNumber(readbuf[0]+4);
     //% blockId=SpO2Temp
     //% block="SpO2 Temp [C]"
     export function SpO2Temp(): number {
-        let tempInteger = i2creads(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_INT);
-        let tempFrac = i2creads(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_FRAC);
+        let tempInteger = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_INT);
+        let tempFrac = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_FRAC);
     
         return tempFrac * 0.0625 + tempInteger;
     }    
