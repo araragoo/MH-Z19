@@ -693,8 +693,8 @@ basic.showNumber(sense_IR[sense_head]);
         setSamplingRate(DEFAULT_SAMPLING_RATE);
         setLedsCurrent(DEFAULT_IR_LED_CURRENT, DEFAULT_RED_LED_CURRENT);
         setHighresModeEnabled(true);
-    //
-//        setMode(MAX30100_MODE_SPO2_HR);
+    
+        setMode(MAX30100_MODE_SPO2_HR);
         setLedsCurrent(irLedCurrent, redLedCurrentIndex);
 
 
