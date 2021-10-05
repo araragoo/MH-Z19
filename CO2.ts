@@ -481,8 +481,8 @@ let HeartRate = 0;
         }
     }
 
-    function checkForBeat(sample: number): number {
-        let beatDetected = 0;
+    function checkForBeat(sample: number): boolean {
+        let beatDetected = false;
 
         switch (beatState) {
             case BEATDETECTOR_STATE_INIT:
@@ -519,7 +519,7 @@ let HeartRate = 0;
             case BEATDETECTOR_STATE_MAYBE_DETECTED:
                 if (sample + BEATDETECTOR_STEP_RESILIENCY < threshold) {
                     // Found a beat
-                    beatDetected = 1;
+                    beatDetected = true;
                     lastMaxValue = sample;
                     beatState = BEATDETECTOR_STATE_MASKING;
                     let delta = control.millis() - tsLastBeat;
@@ -608,7 +608,7 @@ let HeartRate = 0;
         HeartRate = 0;
     }
 
-    function spO2CalculatorUpdate(irACValue: number, redACValue: number, beatDetected: number) {
+    function spO2CalculatorUpdate(irACValue: number, redACValue: number, beatDetected: boolean) {
         irACValueSqSum += irACValue * irACValue;
         redACValueSqSum += redACValue * redACValue;
         ++samplesRecorded;
@@ -703,7 +703,7 @@ let HeartRate = 0;
 
 //i2creads(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, 1);
 //basic.showNumber(readbuf[0]+5);
-basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+4);
+basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+2);
     }
 
     //% subcategory="SpO2"
