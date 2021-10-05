@@ -253,6 +253,7 @@ const MAX30100_LED_CURR_50MA            = 0x0f;
 
 const MAX30100_REG_TEMPERATURE_DATA_INT     = 0x16;
 const MAX30100_REG_TEMPERATURE_DATA_FRAC    = 0x17;
+const MAX30100_MC_TEMP_EN                   = 1 << 3;
 
 const DEFAULT_MODE                      = MAX30100_MODE_HRONLY;
 const DEFAULT_SAMPLING_RATE             = MAX30100_SAMPRATE_100HZ;
@@ -742,7 +743,7 @@ basic.showNumber(readbuf[0]+4);
     //% block="SpO2 Temp [C]"
     export function SpO2Temp(): number {
         let tempInteger = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_INT);
-        let tempFrac = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_FRAC);
+        //let tempFrac = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_FRAC);
     
         return tempFrac * 0.0625 + tempInteger;
     }    
