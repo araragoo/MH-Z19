@@ -426,7 +426,7 @@ let HeartRate = 0;
         if (toRead) {
             burstRead(MAX30100_REG_FIFO_DATA, 4 * toRead);
     
-            sense_tail = sense_head;
+            //sense_tail = sense_head;
             for (let i=0 ; i < toRead ; ++i) {
                 sense_head++;
                 sense_head %= RINGBUFFER_SIZE;
