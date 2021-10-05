@@ -687,15 +687,16 @@ basic.showNumber(sense_IR[sense_head]);
     //% block="Init SpO2"
     export function SpO2Init () {
     
+        resetFifo();
         setMode(DEFAULT_MODE);
         setLedsPulseWidth(DEFAULT_PULSE_WIDTH);
         setSamplingRate(DEFAULT_SAMPLING_RATE);
         setLedsCurrent(DEFAULT_IR_LED_CURRENT, DEFAULT_RED_LED_CURRENT);
         setHighresModeEnabled(true);
     //
-        setMode(MAX30100_MODE_SPO2_HR);
+//        setMode(MAX30100_MODE_SPO2_HR);
         setLedsCurrent(irLedCurrent, redLedCurrentIndex);
-        resetFifo();
+
 
 i2creads(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, 1);
 basic.showNumber(readbuf[0]+4);
@@ -742,6 +743,7 @@ basic.showNumber(readbuf[0]+4);
     //% blockId=SpO2Temp
     //% block="SpO2 Temp [C]"
     export function SpO2Temp(): number {
+        SpO2InitTemp ();
         let tempInteger = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_INT);
         let tempFrac = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_FRAC);
     
