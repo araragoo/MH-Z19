@@ -721,11 +721,11 @@ basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+
     //% blockId=measureSpO2
     //% block="Measure SpO2"
     export function measureSpO2 () {
-//        let t = control.millis();
+        let t = control.millis();
 
-//        while(control.millis() - t < SPO2_MEASUREMENT_TIME_MS) {
+        while(control.millis() - t < SPO2_MEASUREMENT_TIME_MS) {
            SPO2update();
-//        } 
+        } 
     }
 
     //% subcategory="SpO2"
