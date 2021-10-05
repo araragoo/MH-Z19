@@ -421,7 +421,7 @@ let HeartRate = 0;
         if(toRead == 0) {
             toRead = MAX30100_FIFO_DEPTH;
         }
-        basic.showNumber(toRead);
+//       basic.showNumber(toRead);
 
         if (toRead) {
             burstRead(MAX30100_REG_FIFO_DATA, 4 * toRead);
