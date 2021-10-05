@@ -418,6 +418,7 @@ let HeartRate = 0;
         let readPointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_READ_POINTER);
 //basic.showNumber(readPointer);
         let toRead = (writePointer - readPointer) & (MAX30100_FIFO_DEPTH-1);
+toRead = 16;
 basic.showNumber(toRead);
 
         if (toRead) {
