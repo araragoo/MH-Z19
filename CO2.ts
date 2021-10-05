@@ -251,6 +251,9 @@ const MAX30100_LED_CURR_27_1MA        = 0x08;
 //const MAX30100_LED_CURR_46_8MA        = 0x0e;
 const MAX30100_LED_CURR_50MA            = 0x0f;
 
+const MAX30100_REG_TEMPERATURE_DATA_INT     = 0x16;
+const MAX30100_REG_TEMPERATURE_DATA_FRAC    = 0x17;
+
 const DEFAULT_MODE                      = MAX30100_MODE_HRONLY;
 const DEFAULT_SAMPLING_RATE             = MAX30100_SAMPRATE_100HZ;
 const DEFAULT_PULSE_WIDTH               = MAX30100_SPC_PW_1600US_16BITS;
@@ -414,7 +417,7 @@ let HeartRate = 0;
         let readPointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_READ_POINTER);
 //basic.showNumber(readPointer);
         let toRead = (writePointer - readPointer) & (MAX30100_FIFO_DEPTH-1);
-basic.showNumber(readPointer);
+basic.showNumber(toRead);
 
         if (toRead) {
             burstRead(MAX30100_REG_FIFO_DATA, 4 * toRead);
@@ -694,9 +697,20 @@ basic.showNumber(sense_IR[sense_head]);
         resetFifo();
 
 i2creads(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, 1);
-basic.showNumber(readbuf[0]+2);
+basic.showNumber(readbuf[0]+4);
 //basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION));
     }
+
+    //% subcategory="SpO2"
+    //% blockId=initalSpO2Temp
+    //% block="Init SpO2 Temp"
+    export function SpO2InitTemp () {
+    
+        let modeConfig = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION);
+        modeConfig |= MAX30100_MC_TEMP_EN;
+    
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, modeConfig);
+    }   
 
     //% subcategory="SpO2"
     //% blockId=measureSpO2
@@ -722,6 +736,16 @@ basic.showNumber(readbuf[0]+2);
     export function HRValue(): number {
         return HeartRate;
     }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2Temp
+    //% block="SpO2 Temp [C]"
+    export function SpO2Temp(): number {
+        let tempInteger = i2creads(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_INT);
+        let tempFrac = i2creads(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_FRAC);
+    
+        return tempFrac * 0.0625 + tempInteger;
+    }    
 }
 
 
