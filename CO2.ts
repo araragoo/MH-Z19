@@ -413,16 +413,15 @@ let HeartRate = 0;
     }
 
     function readFifoData() {
-        if(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_OVERFLOW_COUNTER) == 0xF) {
-            i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_OVERFLOW_COUNTER, 0);
-        }
-
         let writePointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_WRITE_POINTER);
 //basic.showNumber(writePointer);
         let readPointer = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_FIFO_READ_POINTER);
 //basic.showNumber(readPointer);
         let toRead = (writePointer - readPointer) & (MAX30100_FIFO_DEPTH-1);
-basic.showNumber(toRead);
+        if(toRead == 0) {
+            toRead = MAX30100_FIFO_DEPTH;
+        }
+        basic.showNumber(toRead);
 
         if (toRead) {
             burstRead(MAX30100_REG_FIFO_DATA, 4 * toRead);
@@ -438,7 +437,7 @@ basic.showNumber(toRead);
                 sense_IR[sense_head]  = (readbuf[i*4] << 8) | readbuf[i*4 + 1];
                 sense_red[sense_head] = (readbuf[i*4 + 2] << 8) | readbuf[i*4 + 3];
             }
-basic.showNumber(sense_IR[sense_head]);
+//basic.showNumber(sense_IR[sense_head]);
         }
     }
 
