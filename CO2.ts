@@ -634,12 +634,12 @@ let HeartRate = 0;
     function checkSample() {
         let index = sense_head;
         while (index != sense_tail) {
-            let rawIRValue = sense_IR[index];
-            let rawRedValue = sense_red[index];
-            index--;
-            if(index < 0) {
+            if(--index < 0) {
                 index = RINGBUFFER_SIZE - 1;
             }
+            let rawIRValue = sense_IR[index];
+            let rawRedValue = sense_red[index];
+
             let irACValue = irDCRemoverStep(rawIRValue);
             let redACValue = redDCRemoverStep(rawRedValue);
 
