@@ -421,7 +421,7 @@ let HeartRate = 0;
         if(toRead == 0) {
             toRead = MAX30100_FIFO_DEPTH;
         }
-//       basic.showNumber(toRead);
+       basic.showNumber(toRead);
 
         if (toRead) {
             burstRead(MAX30100_REG_FIFO_DATA, 4 * toRead);
@@ -703,7 +703,7 @@ let HeartRate = 0;
 
 //i2creads(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, 1);
 //basic.showNumber(readbuf[0]+5);
-basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+1);
+basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+5);
     }
 
     //% subcategory="SpO2"
