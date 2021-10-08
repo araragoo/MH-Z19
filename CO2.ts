@@ -430,10 +430,9 @@ let HeartRate = 0;
             for (let i=0 ; i < toRead ; ++i) {
                 sense_head++;
                 sense_head %= RINGBUFFER_SIZE;
-                if(sense_head == sense_tail){
-                    sense_tail = sense_head + 1;
-                    sense_tail %= RINGBUFFER_SIZE;    
-                }
+                sense_tail = sense_head + 1;
+                sense_tail %= RINGBUFFER_SIZE;    
+
                 sense_IR[sense_head]  = (readbuf[i*4] << 8) | readbuf[i*4 + 1];
                 sense_red[sense_head] = (readbuf[i*4 + 2] << 8) | readbuf[i*4 + 3];
             }
@@ -450,7 +449,6 @@ let HeartRate = 0;
     function irDCRemoverStep(x: number): number {
 		irOldDCdcw = irDCdcw;
 		irDCdcw = x + irCDalpha * irDCdcw;
-basic.showNumber(irDCdcw);
 		return irDCdcw - irOldDCdcw;
 	}
 
