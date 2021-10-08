@@ -630,13 +630,21 @@ let HeartRate = 0;
             }
         }
     }
-    
+
+    let rawIRValue: number;
+    let rawRedValue: number;
+    let irACValue: number;
+    let redACValue: number;
+    let filteredPulseValue: number;
+    let beatDetected: number;
+
     function checkSample() {
         let index = sense_head;
         while (index != sense_tail) {
             if(--index < 0) {
                 index = RINGBUFFER_SIZE - 1;
             }
+/*
             let rawIRValue = sense_IR[index];
             let rawRedValue = sense_red[index];
 
@@ -645,6 +653,15 @@ let HeartRate = 0;
 
             let filteredPulseValue = filterBuLp1Step(-irACValue);
             let beatDetected = checkForBeat(filteredPulseValue);
+*/
+            rawIRValue = sense_IR[index];
+            rawRedValue = sense_red[index];
+
+            irACValue = irDCRemoverStep(rawIRValue);
+            redACValue = redDCRemoverStep(rawRedValue);
+
+            filteredPulseValue = filterBuLp1Step(-irACValue);
+            beatDetected = checkForBeat(filteredPulseValue);
 
             if (getRate() > 0) {
                 pulseState = PULSEOXIMETER_STATE_DETECTING;
@@ -752,6 +769,57 @@ basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+
     
         return tempFrac * 0.0625 + tempInteger;
     }    
+
+    //% subcategory="SpO2"
+    //% blockId=IRValue
+    //% block="IRValue"
+    export function IRValue(): number {
+        return rawIRValue;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=RedValue
+    //% block="RedValue"
+    export function RedValue(): number {
+        return rawRedValue;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=irACValue
+    //% block="irACValue"
+    export function f_irACValue(): number {
+        return irACValue;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=redACValue
+    //% block="redACValue"
+    export function f_redACValue(): number {
+        return redACValue;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=filteredPulseValue
+    //% block="filteredPulseValue"
+    export function f_filteredPulseValue(): number {
+        return filteredPulseValue;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=beatDetected
+    //% block="beatDetected"
+    export function f_beatDetected(): number {
+        return beatDetected;
+    }
+
+
+
+
+
+
+
+
+
 }
 
 
