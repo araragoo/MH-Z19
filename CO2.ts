@@ -450,6 +450,7 @@ let HeartRate = 0;
     function irDCRemoverStep(x: number): number {
 		irOldDCdcw = irDCdcw;
 		irDCdcw = x + irCDalpha * irDCdcw;
+basic.showNumber(irDCdcw);
 		return irDCdcw - irOldDCdcw;
 	}
 
