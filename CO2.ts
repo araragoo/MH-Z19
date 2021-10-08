@@ -300,13 +300,13 @@ const spO2LUT: number[] = [100,100,100,100,99,99,99,99,99,99,98,98,98,98,
     95,95,95,95,94,94,94,94,94,93,93,93,93,93];
 
 let irCDalpha = DC_REMOVER_ALPHA;
-let irDCdcw: number;
-let irOldDCdcw: number;
+let irDCdcw = 0;
+let irOldDCdcw = 0;
 let redCDalpha = DC_REMOVER_ALPHA;
-let redDCdcw: number;
-let redOldDCdcw: number;
-let filterV0: number;
-let filterV1: number;
+let redDCdcw = 0;
+let redOldDCdcw = 0;
+let filterV0 = 0;
+let filterV1 = 0;
 
 let redLedCurrentIndex = RED_LED_CURRENT_START;
 let irLedCurrent = DEFAULT_IR_LED_CURRENT;
@@ -631,11 +631,11 @@ let HeartRate = 0;
         }
     }
 
-    let rawIRValue: number;
-    let rawRedValue: number;
-    let irACValue: number;
-    let redACValue: number;
-    let filteredPulseValue: number;
+    let rawIRValue = 0;
+    let rawRedValue = 0;
+    let irACValue = 0;
+    let redACValue = 0;
+    let filteredPulseValue = 0;
     let beatDetected: boolean;
 
     function checkSample() {
