@@ -808,7 +808,7 @@ basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+
     //% subcategory="SpO2"
     //% blockId=beatDetected
     //% block="beatDetected"
-    export function f_beatDetected(): number {
+    export function f_beatDetected(): boolean {
         return beatDetected;
     }
 
