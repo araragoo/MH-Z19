@@ -636,7 +636,7 @@ let HeartRate = 0;
     let irACValue: number;
     let redACValue: number;
     let filteredPulseValue: number;
-    let beatDetected: number;
+    let beatDetected: boolean;
 
     function checkSample() {
         let index = sense_head;
