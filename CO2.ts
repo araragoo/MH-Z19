@@ -641,9 +641,6 @@ let HeartRate = 0;
     function checkSample() {
         let index = sense_head;
         while (index != sense_tail) {
-            if(--index < 0) {
-                index = RINGBUFFER_SIZE - 1;
-            }
 /*
             let rawIRValue = sense_IR[index];
             let rawRedValue = sense_red[index];
@@ -674,6 +671,9 @@ let HeartRate = 0;
             //if (beatDetected && onBeatDetected) {
             //    onBeatDetected();
             //}
+            if(--index < 0) {
+                index = RINGBUFFER_SIZE - 1;
+            }
         }
     }
    
@@ -806,16 +806,25 @@ basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+
     }
 
     //% subcategory="SpO2"
-    //% blockId=beatDetected
-    //% block="beatDetected"
-    export function f_beatDetected(): boolean {
-        return beatDetected;
+    //% blockId=irDCdcw
+    //% block="irDCdcw"
+    export function f_irDCdcw(): number {
+        return irDCdcw;
     }
 
+    //% subcategory="SpO2"
+    //% blockId=redDCdcw
+    //% block="redDCdcw"
+    export function f_redDCdcw(): number {
+        return redDCdcw;
+    }
 
-
-
-
+        //% subcategory="SpO2"
+    //% blockId=filterV1
+    //% block="filterV1"
+    export function f_filterV1(): number {
+        return filterV1;
+    }
 
 
 
