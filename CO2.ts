@@ -719,7 +719,7 @@ let HeartRate = 0;
 
 //i2creads(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, 1);
 //basic.showNumber(readbuf[0]+5);
-basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+4);
+basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+2);
     }
 
     //% subcategory="SpO2"
