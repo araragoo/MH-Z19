@@ -715,11 +715,9 @@ let HeartRate = 0;
         setMode(MAX30100_MODE_SPO2_HR);
         setLedsCurrent(irLedCurrent, redLedCurrentIndex);
         resetFifo();
-
-
 //i2creads(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, 1);
 //basic.showNumber(readbuf[0]+5);
-basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+2);
+basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+5);
     }
 
     //% subcategory="SpO2"
@@ -739,7 +737,7 @@ basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+
     export function measureSpO2 () {
         let t = control.millis();
 
-        while(control.millis() - t < SPO2_MEASUREMENT_TIME_MS) {
+        while(control.millis() - t < SPO2_MEASUREMENT_TIME_MS*3) {
            SPO2update();
         } 
     }
@@ -818,16 +816,12 @@ basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+
         return redDCdcw;
     }
 
-        //% subcategory="SpO2"
+    //% subcategory="SpO2"
     //% blockId=filterV1
     //% block="filterV1"
     export function f_filterV1(): number {
         return filterV1;
     }
-
-
-
-
 }
 
 
