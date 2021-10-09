@@ -737,7 +737,7 @@ basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+
     export function measureSpO2 () {
         let t = control.millis();
 
-        while(control.millis() - t < SPO2_MEASUREMENT_TIME_MS*3) {
+        while(control.millis() - t < SPO2_MEASUREMENT_TIME_MS*2) {
            SPO2update();
         } 
     }
