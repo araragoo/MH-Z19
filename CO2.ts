@@ -550,7 +550,7 @@ let HeartRate = 0;
         } else {
             HeartRate = 0;
         }
-        return HeartRate;
+        return HeartRate / 3;
     }
     
     function sublog(z: number): number {
