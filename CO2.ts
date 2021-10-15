@@ -702,6 +702,54 @@ let HeartRate = 0;
     }
 
     //% subcategory="SpO2"
+    //% blockId=SpO2Temp
+    //% block="SpO2 Temp [C]"
+    export function SpO2Temp(): number {
+        SpO2InitTemp ();
+        let tempInteger = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_INT);
+        let tempFrac = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_FRAC);
+    
+        return tempFrac * 0.0625 + tempInteger;
+    }    
+
+    //% subcategory="SpO2"
+    //% blockId=initalSpO2Temp
+    //% block="Init SpO2 Temp"
+    export function SpO2InitTemp () {
+    
+        let modeConfig = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION);
+        modeConfig |= MAX30100_MC_TEMP_EN;
+    
+        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, modeConfig);
+    }   
+
+
+    //% subcategory="SpO2"
+    //% blockId=HRValue
+    //% block="HR[b/m]"
+    export function HRValue(): number {
+        return HeartRate;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=SpO2Value
+    //% block="SpO2[percent]"
+    export function SpO2Value(): number {
+        return spO2;
+    }
+
+    //% subcategory="SpO2"
+    //% blockId=measureSpO2
+    //% block="Measure SpO2"
+    export function measureSpO2 () {
+        let t = control.millis();
+
+        while(control.millis() - t < SPO2_MEASUREMENT_TIME_MS*2) {
+           SPO2update();
+        } 
+    }
+
+    //% subcategory="SpO2"
     //% blockId=initalSpO2
     //% block="Init SpO2"
     export function SpO2Init () {
@@ -720,52 +768,6 @@ let HeartRate = 0;
         //basic.showNumber(i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION)+5);
     }
 
-    //% subcategory="SpO2"
-    //% blockId=initalSpO2Temp
-    //% block="Init SpO2 Temp"
-    export function SpO2InitTemp () {
-    
-        let modeConfig = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION);
-        modeConfig |= MAX30100_MC_TEMP_EN;
-    
-        i2cwrite(MAX30100_I2C_ADDRESS, MAX30100_REG_MODE_CONFIGURATION, modeConfig);
-    }   
-
-    //% subcategory="SpO2"
-    //% blockId=measureSpO2
-    //% block="Measure SpO2"
-    export function measureSpO2 () {
-        let t = control.millis();
-
-        while(control.millis() - t < SPO2_MEASUREMENT_TIME_MS*2) {
-           SPO2update();
-        } 
-    }
-
-    //% subcategory="SpO2"
-    //% blockId=SpO2Value
-    //% block="SpO2[percent]"
-    export function SpO2Value(): number {
-        return spO2;
-    }
-
-    //% subcategory="SpO2"
-    //% blockId=HRValue
-    //% block="HR[b/m]"
-    export function HRValue(): number {
-        return HeartRate;
-    }
-
-    //% subcategory="SpO2"
-    //% blockId=SpO2Temp
-    //% block="SpO2 Temp [C]"
-    export function SpO2Temp(): number {
-        SpO2InitTemp ();
-        let tempInteger = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_INT);
-        let tempFrac = i2cread(MAX30100_I2C_ADDRESS, MAX30100_REG_TEMPERATURE_DATA_FRAC);
-    
-        return tempFrac * 0.0625 + tempInteger;
-    }    
 /*
     //% subcategory="SpO2"
     //% blockId=IRValue
