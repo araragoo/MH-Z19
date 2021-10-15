@@ -706,7 +706,7 @@ let HeartRate = 0;
     //% block="Init SpO2"
     export function SpO2Init () {
     
-         setMode(DEFAULT_MODE);
+        setMode(DEFAULT_MODE);
         setLedsPulseWidth(DEFAULT_PULSE_WIDTH);
         setSamplingRate(DEFAULT_SAMPLING_RATE);
         setLedsCurrent(DEFAULT_IR_LED_CURRENT, DEFAULT_RED_LED_CURRENT);
