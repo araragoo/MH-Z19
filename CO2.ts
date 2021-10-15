@@ -550,7 +550,7 @@ let HeartRate = 0;
         } else {
             HeartRate = 0;
         }
-        return HeartRate / 3;
+        return HeartRate;
     }
     
     function sublog(z: number): number {
@@ -728,7 +728,8 @@ let HeartRate = 0;
     //% blockId=HRValue
     //% block="HR[b/m]"
     export function HRValue(): number {
-        return HeartRate;
+        //return HeartRate;
+        return HeartRate / 3;
     }
 
     //% subcategory="SpO2"
