@@ -279,7 +279,8 @@ const SPO2_MEASUREMENT_TIME_MS = 1000;
 
 const BEATDETECTOR_INIT_HOLDOFF                 = 2000;    // in ms, how long to wait before counting
 const BEATDETECTOR_MASKING_HOLDOFF              = 200;     // in ms, non-retriggerable window after beat detection
-const BEATDETECTOR_BPFILTER_ALPHA               = 0.6;     // EMA factor for the beat period value
+const BEATDETECTOR_BPFILTER_ALPHA               = 1.0;     // EMA factor for the beat period value
+//const BEATDETECTOR_BPFILTER_ALPHA               = 0.6;     // EMA factor for the beat period value
 const BEATDETECTOR_MIN_THRESHOLD                = 20;      // minimum threshold (filtered) value
 const BEATDETECTOR_MAX_THRESHOLD                = 800;     // maximum threshold (filtered) value
 const BEATDETECTOR_STEP_RESILIENCY              = 30;      // maximum negative jump that triggers the beat edge
