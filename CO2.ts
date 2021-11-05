@@ -56,8 +56,10 @@ namespace CO2 {
     //% block="Init CO2"
     export function CO2Init () {
         serial.redirect(
-            SerialPin.P13,
-            SerialPin.P14,
+//            SerialPin.P13,
+//            SerialPin.P14,
+            SerialPin.P8,
+            SerialPin.P12,
             BaudRate.BaudRate9600
         )
         buf.setNumber(NumberFormat.UInt8LE, 0, 255)
