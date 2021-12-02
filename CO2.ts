@@ -59,8 +59,8 @@ namespace CO2 {
         serial.redirect(
 //            SerialPin.P13, //tx
 //            SerialPin.P14, //rx
-            SerialPin.P12, //tx
-            SerialPin.P8, //rx
+            SerialPin.P8, //tx
+            SerialPin.P12, //rx
             BaudRate.BaudRate9600
         )
         buf.setNumber(NumberFormat.UInt8LE, 0, 255)
