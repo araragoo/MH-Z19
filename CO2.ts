@@ -4,9 +4,12 @@
 namespace CO2 {
 
     let CO2data = 400
-    let buffer: Buffer = null
-    let buf  = control.createBuffer(9)
-    let buf0 = control.createBuffer(9)
+    let buffer = pins.createBuffer(9)
+    let cmd_get = pins.createBuffer(9)
+    let cmd_zero_cal = pins.createBuffer(9)
+    let cmd_span_cal = pins.createBuffer(9)
+    let cmd_auto_on = pins.createBuffer(9)
+    let cmd_auto_off = pins.createBuffer(9)
 
     //% subcategory="CO2"
     //% blockId=setOffset
@@ -34,8 +37,6 @@ namespace CO2 {
     export function CO2Value(): number {
 
         serial.writeBuffer(buf)
-        basic.pause(100)
-
         buffer = serial.readBuffer(9)
         if (buffer.getNumber(NumberFormat.UInt8LE, 0) == 255 && buffer.getNumber(NumberFormat.UInt8LE, 1) == 134) {
 //            let sum = 0
@@ -53,35 +54,59 @@ namespace CO2 {
 
     //% subcategory="CO2"
     //% blockId=initalCO2
-    //% block="Init CO2"
-    export function CO2Init () {
+    //% block="Init CO2 AutoCalibraton ON:1 OFF:0 %onoff"
+    function CO2Init(onoff: number) {
         basic.pause(1000)
         serial.redirect(
-//            SerialPin.P13, //tx
-//            SerialPin.P14, //rx
             SerialPin.P8, //tx
             SerialPin.P12, //rx
             BaudRate.BaudRate9600
         )
-        buf.setNumber(NumberFormat.UInt8LE, 0, 255)
-        buf.setNumber(NumberFormat.UInt8LE, 1, 1)
-        buf.setNumber(NumberFormat.UInt8LE, 2, 134)
-        buf.setNumber(NumberFormat.UInt8LE, 3, 0)
-        buf.setNumber(NumberFormat.UInt8LE, 4, 0)
-        buf.setNumber(NumberFormat.UInt8LE, 5, 0)
-        buf.setNumber(NumberFormat.UInt8LE, 6, 0)
-        buf.setNumber(NumberFormat.UInt8LE, 7, 0)
-        buf.setNumber(NumberFormat.UInt8LE, 8, 121)
+        cmd_get.setNumber(NumberFormat.UInt8LE, 0, 255)
+        cmd_get.setNumber(NumberFormat.UInt8LE, 1, 1)
+        cmd_get.setNumber(NumberFormat.UInt8LE, 2, 134)
+        cmd_get.setNumber(NumberFormat.UInt8LE, 3, 0)
+        cmd_get.setNumber(NumberFormat.UInt8LE, 4, 0)
+        cmd_get.setNumber(NumberFormat.UInt8LE, 5, 0)
+        cmd_get.setNumber(NumberFormat.UInt8LE, 6, 0)
+        cmd_get.setNumber(NumberFormat.UInt8LE, 7, 0)
+        cmd_get.setNumber(NumberFormat.UInt8LE, 8, 121)
 
-        buf0.setNumber(NumberFormat.UInt8LE, 0, 255)
-        buf0.setNumber(NumberFormat.UInt8LE, 1, 1)
-        buf0.setNumber(NumberFormat.UInt8LE, 2, 135)
-        buf0.setNumber(NumberFormat.UInt8LE, 3, 0)
-        buf0.setNumber(NumberFormat.UInt8LE, 4, 0)
-        buf0.setNumber(NumberFormat.UInt8LE, 5, 0)
-        buf0.setNumber(NumberFormat.UInt8LE, 6, 0)
-        buf0.setNumber(NumberFormat.UInt8LE, 7, 0)
-        buf0.setNumber(NumberFormat.UInt8LE, 8, 120)
+        cmd_zero_cal.setNumber(NumberFormat.UInt8LE, 0, 255)
+        cmd_zero_cal.setNumber(NumberFormat.UInt8LE, 1, 1)
+        cmd_zero_cal.setNumber(NumberFormat.UInt8LE, 2, 135)
+        cmd_zero_cal.setNumber(NumberFormat.UInt8LE, 3, 0)
+        cmd_zero_cal.setNumber(NumberFormat.UInt8LE, 4, 0)
+        cmd_zero_cal.setNumber(NumberFormat.UInt8LE, 5, 0)
+        cmd_zero_cal.setNumber(NumberFormat.UInt8LE, 6, 0)
+        cmd_zero_cal.setNumber(NumberFormat.UInt8LE, 7, 0)
+        cmd_zero_cal.setNumber(NumberFormat.UInt8LE, 8, 120)
+
+        cmd_auto_on.setNumber(NumberFormat.UInt8LE, 0, 255)
+        cmd_auto_on.setNumber(NumberFormat.UInt8LE, 1, 1)
+        cmd_auto_on.setNumber(NumberFormat.UInt8LE, 2, 121)
+        cmd_auto_on.setNumber(NumberFormat.UInt8LE, 3, 160)
+        cmd_auto_on.setNumber(NumberFormat.UInt8LE, 4, 0)
+        cmd_auto_on.setNumber(NumberFormat.UInt8LE, 5, 0)
+        cmd_auto_on.setNumber(NumberFormat.UInt8LE, 6, 0)
+        cmd_auto_on.setNumber(NumberFormat.UInt8LE, 7, 0)
+        cmd_auto_on.setNumber(NumberFormat.UInt8LE, 8, 230)
+
+        cmd_auto_off.setNumber(NumberFormat.UInt8LE, 0, 255)
+        cmd_auto_off.setNumber(NumberFormat.UInt8LE, 1, 1)
+        cmd_auto_off.setNumber(NumberFormat.UInt8LE, 2, 121)
+        cmd_auto_off.setNumber(NumberFormat.UInt8LE, 3, 0)
+        cmd_auto_off.setNumber(NumberFormat.UInt8LE, 4, 0)
+        cmd_auto_off.setNumber(NumberFormat.UInt8LE, 5, 0)
+        cmd_auto_off.setNumber(NumberFormat.UInt8LE, 6, 0)
+        cmd_auto_off.setNumber(NumberFormat.UInt8LE, 7, 0)
+        cmd_auto_off.setNumber(NumberFormat.UInt8LE, 8, 134)
+
+        if (onoff==1) {
+            serial.writeBuffer(cmd_auto_on)
+        } else {
+            serial.writeBuffer(cmd_auto_off)
+        }
     }
 
 
