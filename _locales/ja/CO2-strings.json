@@ -3,7 +3,7 @@
 	"{id:subcategory}CO2": "二酸化炭素CO2",
 	"{id:subcategory}SpO2": "血中酸素濃度SpO2",
 	"{id:subcategory}Temp": "体温",
-	"CO2.CO2Init|block": "CO2 初期化",
+	"CO2.CO2Init|block": "CO2 初期化 キャリブレーションオート ON:1 OFF:0 %onoff",
 	"CO2.CO2Value|block": "CO2値[ppm]",
 	"CO2.CO2SetOffset|block": "CO2 オフセット",
 	"CO2.TempBodyTempAve|block": "平均体温[℃] %num",
