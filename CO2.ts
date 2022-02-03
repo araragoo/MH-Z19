@@ -26,7 +26,7 @@ namespace CO2 {
             basic.showString("" + convertToText(60 - s*5) + "s")
         }
 
-        serial.writeBuffer(buf0)
+        serial.writeBuffer(cmd_zero_cal)
         basic.pause(100)
         basic.showString("Done!")
     }
