@@ -36,7 +36,7 @@ namespace CO2 {
     //% block="CO2[ppm]"
     export function CO2Value(): number {
 
-        serial.writeBuffer(buf)
+        serial.writeBuffer(cmd_get)
         buffer = serial.readBuffer(9)
         if (buffer.getNumber(NumberFormat.UInt8LE, 0) == 255 && buffer.getNumber(NumberFormat.UInt8LE, 1) == 134) {
 //            let sum = 0
